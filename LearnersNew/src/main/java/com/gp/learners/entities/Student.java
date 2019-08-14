@@ -48,6 +48,8 @@ public class Student {
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="user_id",referencedColumnName="user_id")
 	private User userId;
+	
+	
 
 	// constructor
 	public Student() {

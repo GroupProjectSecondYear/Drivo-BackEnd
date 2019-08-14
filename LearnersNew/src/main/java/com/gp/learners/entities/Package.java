@@ -1,5 +1,7 @@
 package com.gp.learners.entities;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,6 +9,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.CascadeType;
 
 @Entity
 public class Package {
@@ -21,15 +26,19 @@ public class Package {
 	private String url;
 	private Float price;
 	private Integer status;
-	private Integer manual_les;
-	private Integer auto_les;
+	@Column(name = "manual_les")
+	private Integer manualLes;
+	@Column(name = "auto_les")
+	private Integer autoLes;
 
 	@ManyToOne
 	@JoinColumn(name = "vehicle_category_id", referencedColumnName = "vehicle_category_id")
 	private VehicleCategory vehicleCategoryId;
+
+	
 	
 	public Package() {
-		
+
 	}
 
 	public Integer getPackageId() {
@@ -80,20 +89,20 @@ public class Package {
 		this.status = status;
 	}
 
-	public Integer getManual_les() {
-		return manual_les;
+	public Integer getManualLes() {
+		return manualLes;
 	}
 
-	public void setManual_les(Integer manual_les) {
-		this.manual_les = manual_les;
+	public void setManualLes(Integer manualLes) {
+		this.manualLes = manualLes;
 	}
 
-	public Integer getAuto_les() {
-		return auto_les;
+	public Integer getAutoLes() {
+		return autoLes;
 	}
 
-	public void setAuto_les(Integer auto_les) {
-		this.auto_les = auto_les;
+	public void setAutoLes(Integer autoLes) {
+		this.autoLes = autoLes;
 	}
 
 	public VehicleCategory getVehicleCategoryId() {
@@ -107,8 +116,10 @@ public class Package {
 	@Override
 	public String toString() {
 		return "Package [packageId=" + packageId + ", title=" + title + ", description=" + description + ", url=" + url
-				+ ", price=" + price + ", status=" + status + ", manual_les=" + manual_les + ", auto_les=" + auto_les
+				+ ", price=" + price + ", status=" + status + ", manualLes=" + manualLes + ", autoLes=" + autoLes
 				+ ", vehicleCategoryId=" + vehicleCategoryId + "]";
 	}
+
+	
 
 }
