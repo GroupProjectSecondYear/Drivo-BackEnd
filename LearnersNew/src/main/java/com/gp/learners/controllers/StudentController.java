@@ -7,7 +7,9 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,6 +58,19 @@ public class StudentController {
 		
 		return studentService.packageAdd(id,object);
 		
+	}
+	
+	//delete student package details from the database
+	@DeleteMapping("student/package/{stuId}/{pacId}")
+	public ResponseEntity<Void> studentPackageDelete(@PathVariable("stuId") Integer stuId,@PathVariable("pacId") Integer pacId ) {
+			
+		if(studentService.packageDelete(stuId,pacId).equals("success")) {
+			System.out.println("ok2");
+			return ResponseEntity.noContent().build();
+		}
+		System.out.println("Ok1");
+		return ResponseEntity.notFound().build();
+			
 	}
 	
 }

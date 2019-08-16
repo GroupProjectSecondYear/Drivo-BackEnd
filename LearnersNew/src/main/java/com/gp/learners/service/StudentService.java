@@ -92,12 +92,46 @@ public class StudentService {
 		
 	}
 	
+	
+	//Delete Student's package details from the db
+	public Object packageDelete(Integer stuId,Integer pacId) {
+		if(stuId != null && pacId != null) {
+			if(studentRepository.existsById(stuId) && packageRepository.existsById(pacId)) {//check whether student and package data represent the relevant tables
+				if(!notExistStudentIdAndPackageId(getStudent(stuId), getPackage(pacId))) {//if relevant record exist in the studentPackage table
+					
+					//delete the studentPackage data(when delete studentpackage data relevant 'course fee' also deleted
+					studentPackageRepository.deleteById(getStudentPackageId(stuId, pacId));
+					return "success";
+				}
+			}
+		}
+		return "error";
+	}
+	
+	
+	//Helping Function
 	private Boolean notExistStudentIdAndPackageId(Student studentObject,Package packageObject) {
 		StudentPackage object=studentPackageRepository.findByStudentIdAndPackageId(studentObject, packageObject);
 		if(object != null) {
 			return false;
 		}
 		return true;
+	}
+	
+	//
+	private Integer getStudentPackageId(Integer studentId,Integer packageId) {
+		StudentPackage object =studentPackageRepository.findByStudentIdAndPackageId(getStudent(studentId), getPackage(packageId));
+		return object.getStudentPackageId();
+	}
+	
+	//get student object from the student table
+	private Student getStudent(Integer studentId) {
+		return studentRepository.findByStudentId(studentId);
+	}
+	
+	//get package object from the table
+	private Package getPackage(Integer packageId) {
+		return packageRepository.findByPackageId(packageId);
 	}
 
 }
