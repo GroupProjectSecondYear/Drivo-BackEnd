@@ -1,12 +1,10 @@
 package com.gp.learners.controllers;
 
-import java.util.ArrayList;
+
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,8 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+
+import com.gp.learners.entities.Package;
 import com.gp.learners.entities.Student;
-import com.gp.learners.entities.StudentPackage;
 import com.gp.learners.entities.mapObject.StudentPackageMapWrapper;
 import com.gp.learners.repositories.StudentRepository;
 import com.gp.learners.service.StudentService;
@@ -48,13 +47,19 @@ public class StudentController {
 	//get student following package(output-->packId,Title)
 	@GetMapping("student/package/{id}")
 	public List<Integer> studentPakage(@PathVariable("id") Integer id) {
-		return studentService.packageList(id);
+		return studentService.packageListId(id);
+	}
+	
+	//get student following package(output-->packId,Title)
+	@GetMapping("student/package/list/{id}")
+	public List<Package> studentPakageList(@PathVariable("id") Integer id) {
+			return studentService.packageList(id);
 	}
 	
 	
 	//add student package details to the database
-	@PostMapping("student/package/{id}")
-	public Object studentPackageAdd(@PathVariable("id") Integer id,@RequestBody StudentPackageMapWrapper object) {
+	@PostMapping("student/package/{stuId}")
+	public Object studentPackageAdd(@PathVariable("stuId") Integer id,@RequestBody StudentPackageMapWrapper object) {
 		
 		return studentService.packageAdd(id,object);
 		
@@ -71,6 +76,12 @@ public class StudentController {
 		System.out.println("Ok1");
 		return ResponseEntity.notFound().build();
 			
+	}
+	
+	//student Course Fee Details(return the --> courseFeeId,amount,date,method)
+	@GetMapping("student/coursefees/{stuId}/{pacId}")
+	public List<Object> courseFees(@PathVariable("stuId") Integer stuId,@PathVariable("pacId") Integer pacId) {
+			return studentService.courseFeeList(stuId,pacId);
 	}
 	
 }

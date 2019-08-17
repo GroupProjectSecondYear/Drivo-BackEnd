@@ -1,11 +1,9 @@
 package com.gp.learners.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +13,7 @@ import com.gp.learners.entities.Student;
 import com.gp.learners.entities.StudentPackage;
 import com.gp.learners.entities.mapObject.StudentPackageMap;
 import com.gp.learners.entities.mapObject.StudentPackageMapWrapper;
+import com.gp.learners.repositories.CourseFeeRepository;
 import com.gp.learners.repositories.PackageRepository;
 import com.gp.learners.repositories.StudentPackageRepository;
 import com.gp.learners.repositories.StudentRepository;
@@ -31,19 +30,22 @@ public class StudentService {
 	
 	@Autowired
 	PackageRepository packageRepository;
+	
+	@Autowired
+	CourseFeeRepository courseFee;
 
 	public Boolean register(Map<String, String> data) {
 		return false;
 	}
 
-	// give student followed packages
-	public List<Integer> packageList(Integer studentId) {
+	// give student followed packagesId
+	public List<Integer> packageListId(Integer studentId) {
 
 		List<Integer> list = new ArrayList<Integer>();// error list
 
 		Student student = studentRepository.getStudentId(studentId);
 		if (student != null) {
-			List<Integer> packId = studentPackageRepository.getStudentId(student);
+			List<Integer> packId = studentPackageRepository.findByStudentId(student);
 			if (packId != null && packId.size() > 0) {
 				return packId;
 			}
@@ -54,6 +56,25 @@ public class StudentService {
 		// if no such a student
 		list.add(-1);
 		return list;
+	}
+	
+	//give student following packages
+	public List<Package> packageList(Integer studentId){
+		List<Package> packages=new ArrayList<Package>();
+		if(studentId != null) {
+			if(studentRepository.existsById(studentId)) {
+				Student student=getStudent(studentId);
+				if(existStudentId(student)) {//check student record has in the studentPackage table
+					List<Integer> packageId=studentPackageRepository.findByStudentId(student);
+					for( Integer i : packageId) {
+						packages.add(packageRepository.findByPackageId(i));
+					}
+					return packages;
+					
+				}
+			}
+		}
+		return packages;
 	}
 
 	// Add Student following package details to the db
@@ -94,7 +115,7 @@ public class StudentService {
 	
 	
 	//Delete Student's package details from the db
-	public Object packageDelete(Integer stuId,Integer pacId) {
+	public String packageDelete(Integer stuId,Integer pacId) {
 		if(stuId != null && pacId != null) {
 			if(studentRepository.existsById(stuId) && packageRepository.existsById(pacId)) {//check whether student and package data represent the relevant tables
 				if(!notExistStudentIdAndPackageId(getStudent(stuId), getPackage(pacId))) {//if relevant record exist in the studentPackage table
@@ -108,14 +129,42 @@ public class StudentService {
 		return "error";
 	}
 	
+	//Get Student Course Fees Details
+	public List<Object> courseFeeList(Integer studentId,Integer packageId){
+		List<Object> courseFees=new ArrayList<Object>();
+		if(studentId != null && packageId != null) {
+			if(studentRepository.existsById(studentId) && packageRepository.existsById(packageId)) {//check whether student's and package's record has or not
+				if(!notExistStudentIdAndPackageId(getStudent(studentId), getPackage(packageId))) {//if record exist in the studentPackage table
+					
+					Integer studentPackageId=getStudentPackageId(studentId, packageId);
+					StudentPackage studentPackage=studentPackageRepository.findByStudentPackageId(studentPackageId);
+					courseFees =courseFee.findByStudentPackageId(studentPackage);
+					return courseFees;
+				}
+			}
+		}
+		return courseFees;
+	}
+	
 	
 	//Helping Function
+	
+	//if student and package exist the student Package table return false
 	private Boolean notExistStudentIdAndPackageId(Student studentObject,Package packageObject) {
 		StudentPackage object=studentPackageRepository.findByStudentIdAndPackageId(studentObject, packageObject);
 		if(object != null) {
 			return false;
 		}
 		return true;
+	}
+	
+	//if student exist in the studentpackage table return true
+	private Boolean existStudentId(Student student) {
+		List<Integer> object=studentPackageRepository.findByStudentId(student);
+		if(object != null) {
+			return true;
+		}
+		return false;
 	}
 	
 	//
@@ -133,5 +182,5 @@ public class StudentService {
 	private Package getPackage(Integer packageId) {
 		return packageRepository.findByPackageId(packageId);
 	}
-
+	
 }
