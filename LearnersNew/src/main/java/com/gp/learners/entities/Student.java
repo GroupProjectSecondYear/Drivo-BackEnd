@@ -29,11 +29,13 @@ public class Student {
 	String name;
 
 	@Size(min = 10, max = 10, message = "Telephone number should be 10 numners")
+	@NotBlank(message = "Telephone number is mandatory")
 	String tel;
 
 	@Size(min = 10, max = 10, message = "NIC number should be 10 numners")
+	@NotBlank(message = "NIC is mandatory")
 	String nic;
-
+	
 	@FutureOrPresent(message = "Not Valid Exam Date")
 	@DateTimeFormat(pattern="MM-dd-YYYY")
 	LocalDate examDate;

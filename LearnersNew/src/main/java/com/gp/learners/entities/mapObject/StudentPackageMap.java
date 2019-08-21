@@ -1,11 +1,16 @@
 package com.gp.learners.entities.mapObject;
 
+import javax.validation.constraints.NotBlank;
 
 //this class is relevant for StudentController.
 //when add student following packages
 //Student_Package
 public class StudentPackageMap {
+	
+	@NotBlank(message = "PackageId is mandatory")
 	private Integer packageId;
+	
+	@NotBlank(message = "Transmission is mandatory")
 	private Integer transmission;
 
 	public StudentPackageMap(Integer packageId, Integer transmission) {

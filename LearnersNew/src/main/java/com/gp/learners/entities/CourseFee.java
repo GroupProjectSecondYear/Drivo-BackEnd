@@ -4,10 +4,15 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Table(name = "course_fee")
 @Entity
@@ -15,10 +20,14 @@ public class CourseFee {
 
 	@Id
 	@Column(name = "course_fee_id")
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer courseFeeId;
+	
 
 	private Date date;
-	private Double amount;
+	
+
+	private Float amount;
 	private Integer method;
 
 	@ManyToOne
@@ -29,7 +38,7 @@ public class CourseFee {
 
 	}
 
-	public CourseFee(Integer courseFeeId, Date date, Double amount, Integer method, StudentPackage studentPackageId) {
+	public CourseFee(Integer courseFeeId, Date date, Float amount, Integer method, StudentPackage studentPackageId) {
 		super();
 		this.courseFeeId = courseFeeId;
 		this.date = date;
@@ -54,11 +63,11 @@ public class CourseFee {
 		this.date = date;
 	}
 
-	public Double getAmount() {
+	public Float getAmount() {
 		return amount;
 	}
 
-	public void setAmount(Double amount) {
+	public void setAmount(Float amount) {
 		this.amount = amount;
 	}
 

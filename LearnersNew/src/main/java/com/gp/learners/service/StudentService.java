@@ -1,22 +1,32 @@
 package com.gp.learners.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
+
 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.gp.learners.entities.CourseFee;
+import com.gp.learners.entities.ExamResult;
 import com.gp.learners.entities.Package;
 import com.gp.learners.entities.Student;
 import com.gp.learners.entities.StudentPackage;
+import com.gp.learners.entities.User;
 import com.gp.learners.entities.mapObject.StudentPackageMap;
-import com.gp.learners.entities.mapObject.StudentPackageMapWrapper;
+import com.gp.learners.entities.mapObject.StudentTrialMap;
 import com.gp.learners.repositories.CourseFeeRepository;
+import com.gp.learners.repositories.ExamResultRepository;
 import com.gp.learners.repositories.PackageRepository;
 import com.gp.learners.repositories.StudentPackageRepository;
 import com.gp.learners.repositories.StudentRepository;
+import com.gp.learners.repositories.UserRepository;
+
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 
 @Service
@@ -32,10 +42,58 @@ public class StudentService {
 	PackageRepository packageRepository;
 	
 	@Autowired
-	CourseFeeRepository courseFee;
+	CourseFeeRepository courseFeeRepository;
+	
+	@Autowired
+	UserRepository userRepository;
+	
+	@Autowired
+	ExamResultRepository examResultRepository;
 
-	public Boolean register(Map<String, String> data) {
-		return false;
+	//get StudentId
+	public Integer getStudentId(Integer userId) {
+		if(userRepository.existsById(userId)) {
+			Integer studentId=studentRepository.findByUserId(userRepository.findByUserId(userId));
+			if(studentId != null) {
+				return studentId;
+			}
+		}
+		return -1;
+	}
+	
+	//get Student Details
+	public Student getStudentDetails(Integer studentId) {
+		if(studentId != null) {
+			if(studentRepository.existsById(studentId)) {
+				return studentRepository.findByStudentId(studentId);
+			}
+		}
+		return new Student(); 
+	}
+	
+	//update Student Details
+	public Student studentUpdate(Student student) {
+		if(userRepository.existsById(student.getUserId().getUserId()) && student.getExamDate()!= null && student.getTrialDate()!=null) {
+			User user=userRepository.findByUserId(student.getUserId().getUserId());
+			
+			if( (user.getEmail() != "") && (user.getPassword()!="") && user.getRole()==5 && user.getStatus()==1) {
+				if(studentRepository.existsById(student.getStudentId())) {
+					return studentRepository.save(student);
+				}
+			}
+		}
+		return new Student();
+	}
+	
+	//delete Student
+	public String deleteStudent(Integer studentId) {
+		if(studentId != null) {
+			if(studentRepository.existsById(studentId)) {
+				studentRepository.deleteById(studentId);
+				return "success";
+			}
+		}
+		return "error";
 	}
 
 	// give student followed packagesId
@@ -78,38 +136,31 @@ public class StudentService {
 	}
 
 	// Add Student following package details to the db
-	public Object packageAdd(Integer id, StudentPackageMapWrapper object) {
+	public String packageAdd(Integer studentId, StudentPackageMap object) {
 		
-		StudentPackage studentPackageObject=new StudentPackage();
-		//insert reply 
-		ArrayList<Integer> reply=new ArrayList<Integer>();
+			StudentPackage studentPackageObject=new StudentPackage();
 		
-		
-		for (StudentPackageMap studentPackage : object.getStudentPackageMap()) {
-			if( (studentPackage != null) && (studentPackage.getPackageId() != null) && (studentPackage.getTransmission()!=null)) {
+			//check whether (student && package)exist or not
+			if(studentRepository.existsById(studentId) && packageRepository.existsById(object.getPackageId())) {
 				
-				//check whether (student && package)exist or not
-				if(studentRepository.existsById(id) && packageRepository.existsById(studentPackage.getPackageId())) {
+				//check if already student register this course(Package) or not
+				//if not register for course
+				if(notExistStudentIdAndPackageId(getStudent(studentId),getPackage(object.getPackageId()))) {
 					
-					//check if already student register this course(Package) or not
-					//if not register for course
-					if(notExistStudentIdAndPackageId(studentRepository.getStudentId(id),packageRepository.findByPackageId(studentPackage.getPackageId()))) {
-						
-						//create studentpackage object
-						studentPackageObject.setJoinDate(LocalDate.now());
-						studentPackageObject.setPackageId(packageRepository.findByPackageId(studentPackage.getPackageId()));
-						studentPackageObject.setStudentId(studentRepository.getStudentId(id));
-						studentPackageObject.setTransmission(studentPackage.getTransmission());
-						
-						//save studentpackage object to database
-						studentPackageRepository.save(studentPackageObject);
-						reply.add(studentPackage.getPackageId());
-					}
+					//create studentpackage object
+					studentPackageObject.setJoinDate(LocalDate.now());
+					studentPackageObject.setPackageId(getPackage(object.getPackageId()));
+					studentPackageObject.setStudentId(getStudent(studentId));
+					studentPackageObject.setTransmission(object.getTransmission());
 					
+					//save studentpackage object to database
+					studentPackageRepository.save(studentPackageObject);
+					return "success";
 				}
+				
 			}
-		}
-		return reply;
+
+		return "notsuccess";
 		
 	}
 	
@@ -138,7 +189,7 @@ public class StudentService {
 					
 					Integer studentPackageId=getStudentPackageId(studentId, packageId);
 					StudentPackage studentPackage=studentPackageRepository.findByStudentPackageId(studentPackageId);
-					courseFees =courseFee.findByStudentPackageId(studentPackage);
+					courseFees =courseFeeRepository.findByStudentPackageId(studentPackage);
 					return courseFees;
 				}
 			}
@@ -146,6 +197,152 @@ public class StudentService {
 		return courseFees;
 	}
 	
+	//Add Course Fee Details
+	public String courseFeeAdd(Integer studentId,Integer packageId,CourseFee object) {
+		if(!notExistStudentIdAndPackageId(getStudent(studentId), getPackage(packageId))) {
+			
+			if(object.getAmount()>0) {
+				
+				//get Course Fee
+				Package packageObject=getPackage(packageId);
+				Float courseFee=packageObject.getPrice();
+				
+				StudentPackage studentPackage=studentPackageRepository.findByStudentIdAndPackageId(getStudent(studentId), getPackage(packageId));//get StudentPAckage object
+				Float payment=courseFeeRepository.getTotalFee(studentPackage);//Already done payments
+				
+				Float balance;
+				if(payment != null) {
+					balance=courseFee-payment;
+				}else {
+					balance=courseFee;
+				}
+				
+				if(balance>0) {
+					//newPayment save to db
+					object.setStudentPackageId(studentPackage);
+					courseFeeRepository.save(object);
+					return "success";
+				}
+				
+			}
+			
+		}
+		return "notsuccess";
+	}
+	
+	
+	//get Trial Students Information
+	public List<StudentTrialMap> getStudentTrialList(LocalDate localDate){
+		
+		
+		List<Student> studentList=studentRepository.findByTrialDate(localDate);
+		List<StudentTrialMap> studentTrialList=new ArrayList<StudentTrialMap>();
+		
+		for(Student student : studentList) {
+			studentTrialList.add(new StudentTrialMap(student.getName(),student.getNic()));
+		}
+		
+		return studentTrialList;
+	}
+	
+	//get Exam Students Information
+	public List<StudentTrialMap> getStudentExamList(LocalDate localDate){
+		
+		
+		List<Student> studentList=studentRepository.findByExamDate(localDate);
+		List<StudentTrialMap> studentExamList=new ArrayList<StudentTrialMap>();
+		
+		for(Student student : studentList) {
+			studentExamList.add(new StudentTrialMap(student.getName(),student.getNic()));
+		}
+		
+		return studentExamList;
+	}
+	
+	
+	//get WrittenExam Result
+	public List<Double> getWrittenExamResult(){
+		
+		List<Double> writtenExamResult=new ArrayList<Double>();
+			
+		Calendar gc = new GregorianCalendar();
+     
+        for(int i=0 ; i<12 ; i++) {
+        	 gc.set(Calendar.MONTH, i);
+             gc.set(Calendar.DAY_OF_MONTH, 0);
+             Date monthStart = gc.getTime();//month start date
+             gc.add(Calendar.MONTH, 1);
+             gc.add(Calendar.DAY_OF_MONTH, 0);
+             Date monthEnd = gc.getTime();//month end date
+             
+             
+             Double pass=examResultRepository.findWrittenExamResultSum(monthStart,monthEnd);
+             Double fail=examResultRepository.findWrittenExamResultFailSum(monthStart, monthEnd);
+             
+             Double passRate;
+             if(pass != null) {
+            	 if(fail != null) {
+            		 passRate=(pass/(pass+fail))*100;
+            	 }else {
+            		 passRate=100.d;
+            	 }
+            	 writtenExamResult.add(truncate(passRate, 2));
+             }else {
+            	 writtenExamResult.add(0.d);
+             }        
+        }
+		return writtenExamResult;
+	}
+	
+	
+	//submit writtenExam Data
+	public String submitWrittenExamResult(LocalDate localDate,Integer countPass,Integer countFail) {
+		if( (localDate != null) && (countPass>=0) && (countFail>=0)) {
+			if(existByDate(localDate)) {
+				ExamResult object=examResultRepository.findByDate(localDate);
+				object.setWrittenExam(countPass);
+				object.setWrittenExamFail(countFail);
+				examResultRepository.save(object);
+			}else {
+				ExamResult object=new ExamResult();
+				object.setDate(localDate);
+				object.setWrittenExam(countPass);
+				object.setWrittenExamFail(countFail);
+				object.setTrialExam(0);
+				object.setTrialExamFail(0);
+				examResultRepository.save(object);
+			}
+			
+			return "success";
+		}
+		
+		return "notsuccess";
+	}
+	
+	//submit trialExam Data
+	
+	public String submitTrialExamResult(LocalDate localDate,Integer countPass,Integer countFail) {
+			if( (localDate != null) && (countPass>=0) && (countFail>=0)) {
+				if(existByDate(localDate)) {
+					ExamResult object=examResultRepository.findByDate(localDate);
+					object.setTrialExam(countPass);
+					object.setTrialExamFail(countFail);
+					examResultRepository.save(object);
+				}else {
+					ExamResult object=new ExamResult();
+					object.setDate(localDate);
+					object.setTrialExam(countPass);
+					object.setTrialExamFail(countFail);
+					object.setWrittenExam(0);
+					object.setWrittenExamFail(0);
+					examResultRepository.save(object);
+				}
+				
+				return "success";
+			}
+			
+			return "notsuccess";
+	}
 	
 	//Helping Function
 	
@@ -181,6 +378,25 @@ public class StudentService {
 	//get package object from the table
 	private Package getPackage(Integer packageId) {
 		return packageRepository.findByPackageId(packageId);
+	}
+	
+	double truncate(double number, int precision)
+	{
+	    double prec = Math.pow(10, precision);
+	    int integerPart = (int) number;
+	    double fractionalPart = number - integerPart;
+	    fractionalPart *= prec;
+	    int fractPart = (int) fractionalPart;
+	    fractionalPart = (double) (integerPart) + (double) (fractPart)/prec;
+	    return fractionalPart;
+	}
+	
+	private Boolean existByDate(LocalDate localDate) {
+		ExamResult object=examResultRepository.findByDate(localDate);
+		if(object != null) {
+			return true;
+		}
+		return false;
 	}
 	
 }

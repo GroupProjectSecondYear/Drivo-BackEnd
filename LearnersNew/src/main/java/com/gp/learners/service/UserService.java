@@ -1,6 +1,6 @@
 package com.gp.learners.service;
 
-import java.util.Optional;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,13 +16,19 @@ public class UserService {
 	@Autowired
 	UserRepository userRepository;
 	
-	public Object isValidLogin(String email,String password) {
+	public String isValidLogin(String email,String password) {
 		
-		if(email.equals("") && password.equals("")) {
-			return "400";
+		if( !email.equals("") && !password.equals("")) {
+			User user=userRepository.findByEmailAndPassword(email, password);
+			if(user.getStatus() == 1) {
+				return "success";
+			}
+			else {
+				return "deactivate";
+			}
 		}
 		
-		return userRepository.findByEmailAndPassword(email, password);
+		return "";
 	}
 	
 }
