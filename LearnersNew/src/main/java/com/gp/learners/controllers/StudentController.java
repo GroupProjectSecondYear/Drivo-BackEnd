@@ -27,9 +27,6 @@ import com.gp.learners.entities.mapObject.StudentTrialMap;
 import com.gp.learners.repositories.StudentRepository;
 import com.gp.learners.service.StudentService;
 
-
-
-
 @RestController
 @CrossOrigin(origins="*",allowedHeaders="*",maxAge=3600)
 public class StudentController {

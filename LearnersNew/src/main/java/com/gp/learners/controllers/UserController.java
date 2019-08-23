@@ -27,14 +27,8 @@ public class UserController {
 	
 	
 	@GetMapping("login/{email}/{password}")
-	public ResponseEntity<User> loginUser( @PathVariable("email") String email,@PathVariable("password") String password) {
-		
-		String reply=userService.isValidLogin(email, password);
-		if(reply.equals("success")) {
-			User user=userRepository.findByEmailAndPassword(email, password);
-			return ResponseEntity.ok(user);
-		}
-		return ResponseEntity.notFound().build();
+	public User loginUser( @PathVariable("email") String email,@PathVariable("password") String password) {	
+		return userService.isValidLogin(email, password);	
 	}
 	
 	@PostMapping("user/register")
