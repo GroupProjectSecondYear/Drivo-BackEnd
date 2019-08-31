@@ -49,7 +49,12 @@ public class StudentService {
 	
 	@Autowired
 	ExamResultRepository examResultRepository;
-
+	
+	//getStudentList
+	public List<Student> getStudentList(){
+		return studentRepository.findActiveStudent();
+	}
+	
 	//get StudentId
 	public Integer getStudentId(Integer userId) {
 		if(userRepository.existsById(userId)) {
@@ -73,10 +78,9 @@ public class StudentService {
 	
 	//update Student Details
 	public Student studentUpdate(Student student) {
-		if(userRepository.existsById(student.getUserId().getUserId()) && student.getExamDate()!= null && student.getTrialDate()!=null) {
+		if(userRepository.existsById(student.getUserId().getUserId()) && student.getExamDate()!= null ) {
 			User user=userRepository.findByUserId(student.getUserId().getUserId());
-			
-			if( (user.getEmail() != "") && (user.getPassword()!="") && user.getRole()==5 && user.getStatus()==1) {
+			if(user.getRole()==5 && user.getStatus()==1) {
 				if(studentRepository.existsById(student.getStudentId())) {
 					return studentRepository.save(student);
 				}

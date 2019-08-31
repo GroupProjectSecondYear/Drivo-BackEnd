@@ -1,16 +1,15 @@
 package com.gp.learners.entities;
 
-import java.sql.Time;
-import java.time.LocalTime;
-import java.util.Date;
 
+import java.time.LocalTime;
+
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -19,6 +18,7 @@ public class TimeSlot {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="time_slot_id")
 	private Integer timeSlotId;
 
 	@NotNull(message = "from time is mandatory")

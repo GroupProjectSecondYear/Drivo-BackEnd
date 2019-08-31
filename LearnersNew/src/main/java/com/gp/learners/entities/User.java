@@ -23,9 +23,10 @@ public class User {
 	private Integer userId;
 
 	@Email(message="Email Should be valid")
+	@NotNull(message="Email is mandatory")
 	private String email;
 	
-	@NotBlank(message="Password is mandatory")
+	@NotNull(message="Password is mandatory")
 	private String password;
 
 	@Column(name = "reg_date")

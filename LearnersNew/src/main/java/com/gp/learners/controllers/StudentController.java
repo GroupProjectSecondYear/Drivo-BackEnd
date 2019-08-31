@@ -39,13 +39,12 @@ public class StudentController {
 	
 	@PostMapping("/student/register")
 	public Student StudentRegister(@RequestBody Student student) {
-		System.out.println(student);
 		return studentRepository.save(student);
 	}
 	
 	@GetMapping("/students")
-	public List<Student> studetsList(){
-		return studentRepository.findAll();
+	public List<Student> getStudetsList(){
+		return studentService.getStudentList();
 	}
 	
 	

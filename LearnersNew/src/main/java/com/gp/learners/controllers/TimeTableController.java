@@ -1,9 +1,15 @@
 package com.gp.learners.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gp.learners.entities.Path;
 import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.service.TimeTableService;
 
@@ -22,6 +29,9 @@ public class TimeTableController {
 	
 	@Autowired
 	private TimeTableService timeTableService;
+	
+	
+	//1)Time Slot Functions
 	
 	@GetMapping("/timetable/timeslots")
 	public List<TimeSlot> getTimeSlotList(){
@@ -54,5 +64,59 @@ public class TimeTableController {
 			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.notFound().build();
+	}
+	
+	//2)Path functions
+	
+	@PostMapping("/timetable/path")
+	public ResponseEntity<Integer> addPath(@Valid @RequestBody Path object){
+		Integer reply=timeTableService.addPath(object);
+		if(reply>0) {
+			return ResponseEntity.ok(reply);
+		}
+		return ResponseEntity.badRequest().build();
+	}
+	
+	@DeleteMapping("timetable/path/{pathId}")
+	public ResponseEntity<Void> deletePath(@PathVariable Integer pathId){
+		String reply=timeTableService.deletePath(pathId);
+		if(reply.equals("success")) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("/timetable/path")
+	public List<Path> getPathList(){
+		return timeTableService.getPathList();
+	}
+	
+	//subPath
+	@PostMapping("/timetable/subpath/{pathId}")
+	public ResponseEntity<Void> addSubPath(@PathVariable("pathId") Integer pathId,@RequestBody ArrayList<String> subPaths){
+		System.out.println(subPaths);
+		String reply=timeTableService.addSubPaths(pathId,subPaths);
+		if(reply.equals("success")) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("/timetable/subpath/{pathId}")
+	public List<String> getSubPathList(@PathVariable("pathId") Integer pathId){
+		return timeTableService.getSubPathList(pathId);
+	}
+	
+	
+	
+	
+	//3)Instructor functions
+	@GetMapping("/timetable/instructors/{dayId}/{pacId}/{timeSlotId}/{transmission}")
+	public String getRelevantInstructors(@PathVariable("dayId") Integer dayId	,
+										 @PathVariable("pacId") Integer packageId ,
+										 @PathVariable("timeSlotId") Integer timeSlotId,
+										 @PathVariable("transmission") Integer transmission){
+		timeTableService.getRelevantInstructors(dayId,packageId,timeSlotId,transmission);
+		return "ok";
 	}
 }
