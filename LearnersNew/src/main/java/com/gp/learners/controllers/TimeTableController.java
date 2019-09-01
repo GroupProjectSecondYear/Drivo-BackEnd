@@ -91,11 +91,20 @@ public class TimeTableController {
 		return timeTableService.getPathList();
 	}
 	
+	@PutMapping("timetable/path")
+	public ResponseEntity<Integer> updatePath(@Valid @RequestBody Path object){
+		Integer reply=timeTableService.updatePath(object);
+		if(reply>0) {
+			return ResponseEntity.ok(reply);
+		}
+	
+		return ResponseEntity.badRequest().build();
+	}
+	
 	//subPath
 	@PostMapping("/timetable/subpath/{pathId}")
 	public ResponseEntity<Void> addSubPath(@PathVariable("pathId") Integer pathId,@RequestBody ArrayList<String> subPaths){
-		System.out.println(subPaths);
-		String reply=timeTableService.addSubPaths(pathId,subPaths);
+		String reply=timeTableService.addSubPaths(pathId,subPaths,1);
 		if(reply.equals("success")) {
 			return ResponseEntity.noContent().build();
 		}
@@ -107,7 +116,14 @@ public class TimeTableController {
 		return timeTableService.getSubPathList(pathId);
 	}
 	
-	
+	@PutMapping("/timetable/subpath/{pathId}")
+	public ResponseEntity<Void> updateSubPath(@PathVariable("pathId") Integer pathId,@RequestBody ArrayList<String> subPaths){
+		String reply=timeTableService.addSubPaths(pathId,subPaths,2);
+		if(reply.equals("success")) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
 	
 	
 	//3)Instructor functions

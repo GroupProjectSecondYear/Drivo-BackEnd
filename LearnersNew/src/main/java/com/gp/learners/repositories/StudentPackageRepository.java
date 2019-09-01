@@ -6,8 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import com.gp.learners.entities.Package;
 import com.gp.learners.entities.Student;
 import com.gp.learners.entities.StudentPackage;
 
@@ -29,9 +27,9 @@ public interface StudentPackageRepository extends JpaRepository<StudentPackage, 
 	public StudentPackage findByStudentIdAndPackageId(@Param("studentId")Student studentId,@Param("packageId")com.gp.learners.entities.Package packageId);
 	
 	
-	@Modifying
-	@Query(value="delete from student_package u where u.package_id = :packageId and u.student_id = :studentId",nativeQuery=true)
-	public void deletePackageByStudentIdAndPackageId(@Param("studentId")Student studentId,@Param("packageId")com.gp.learners.entities.Package packageId);
+//	@Modifying
+//	@Query(value="delete from student_package u where u.package_id = :packageId and u.student_id = :studentId",nativeQuery=true)
+//	public void deletePackageByStudentIdAndPackageId(@Param("studentId")Student studentId,@Param("packageId")com.gp.learners.entities.Package packageId);
 	
 	@Query(value="select * from student_package u WHERE u.student_package_id = :studentPackageId ",nativeQuery=true)
 	public StudentPackage findByStudentPackageId(@Param("studentPackageId")Integer studentPackageId);

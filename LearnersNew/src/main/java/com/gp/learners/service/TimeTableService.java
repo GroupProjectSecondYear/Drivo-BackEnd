@@ -94,12 +94,24 @@ public class TimeTableService {
 		return "notsuccess";
 	}
 	
+	public Integer updatePath(Path object) {
+		if(pathRepository.existsById(object.getPathId())) {
+			pathRepository.save(object);
+			return object.getPathId();
+		}
+		return 0;
+	}
 	
 	//subPath functions
-	public String addSubPaths(Integer pathId,ArrayList<String> subPaths) {
+	public String addSubPaths(Integer pathId,ArrayList<String> subPaths,Integer type) {
 		if(pathRepository.existsById(pathId)) {
 			Boolean flag=false;
 			Path path=pathRepository.findByPathId(pathId);
+			
+			if(type==2) {//when update perform
+				deleteSubPaths(path);
+			}
+			
 			for (String name : subPaths) {
 				if(name!=null && name.trim().length()>0) {
 					SubPath subPath=new SubPath();
@@ -136,6 +148,8 @@ public class TimeTableService {
 		return new ArrayList<Path>();
 	}
 	
+
+	
 	public String getRelevantInstructors(Integer dayId, Integer packageId ,Integer timeSlotId ,Integer transmission){
 		if( dayId!=null && packageId!=null && timeSlotId!=null && transmission!=null) {
 			if(packageRepository.existsById(packageId) && timeSlotRepository.existsById(timeSlotId)) {
@@ -165,6 +179,15 @@ public class TimeTableService {
 			return false;
 		}
 		return true;
+	}
+	
+	private void deleteSubPaths(Path pathId) {
+		List<Integer> subPathIdList=subPathRepository.findByPathIdAndGetIds(pathId);
+		if(subPathIdList != null) {
+			for (Integer subPathId : subPathIdList) {
+				subPathRepository.deleteById(subPathId);
+			}
+		}
 	}
 	
 }
