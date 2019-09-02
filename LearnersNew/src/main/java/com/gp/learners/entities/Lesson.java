@@ -10,6 +10,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.Range;
+
 @Entity
 @Table(name = "lesson")
 public class Lesson {
@@ -19,14 +21,15 @@ public class Lesson {
 	private Integer lessonId;
 
 	@NotNull
-	@Size(min = 0, max = 6, message = "Day value should be between 0 and 6")
+	@Range(min = 0, max = 6, message = "Day value should be between 0 and 6")
 	private Integer day;
 
 	@NotNull
-	@Size(min = 1, max = 2, message = "Transmission value should be between 1 and 2")
+	@Range(min = 1, max = 2, message = "Transmission value should be between 1 and 2")
 	private Integer transmission;
 
 	@NotNull
+	@Range(min = 1, message = "Number of student should be greater than 0")
 	private Integer numStu;// number of students for a lesson
 
 	@ManyToOne
@@ -46,6 +49,7 @@ public class Lesson {
 
 	@ManyToOne
 	@JoinColumn(name = "path_id", referencedColumnName = "path_id")
+	@NotNull
 	private Path pathId;
 
 	public Lesson() {
@@ -53,9 +57,9 @@ public class Lesson {
 	}
 
 	public Lesson(Integer lessonId,
-			@NotNull @Size(min = 0, max = 6, message = "Day value should be between 0 and 6") Integer day,
-			@NotNull @Size(min = 1, max = 2, message = "Transmission value should be between 1 and 2") Integer transmission,
-			@NotNull Integer numStu, @NotNull Instructor instructorId, @NotNull Package packageId,
+			@NotNull @Range(min = 0, max = 6, message = "Day value should be between 0 and 6") Integer day,
+			@NotNull @Range(min = 1, max = 2, message = "Transmission value should be between 1 and 2") Integer transmission,
+			@NotNull @Range(min = 1, message="Number of student should be greater than 0")Integer numStu, @NotNull Instructor instructorId, @NotNull Package packageId,
 			@NotNull TimeSlot timeSlotId, Path pathId) {
 		super();
 		this.lessonId = lessonId;

@@ -15,7 +15,7 @@ public interface TimeSlotRepositroy extends JpaRepository<TimeSlot, Integer>{
 	@Query(value="select * from time_slot u where u.start_time = :startTime and u.finish_time = :finishTime",nativeQuery=true)
 	public TimeSlot findByStartTimeandFinishTime(@Param("startTime")LocalTime startTime,@Param("finishTime") LocalTime finishTime);
 	
-	@Query(value="select * from time_slot u where u.time_slot_id=timeSlotId",nativeQuery=true)
+	@Query(value="select * from time_slot u where u.time_slot_id = :timeSlotId",nativeQuery=true)
 	public TimeSlot findByTimeSlotId(@Param("timeSlotId")Integer timeSlotId);
 }
 

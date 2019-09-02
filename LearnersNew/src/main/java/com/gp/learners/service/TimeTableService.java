@@ -2,6 +2,7 @@ package com.gp.learners.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -13,10 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.gp.learners.entities.Instructor;
+import com.gp.learners.entities.Lesson;
 import com.gp.learners.entities.Path;
 import com.gp.learners.entities.SubPath;
 import com.gp.learners.entities.TimeSlot;
+import com.gp.learners.entities.mapObject.InstructorMap;
 import com.gp.learners.repositories.InstructorRepository;
+import com.gp.learners.repositories.LessonRepository;
 import com.gp.learners.repositories.PackageRepository;
 import com.gp.learners.repositories.PathRepository;
 import com.gp.learners.repositories.SubPathRepository;
@@ -39,6 +43,9 @@ public class TimeTableService {
 	
 	@Autowired 
 	SubPathRepository subPathRepository;
+	
+	@Autowired
+	LessonRepository lessonRepository;
 	
 	//Time Slot functions
 	public List<TimeSlot> getTimeSlotList(){
@@ -150,15 +157,47 @@ public class TimeTableService {
 	
 
 	
-	public String getRelevantInstructors(Integer dayId, Integer packageId ,Integer timeSlotId ,Integer transmission){
-		if( dayId!=null && packageId!=null && timeSlotId!=null && transmission!=null) {
-			if(packageRepository.existsById(packageId) && timeSlotRepository.existsById(timeSlotId)) {
-				List<Instructor> instructors=instructorRepository.getRelevantInstructors(dayId,packageRepository.findByPackageId(packageId).getPackageId(),timeSlotRepository.findByTimeSlotId(timeSlotId).getTimeSlotId(),transmission);
-				System.out.println("ok");
-				System.out.println(instructors);
+	public List<InstructorMap> getRelevantInstructors(Integer dayId, Integer packageId ,Integer timeSlotId ,Integer pathId,Integer transmission){
+		List<InstructorMap> instructorList=new ArrayList<InstructorMap>();
+		if( dayId>-1 && dayId<7 && transmission>0 && transmission<3) {
+			if( dayId!=null && packageId!=null && timeSlotId!=null && transmission!=null && pathId!=null) {
+				if(packageRepository.existsById(packageId) && timeSlotRepository.existsById(timeSlotId) && pathRepository.existsById(pathId)) {
+					List<Integer>  instructorIdList=instructorRepository.getRelevantInstructors(dayId,packageId,timeSlotId,transmission);
+					
+					
+					for (Integer id : instructorIdList) {
+						String name=instructorRepository.nameFindByInstructorId(id);
+						instructorList.add(new InstructorMap(id,name));
+					}
+					
+				}
 			}
 		}
-		return "ok";
+		
+		return instructorList;
+	}
+	
+	//Lesson Functions
+	public String addLesson(Integer dayId,Integer packageId,Integer timeSlotId,Integer pathId,Integer transmission,Integer instructorId,Integer numStudent) {
+		if( dayId>-1 && dayId<7 && transmission>0 && transmission<3 && numStudent>0) {
+			if(packageRepository.existsById(packageId) && timeSlotRepository.existsById(timeSlotId) && pathRepository.existsById(pathId) && instructorRepository.existsById(instructorId)) {
+				Lesson lesson=new Lesson();
+				lesson.setDay(dayId);
+				lesson.setPackageId(packageRepository.findByPackageId(packageId));
+				lesson.setTimeSlotId(timeSlotRepository.findByTimeSlotId(timeSlotId));
+				lesson.setPathId(pathRepository.findByPathId(pathId));
+				lesson.setTransmission(transmission);
+				lesson.setInstructorId(instructorRepository.findByInstructorId(instructorId));
+				lesson.setNumStu(numStudent);
+				
+				if(notExistLesson(lesson)) {
+					lessonRepository.save(lesson);
+					return "success";
+				}
+				
+			}
+		}
+		return "notsuccess";
 	}
 	
 	
@@ -176,6 +215,14 @@ public class TimeTableService {
 	private Boolean notExistPath(Path path) {
 		Path object=pathRepository.findByPathDetails(path.getPathName(),path.getOrigin(),path.getDestination());
 		if(object != null) {
+			return false;
+		}
+		return true;
+	}
+	
+	private Boolean notExistLesson(Lesson lesson) {
+		Lesson  object=lessonRepository.findByLessonDetails(lesson.getDay(),lesson.getTransmission(),lesson.getNumStu(),lesson.getInstructorId(),lesson.getTimeSlotId(),lesson.getPackageId(),lesson.getPathId());
+		if(object != null ) {
 			return false;
 		}
 		return true;

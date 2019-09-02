@@ -5,8 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,9 +22,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClientException;
 
 import com.gp.learners.entities.Path;
 import com.gp.learners.entities.TimeSlot;
+import com.gp.learners.entities.mapObject.InstructorMap;
 import com.gp.learners.service.TimeTableService;
 
 @RestController
@@ -98,7 +104,7 @@ public class TimeTableController {
 			return ResponseEntity.ok(reply);
 		}
 	
-		return ResponseEntity.badRequest().build();
+		return ResponseEntity.notFound().build();
 	}
 	
 	//subPath
@@ -108,7 +114,7 @@ public class TimeTableController {
 		if(reply.equals("success")) {
 			return ResponseEntity.noContent().build();
 		}
-		return ResponseEntity.notFound().build();
+		return ResponseEntity.badRequest().build();
 	}
 	
 	@GetMapping("/timetable/subpath/{pathId}")
@@ -127,12 +133,31 @@ public class TimeTableController {
 	
 	
 	//3)Instructor functions
-	@GetMapping("/timetable/instructors/{dayId}/{pacId}/{timeSlotId}/{transmission}")
-	public String getRelevantInstructors(@PathVariable("dayId") Integer dayId	,
+	@GetMapping("/timetable/instructors/{dayId}/{pacId}/{timeSlotId}/{pathId}/{transmission}")
+	public List<InstructorMap> getRelevantInstructors(@PathVariable("dayId") Integer dayId,
 										 @PathVariable("pacId") Integer packageId ,
 										 @PathVariable("timeSlotId") Integer timeSlotId,
+										 @PathVariable("pathId") Integer pathId,
 										 @PathVariable("transmission") Integer transmission){
-		timeTableService.getRelevantInstructors(dayId,packageId,timeSlotId,transmission);
-		return "ok";
+		return timeTableService.getRelevantInstructors(dayId,packageId,timeSlotId,pathId,transmission);
+
+	}
+	
+	//4)Lesson Functions
+	@PostMapping("/timetable/lesson/{dayId}/{pacId}/{timeSlotId}/{pathId}/{transmission}/{insId}/{numStu}")
+	public ResponseEntity<Void> addLesson(@PathVariable("dayId") Integer dayId	,
+			 @PathVariable("pacId") Integer packageId ,
+			 @PathVariable("timeSlotId") Integer timeSlotId,
+			 @PathVariable("pathId") Integer pathId,
+			 @PathVariable("transmission") Integer transmission,
+			 @PathVariable("insId") Integer instructorId,
+			 @PathVariable("numStu") Integer numStudent)throws RestClientException{
+		
+		
+		String reply=timeTableService.addLesson(dayId,packageId,timeSlotId,pathId,transmission,instructorId,numStudent);
+		if(reply.equals("success")) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.badRequest().build();
 	}
 }
