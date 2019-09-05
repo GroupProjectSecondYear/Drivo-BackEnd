@@ -38,6 +38,19 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-aws-context</artifactId>
+            <version>${spring-cloud-aws-version}</version>
+        </dependency>
+        
+      
+         <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-aws-jdbc</artifactId>
+            <version>${spring-cloud-aws-version}</version>
+        </dependency>
 	</dependencies>
 
 	<build>
