@@ -6,8 +6,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-
-
+import org.hibernate.type.LocalDateType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +48,9 @@ public class StudentService {
 	
 	@Autowired
 	ExamResultRepository examResultRepository;
+	
+	@Autowired
+	EmailService emailService;
 	
 	//getStudentList
 	public List<Student> getStudentList(){
@@ -225,7 +227,21 @@ public class StudentService {
 					//newPayment save to db
 					object.setStudentPackageId(studentPackage);
 					courseFeeRepository.save(object);
-					return "success";
+					
+					//send email for student
+					User user = studentRepository.getStudentId(studentId).getUserId();
+					
+					String from="drivo@gmail.com";
+					String to=user.getEmail();
+					String subject="Package Payment of "+packageObject.getTitle()+" in Drivo Learners";
+					String text="Package	:"+packageObject.getTitle()+
+								" "+object.getDate()+ "payed (Rs): "+object.getAmount();
+					
+					String reply=emailService.setUpEmailInstance(from, to , subject , text);
+					if(reply.equals("success")) {
+						return "success";
+					}
+					
 				}
 				
 			}

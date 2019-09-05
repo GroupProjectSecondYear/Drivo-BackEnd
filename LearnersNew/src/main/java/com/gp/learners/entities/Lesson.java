@@ -1,5 +1,6 @@
 package com.gp.learners.entities;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,6 +19,7 @@ public class Lesson {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="lesson_id")
 	private Integer lessonId;
 
 	@NotNull
@@ -31,6 +33,9 @@ public class Lesson {
 	@NotNull
 	@Range(min = 1, message = "Number of student should be greater than 0")
 	private Integer numStu;// number of students for a lesson
+
+	@NotNull
+	private Integer status;
 
 	@ManyToOne
 	@JoinColumn(name = "instructor_id", referencedColumnName = "instructor_id")
@@ -59,13 +64,15 @@ public class Lesson {
 	public Lesson(Integer lessonId,
 			@NotNull @Range(min = 0, max = 6, message = "Day value should be between 0 and 6") Integer day,
 			@NotNull @Range(min = 1, max = 2, message = "Transmission value should be between 1 and 2") Integer transmission,
-			@NotNull @Range(min = 1, message="Number of student should be greater than 0")Integer numStu, @NotNull Instructor instructorId, @NotNull Package packageId,
-			@NotNull TimeSlot timeSlotId, Path pathId) {
+			@NotNull @Range(min = 1, message = "Number of student should be greater than 0") Integer numStu,
+			@NotNull Integer status, @NotNull Instructor instructorId, @NotNull Package packageId,
+			@NotNull TimeSlot timeSlotId, @NotNull Path pathId) {
 		super();
 		this.lessonId = lessonId;
 		this.day = day;
 		this.transmission = transmission;
 		this.numStu = numStu;
+		this.status = status;
 		this.instructorId = instructorId;
 		this.packageId = packageId;
 		this.timeSlotId = timeSlotId;
@@ -104,6 +111,14 @@ public class Lesson {
 		this.numStu = numStu;
 	}
 
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
 	public Instructor getInstructorId() {
 		return instructorId;
 	}
@@ -139,8 +154,8 @@ public class Lesson {
 	@Override
 	public String toString() {
 		return "Lesson [lessonId=" + lessonId + ", day=" + day + ", transmission=" + transmission + ", numStu=" + numStu
-				+ ", instructorId=" + instructorId + ", packageId=" + packageId + ", timeSlotId=" + timeSlotId
-				+ ", pathId=" + pathId + "]";
+				+ ", status=" + status + ", instructorId=" + instructorId + ", packageId=" + packageId + ", timeSlotId="
+				+ timeSlotId + ", pathId=" + pathId + "]";
 	}
 
 }

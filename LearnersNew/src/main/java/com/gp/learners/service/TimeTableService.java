@@ -2,27 +2,27 @@ package com.gp.learners.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import javax.transaction.Transactional;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+
+
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.gp.learners.entities.Instructor;
+
 import com.gp.learners.entities.Lesson;
 import com.gp.learners.entities.Path;
+import com.gp.learners.entities.StudentLesson;
 import com.gp.learners.entities.SubPath;
 import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.entities.mapObject.InstructorMap;
+import com.gp.learners.entities.mapObject.LessonMap;
 import com.gp.learners.repositories.InstructorRepository;
 import com.gp.learners.repositories.LessonRepository;
 import com.gp.learners.repositories.PackageRepository;
 import com.gp.learners.repositories.PathRepository;
+import com.gp.learners.repositories.StudentLessonRepository;
 import com.gp.learners.repositories.SubPathRepository;
 import com.gp.learners.repositories.TimeSlotRepositroy;
 
@@ -46,6 +46,9 @@ public class TimeTableService {
 	
 	@Autowired
 	LessonRepository lessonRepository;
+	
+	@Autowired
+	StudentLessonRepository studentLessonRepository;
 	
 	//Time Slot functions
 	public List<TimeSlot> getTimeSlotList(){
@@ -189,6 +192,7 @@ public class TimeTableService {
 				lesson.setTransmission(transmission);
 				lesson.setInstructorId(instructorRepository.findByInstructorId(instructorId));
 				lesson.setNumStu(numStudent);
+				lesson.setStatus(1);
 				
 				if(notExistLesson(lesson)) {
 					lessonRepository.save(lesson);
@@ -198,6 +202,130 @@ public class TimeTableService {
 			}
 		}
 		return "notsuccess";
+	}
+	
+	
+	
+	public List<LessonMap> getLessonList() {
+		
+		List<LessonMap> lessonList=new ArrayList<LessonMap>();
+		
+		for (int i=1 ; i<=7 ; i++) {
+			
+			
+			List<Lesson> lessons= new ArrayList<Lesson>();
+			if(i==7) {
+				lessons=lessonRepository.getLessonASC(0);
+			}else {
+				lessons=lessonRepository.getLessonASC(i);
+			}
+			
+			
+			LessonMap lessonMap = new LessonMap();
+			ArrayList<String> timeSlotData = new ArrayList<String>();
+			ArrayList<List<String>> packageData = new ArrayList<List<String>>();
+			ArrayList<List<String>> instructorData = new ArrayList<List<String>>();
+			ArrayList<List<String>> pathData = new ArrayList<List<String>>();
+			ArrayList<List<Integer>> numStuData = new ArrayList<List<Integer>>();;
+			ArrayList<List<Integer>> idData = new ArrayList<List<Integer>>();
+		
+			
+			List<String> packageDataRow = new ArrayList<String>();
+			List<String> instructorDataRow = new ArrayList<String>();
+			List<String> pathDataRow = new ArrayList<String>();
+			List<Integer> numStuDataRow = new ArrayList<Integer>();
+			List<Integer> idDataRow = new ArrayList<Integer>();
+			
+			
+			
+			if(lessons!=null && lessons.size()>0) {
+				TimeSlot timeSlot=lessons.get(0).getTimeSlotId();
+				
+				for (Lesson lesson : lessons) {
+					if(timeSlot.equals(lesson.getTimeSlotId())) {
+						packageDataRow.add(lesson.getPackageId().getTitle()+"("+getTransmission(lesson.getTransmission())+")");
+						instructorDataRow.add(lesson.getInstructorId().getStaffId().getName());
+						pathDataRow.add(lesson.getPathId().getOrigin()+" : "+lesson.getPathId().getDestination());
+						numStuDataRow.add(lesson.getNumStu());
+						idDataRow.add(lesson.getLessonId());
+						
+					}else {
+						
+						timeSlotData.add(timeSlot.getStartTime().toString()+" : "+timeSlot.getFinishTime().toString());
+						
+						packageData.add(packageDataRow);
+						instructorData.add(instructorDataRow);
+						pathData.add(pathDataRow);
+						numStuData.add(numStuDataRow);
+						idData.add(idDataRow);
+						
+						packageDataRow = new ArrayList<String>();
+						instructorDataRow = new ArrayList<String>();
+						pathDataRow = new ArrayList<String>();
+						numStuDataRow = new ArrayList<Integer>();
+						idDataRow = new ArrayList<Integer>();
+						
+						packageDataRow.add(lesson.getPackageId().getTitle()+"("+getTransmission(lesson.getTransmission())+")");
+						instructorDataRow.add(lesson.getInstructorId().getStaffId().getName());
+						pathDataRow.add(lesson.getPathId().getOrigin()+" : "+lesson.getPathId().getDestination());
+						numStuDataRow.add(lesson.getNumStu());
+						idDataRow.add(lesson.getLessonId());
+						
+						timeSlot=lesson.getTimeSlotId();
+						
+					}
+				}
+				
+				timeSlotData.add(timeSlot.getStartTime()+" : "+timeSlot.getFinishTime());
+				
+				packageData.add(packageDataRow);
+				instructorData.add(instructorDataRow);
+				pathData.add(pathDataRow);
+				numStuData.add(numStuDataRow);
+				idData.add(idDataRow);
+				
+			}else {
+				packageDataRow.add("-");
+				instructorDataRow.add("-");
+				pathDataRow.add("-");
+				numStuDataRow.add(0);
+				idDataRow.add(0);
+				
+				timeSlotData.add("-");
+				packageData.add(packageDataRow);
+				instructorData.add(instructorDataRow);
+				pathData.add(pathDataRow);
+				numStuData.add(numStuDataRow);
+				idData.add(idDataRow);
+			}
+			
+			lessonMap.setDay(getDay(i));
+			lessonMap.setTimeSlotData(timeSlotData);
+			lessonMap.setPackageData(packageData);
+			lessonMap.setInstructorData(instructorData);
+			lessonMap.setPathData(pathData);
+			lessonMap.setNumStuData(numStuData);
+			lessonMap.setIdData(idData);
+			
+			lessonList.add(lessonMap);
+		}
+		return lessonList;
+	}
+	
+	public Integer deleteLesson(Integer lessonId) {
+		
+		if(lessonRepository.existsById(lessonId)) {
+			
+			//check whether this lesson already book in the future or past
+			if(isLessonBook(lessonId)) {
+				return 1;//can't perform dalete action
+			}else {
+				lessonRepository.deleteById(lessonId);
+				return 0;//perform delete action
+			}
+		}
+		System.out.println("ok1");
+		return -1;//not exist lesson in the table
 	}
 	
 	
@@ -235,6 +363,31 @@ public class TimeTableService {
 				subPathRepository.deleteById(subPathId);
 			}
 		}
+	}
+	
+	private String getDay(Integer i) {
+		if(i==1)	return "Monday";
+		else if(i==2) return "Tuesday";
+		else if(i==3) return "Wednesday";
+		else if(i==4) return "Thursday";
+		else if(i==5) return "Friday";
+		else if(i==6) return "Saturday";
+		return "Sunday";
+	}
+	
+	private String getTransmission(int i) {
+		if(i==1) {
+			return "Manual";
+		}
+		return "Auto";
+	}
+	
+	private Boolean isLessonBook(Integer lessonId) {
+		StudentLesson object= studentLessonRepository.isExistByLessonId(lessonRepository.findByLessonId(lessonId));
+		if(object != null) {
+			return true;
+		}
+		return false;
 	}
 	
 }

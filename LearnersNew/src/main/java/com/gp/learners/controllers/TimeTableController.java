@@ -27,6 +27,7 @@ import org.springframework.web.client.RestClientException;
 import com.gp.learners.entities.Path;
 import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.entities.mapObject.InstructorMap;
+import com.gp.learners.entities.mapObject.LessonMap;
 import com.gp.learners.service.TimeTableService;
 
 @RestController
@@ -159,5 +160,21 @@ public class TimeTableController {
 			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.badRequest().build();
+	}
+	
+	@GetMapping("/lesson")
+	public List<LessonMap> getLesson() {
+		return timeTableService.getLessonList();
+	}
+	
+	@DeleteMapping("/lesson/{id}")
+	public ResponseEntity<Integer> deleteLesson(@PathVariable("id")Integer lessonId){
+		
+		Integer reply=timeTableService.deleteLesson(lessonId);
+		if(reply == -1) {
+			System.out.println("no");
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(reply);
 	}
 }
