@@ -33,9 +33,13 @@ public interface LessonRepository extends JpaRepository<Lesson,Integer>{
 									  @Param("pathId")Path pathId);
 	
 	
-	@Query(value="select * from lesson l,time_slot t  where l.day = :day and l.time_slot_id=t.time_slot_id and l.status=1 ORDER BY t.start_time ASC",nativeQuery=true)
-	public List<Lesson> getLessonASC(@Param("day")Integer day);
+	@Query(value="select * from lesson l,time_slot t  where l.day = :day and l.time_slot_id=t.time_slot_id and l.status = :type ORDER BY t.start_time ASC",nativeQuery=true)
+	public List<Lesson> getLessonASC(@Param("day")Integer day,@Param("type") Integer type);
 	
 	@Query(value="select * from lesson l where l.lesson_id = :lessonId",nativeQuery=true)
 	public Lesson findByLessonId(@Param("lessonId")Integer lessonId);
+	
+	@Query(value="select * from lesson l where l.day = :day and l.time_slot_id = :timeSlotId and l.instructor_id = :instructorId and l.status = 1 ",nativeQuery=true)
+	public Lesson findByDeactivateLessonDetails(@Param("day") Integer day, @Param("timeSlotId") TimeSlot timeSlotId, @Param("instructorId") Instructor instructorId);
+	
 }

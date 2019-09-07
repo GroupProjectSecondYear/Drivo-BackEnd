@@ -206,7 +206,7 @@ public class TimeTableService {
 	
 	
 	
-	public List<LessonMap> getLessonList() {
+	public List<LessonMap> getLessonList(Integer type) {
 		
 		List<LessonMap> lessonList=new ArrayList<LessonMap>();
 		
@@ -215,9 +215,9 @@ public class TimeTableService {
 			
 			List<Lesson> lessons= new ArrayList<Lesson>();
 			if(i==7) {
-				lessons=lessonRepository.getLessonASC(0);
+				lessons=lessonRepository.getLessonASC(0,type);
 			}else {
-				lessons=lessonRepository.getLessonASC(i);
+				lessons=lessonRepository.getLessonASC(i,type);
 			}
 			
 			
@@ -312,6 +312,14 @@ public class TimeTableService {
 		return lessonList;
 	}
 	
+	public Lesson getLesson(Integer lessonId) {
+		Lesson lesson = new Lesson();
+		if(lessonRepository.existsById(lessonId)) {
+			lesson = lessonRepository.findByLessonId(lessonId);
+		}
+		return lesson;
+	}
+	
 	public Integer deleteLesson(Integer lessonId) {
 		
 		if(lessonRepository.existsById(lessonId)) {
@@ -324,10 +332,54 @@ public class TimeTableService {
 				return 0;//perform delete action
 			}
 		}
-		System.out.println("ok1");
 		return -1;//not exist lesson in the table
 	}
 	
+	public String lessonDeactivate(Integer lessonId) {
+		if(lessonRepository.existsById(lessonId)) {
+			Lesson lesson=lessonRepository.findByLessonId(lessonId);
+			lesson.setStatus(0);
+			lessonRepository.save(lesson);
+			return "success";
+		}
+		return "notsuccess";
+	}
+	
+	public Integer lessonActivate(Integer lessonId) {
+		if(lessonRepository.existsById(lessonId)) {
+			Lesson deactivateLesson=lessonRepository.findByLessonId(lessonId);
+			
+			//check whether above deactivate lesson's instructor available or not
+			Lesson object=lessonRepository.findByDeactivateLessonDetails(deactivateLesson.getDay(),deactivateLesson.getTimeSlotId(),deactivateLesson.getInstructorId());
+			if(object != null) {//Instructor is not available.so can't activate this lesson
+				return 0;
+			}else {//Instructor is available.so lesson can be activate
+				deactivateLesson.setStatus(1);
+				lessonRepository.save(deactivateLesson);
+				return 1;
+			}
+		}
+		return -1;
+	}
+	
+	public String updateLesson(Integer lessonId,Integer type,Integer dayId,Integer timeSlotId,Integer pathId,Integer instructorId,Integer numStudent) {
+		if( dayId>-1 && dayId<7  && numStudent>0) {
+			if(lessonRepository.existsById(lessonId) && timeSlotRepository.existsById(timeSlotId) && pathRepository.existsById(pathId) && instructorRepository.existsById(instructorId)) {
+				Lesson lesson=lessonRepository.findByLessonId(lessonId);
+				lesson.setDay(dayId);
+				lesson.setTimeSlotId(timeSlotRepository.findByTimeSlotId(timeSlotId));
+				lesson.setPathId(pathRepository.findByPathId(pathId));
+				lesson.setInstructorId(instructorRepository.findByInstructorId(instructorId));
+				lesson.setNumStu(numStudent);
+				lesson.setStatus(1);
+	
+				lessonRepository.save(lesson);
+				return "success";
+		
+			}
+		}
+		return "notsuccess";
+	}
 	
 	//Helping Function
 	

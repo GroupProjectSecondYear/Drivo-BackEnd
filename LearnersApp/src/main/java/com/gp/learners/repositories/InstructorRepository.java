@@ -24,7 +24,7 @@ public interface InstructorRepository extends JpaRepository<Instructor,Integer>{
 			+ "v.instructor_id		 = i.instructor_id		 and "
 			+ "p.package_id		= :packageId 	and "
 			+ "v.transmission	= :transmission 	and "
-			+ "i.instructor_id not in (select instructor_id from lesson l where l.day = :dayId and l.time_slot_id = :timeSlotId ));"
+			+ "i.instructor_id not in (select instructor_id from lesson l where l.day = :dayId and l.time_slot_id = :timeSlotId and l.status=1));"
 			,nativeQuery=true)
 	public List<Integer> getRelevantInstructors(@Param("dayId")Integer dayId  ,@Param("packageId")Integer packageId	,@Param("timeSlotId")Integer timeSlotId ,@Param("transmission")Integer transmission);
 	

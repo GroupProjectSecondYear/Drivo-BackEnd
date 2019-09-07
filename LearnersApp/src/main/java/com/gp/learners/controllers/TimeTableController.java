@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 
+import com.gp.learners.entities.Lesson;
 import com.gp.learners.entities.Path;
 import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.entities.mapObject.InstructorMap;
@@ -162,12 +163,22 @@ public class TimeTableController {
 		return ResponseEntity.badRequest().build();
 	}
 	
-	@GetMapping("/lesson")
-	public List<LessonMap> getLesson() {
-		return timeTableService.getLessonList();
+	//type 0:Deactivated Lesson  / 1:Activated Lesson
+	@GetMapping("/timetable/lessons/{type}")
+	public List<LessonMap> getLessons(@PathVariable("type") Integer type) {
+		return timeTableService.getLessonList(type);
 	}
 	
-	@DeleteMapping("/lesson/{id}")
+	@GetMapping("/timetable/lesson/{id}")
+	public ResponseEntity<Lesson> getLesson(@PathVariable("id") Integer lessonId) {
+		Lesson lesson=timeTableService.getLesson(lessonId);
+		if(lesson.getLessonId() != null) {
+			return ResponseEntity.ok(lesson);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@DeleteMapping("/timetable/lesson/{id}")
 	public ResponseEntity<Integer> deleteLesson(@PathVariable("id")Integer lessonId){
 		
 		Integer reply=timeTableService.deleteLesson(lessonId);
@@ -176,5 +187,39 @@ public class TimeTableController {
 			return ResponseEntity.notFound().build();
 		}
 		return ResponseEntity.ok(reply);
+	}
+	
+	@PutMapping("/timetable/lesson/deactivate/{id}")
+	public ResponseEntity<Void> deactivateLesson(@PathVariable("id") Integer lessonId){
+		String reply=timeTableService.lessonDeactivate(lessonId);
+		if(reply.equals("success")) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@PutMapping("/timetable/lesson/activate/{id}")
+	public ResponseEntity<Integer> activateLesson(@PathVariable("id") Integer lessonId){
+		Integer reply=timeTableService.lessonActivate(lessonId);
+		if(reply==-1) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(reply);
+	}
+	
+	@PutMapping("/timetable/lesson/{lessonId}/{type}/{dayId}/{timeSlotId}/{pathId}/{insId}/{numStu}")
+	public ResponseEntity<Void> updateLesson(@PathVariable("lessonId") Integer lessonId	,
+			 @PathVariable("type") Integer type ,
+			 @PathVariable("dayId") Integer dayId,
+			 @PathVariable("timeSlotId") Integer timeSlotId,
+			 @PathVariable("pathId") Integer pathId,
+			 @PathVariable("insId") Integer instructorId,
+			 @PathVariable("numStu") Integer numStudent)throws RestClientException{
+		
+		String reply=timeTableService.updateLesson(lessonId,type,dayId,timeSlotId,pathId,instructorId,numStudent);
+		if(reply.equals("success")) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
 	}
 }
