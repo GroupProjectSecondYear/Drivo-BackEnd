@@ -38,8 +38,8 @@ public class StudentController {
 	StudentRepository studentRepository;
 	
 	@PostMapping("/student/register")
-	public Student StudentRegister(@RequestBody Student student) {
-		return studentRepository.save(student);
+	public Integer StudentRegister(@RequestBody Student student) {//0:Student already registered ,1:Register success
+		return studentService.studentRegister(student);
 	}
 	
 	@GetMapping("/students")
@@ -177,6 +177,16 @@ public class StudentController {
 		String reply=studentService.submitWrittenExamResult(date,countPass,countFail);
 		if(reply.equals("success")) {
 			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("student/user/{id}")
+	public ResponseEntity<Student> getStudentData(@PathVariable("id") Integer userId) {
+		
+		Student student=studentService.getStudentData(userId);
+		if(student.getStudentId() != null) {
+			return ResponseEntity.ok(student);
 		}
 		return ResponseEntity.notFound().build();
 	}

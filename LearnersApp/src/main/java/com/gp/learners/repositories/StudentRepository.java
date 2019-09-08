@@ -42,5 +42,6 @@ public interface StudentRepository extends JpaRepository<Student, Integer>{
 	@Query(value="select * from student u where u.exam_date = :examDate",nativeQuery=true)
 	public List<Student> findByExamDate(@Param("examDate") LocalDate examDate);
 	
-	
+	@Query(value="select * from student u where u.nic = :nic",nativeQuery=true)
+	public Student findByNic(@Param("nic") String nic);
 }

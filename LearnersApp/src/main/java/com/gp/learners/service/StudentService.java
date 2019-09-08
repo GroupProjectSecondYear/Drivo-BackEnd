@@ -52,6 +52,14 @@ public class StudentService {
 	@Autowired
 	EmailService emailService;
 	
+	public Integer studentRegister(Student student) {
+		if(isNotExistStudent(student.getNic())) {
+			studentRepository.save(student);
+			return 1;
+		}
+		return 0;
+	}
+	
 	//getStudentList
 	public List<Student> getStudentList(){
 		return studentRepository.findActiveStudent();
@@ -364,6 +372,19 @@ public class StudentService {
 			return "notsuccess";
 	}
 	
+	//get Student data by using userid
+	public Student getStudentData(Integer userId) {
+		Student student=new Student();
+		
+		if(userRepository.existsById(userId)) {
+			Integer studentId=studentRepository.findByUserId(userRepository.findByUserId(userId));
+			student=studentRepository.findByStudentId(studentId);
+			return student;
+		}
+		
+		return student;
+	}
+	
 	//Helping Function
 	
 	//if student and package exist the student Package table return false
@@ -417,6 +438,14 @@ public class StudentService {
 			return true;
 		}
 		return false;
+	}
+	
+	private Boolean isNotExistStudent(String nic) {
+		Student student = studentRepository.findByNic(nic);
+		if(student != null ) {
+			return false;
+		}
+		return true;
 	}
 	
 }
