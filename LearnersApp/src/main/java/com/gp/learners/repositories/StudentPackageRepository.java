@@ -18,9 +18,13 @@ public interface StudentPackageRepository extends JpaRepository<StudentPackage, 
 //	@Query("from StudentPackage where studentId = :studentId")
 //	public List<StudentPackage> getStudentId(@Param("studentId")Student studentId);
 	
-//	
+	
 	@Query(value="select package_id from student_package u WHERE u.student_id = :studentId ",nativeQuery=true)
 	public List<Integer> findByStudentId(@Param("studentId")Student studentId);
+	
+	//get Student following package details
+	@Query(value="select * from student_package u WHERE u.student_id = :studentId ",nativeQuery=true)
+	public List<StudentPackage> packageListfindByStudentId(@Param("studentId")Student studentId);
 		
 	
 	@Query(value="select * from student_package u where u.package_id = :packageId and u.student_id = :studentId",nativeQuery=true)

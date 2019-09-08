@@ -42,4 +42,7 @@ public interface LessonRepository extends JpaRepository<Lesson,Integer>{
 	@Query(value="select * from lesson l where l.day = :day and l.time_slot_id = :timeSlotId and l.instructor_id = :instructorId and l.status = 1 ",nativeQuery=true)
 	public Lesson findByDeactivateLessonDetails(@Param("day") Integer day, @Param("timeSlotId") TimeSlot timeSlotId, @Param("instructorId") Instructor instructorId);
 	
+	@Query(value="select * from lesson l where l.day = :day and l.package_id = :packageId and l.time_slot_id = :timeSlotId and status=1",nativeQuery=true)
+	public List<Lesson> findLesson(@Param("day") Integer day, @Param("packageId") Package packageId,@Param("timeSlotId") TimeSlot timeSlotId );
+	
 }
