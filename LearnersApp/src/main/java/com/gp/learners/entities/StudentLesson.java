@@ -1,6 +1,7 @@
 package com.gp.learners.entities;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 import javax.annotation.Generated;
 import javax.persistence.Entity;
@@ -17,12 +18,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class StudentLesson {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer studentLessonId;
 
 	@NotNull
 	@DateTimeFormat(pattern = "MM-dd-YYYY")
-	private Date date;
+	private LocalDate date;
 
 	@NotNull
 	private Integer complete;
@@ -41,7 +42,7 @@ public class StudentLesson {
 
 	}
 
-	public StudentLesson(Integer studentLessonId, @NotNull Date date, @NotNull Integer complete,
+	public StudentLesson(Integer studentLessonId, @NotNull LocalDate date, @NotNull Integer complete,
 			@NotNull Student studentId, @NotNull Lesson lessonId) {
 		super();
 		this.studentLessonId = studentLessonId;
@@ -59,11 +60,11 @@ public class StudentLesson {
 		this.studentLessonId = studentLessonId;
 	}
 
-	public Date getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 
@@ -89,6 +90,12 @@ public class StudentLesson {
 
 	public void setLessonId(Lesson lessonId) {
 		this.lessonId = lessonId;
+	}
+
+	@Override
+	public String toString() {
+		return "StudentLesson [studentLessonId=" + studentLessonId + ", date=" + date + ", complete=" + complete
+				+ ", studentId=" + studentId + ", lessonId=" + lessonId + "]";
 	}
 
 }
