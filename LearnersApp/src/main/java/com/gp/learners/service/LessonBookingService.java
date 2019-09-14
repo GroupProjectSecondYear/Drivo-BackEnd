@@ -210,6 +210,13 @@ public class LessonBookingService {
 		return studentLessonList;
 	}
 	
+	public String cancelBooking(Integer studentLessonId) {
+		if(studentLessonRepository.existsById(studentLessonId)) {
+			studentLessonRepository.deleteById(studentLessonId);
+			return "success";
+		}
+		return "notsuccess";
+	}
 	
 	//Helping Functions
 	private Student getStudent(Integer userId) {

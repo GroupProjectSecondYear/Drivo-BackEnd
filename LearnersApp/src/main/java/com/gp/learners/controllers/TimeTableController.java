@@ -28,6 +28,7 @@ import com.gp.learners.entities.Lesson;
 import com.gp.learners.entities.Path;
 import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.entities.mapObject.InstructorMap;
+import com.gp.learners.entities.mapObject.LessonDistributionMap;
 import com.gp.learners.entities.mapObject.LessonMap;
 import com.gp.learners.service.TimeTableService;
 
@@ -221,5 +222,16 @@ public class TimeTableController {
 			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("timetable/lesson/week/{packageId}/{type}")
+	public ResponseEntity<List<LessonDistributionMap>> getLessonDistributionDetails(@PathVariable("packageId") Integer packageId,@PathVariable("type") Integer type){
+		List<LessonDistributionMap> lessonDistribution = timeTableService.getLessonDistributionDetails(packageId,type);
+		if(lessonDistribution != null && lessonDistribution.size()>0) {
+			if(lessonDistribution.get(0).getDay() == -1) {
+				return ResponseEntity.notFound().build();
+			}
+		}
+		return ResponseEntity.ok(lessonDistribution);
 	}
 }

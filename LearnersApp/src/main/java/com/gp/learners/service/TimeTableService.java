@@ -17,6 +17,7 @@ import com.gp.learners.entities.StudentLesson;
 import com.gp.learners.entities.SubPath;
 import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.entities.mapObject.InstructorMap;
+import com.gp.learners.entities.mapObject.LessonDistributionMap;
 import com.gp.learners.entities.mapObject.LessonMap;
 import com.gp.learners.repositories.InstructorRepository;
 import com.gp.learners.repositories.LessonRepository;
@@ -379,6 +380,19 @@ public class TimeTableService {
 			}
 		}
 		return "notsuccess";
+	}
+	
+	public List<LessonDistributionMap> getLessonDistributionDetails(Integer packageId,Integer transmission) {
+		List<LessonDistributionMap> lessonDistribution = new ArrayList<LessonDistributionMap>();
+		if(packageRepository.existsById(packageId) && transmission>0 && transmission<3) {
+			lessonDistribution = lessonRepository.findByPackageIdAndType(packageRepository.findByPackageId(packageId), transmission);
+			return lessonDistribution;
+		}
+		
+		LessonDistributionMap object = new LessonDistributionMap();
+		object.setDay(-1);
+		lessonDistribution.add(object);
+		return lessonDistribution;
 	}
 	
 	//Helping Function

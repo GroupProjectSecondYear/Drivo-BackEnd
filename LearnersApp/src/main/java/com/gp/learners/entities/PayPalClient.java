@@ -28,7 +28,7 @@ public class PayPalClient {
 	String clientId = "AcHjBWKGO_0_CZPcrFg1G9xynSWJ8LK1YsO2qKMgF1qd8vvmbS0oUk76iiyfPl3tMV91E_yMSYgdg61V";
 	String clientSecret = "EHRoMMwUIaEF5-2MRCD6tIgfsNUTFMYbZE2aC_SALaNmTR1JSR_oo3wC3rDhNquoA26TtRjk7eDJ7dqB";
 	
-	public Map<String, Object> createPayment(String sum){
+	public Map<String, Object> createPayment(String sum,Integer userId){
 		Map<String, Object> response = new HashMap<String, Object>();
 	    Amount amount = new Amount();
 	    amount.setCurrency("USD");
@@ -47,8 +47,8 @@ public class PayPalClient {
 	    payment.setTransactions(transactions);
 
 	    RedirectUrls redirectUrls = new RedirectUrls();
-	    redirectUrls.setCancelUrl("http://localhost:4200/cancel");
-	    redirectUrls.setReturnUrl("http://localhost:4200/");
+	    redirectUrls.setCancelUrl("http://localhost:4200/");
+	    redirectUrls.setReturnUrl("http://localhost:4200/student-payment/"+userId);
 	    payment.setRedirectUrls(redirectUrls);
 	    Payment createdPayment;
 	    try {
@@ -73,24 +73,26 @@ public class PayPalClient {
 	}
 	
 	
-	public Map<String, Object> completePayment(HttpServletRequest req){
-	    Map<String, Object> response = new HashMap();
+	public String completePayment(String paymentId,String payerId){
+	   
 	    Payment payment = new Payment();
-	    payment.setId(req.getParameter("paymentId"));
+	    payment.setId(paymentId);
 
 	    PaymentExecution paymentExecution = new PaymentExecution();
-	    paymentExecution.setPayerId(req.getParameter("PayerID"));
+	    paymentExecution.setPayerId(payerId);
 	    try {
 	        APIContext context = new APIContext(clientId, clientSecret, "sandbox");
 	        Payment createdPayment = payment.execute(context, paymentExecution);
 	        if(createdPayment!=null){
-	            response.put("status", "success");
-	            response.put("payment", createdPayment);
+	           //save student payment details in db
+	           
+	           return "success";
 	        }
 	    } catch (PayPalRESTException e) {
 	        System.err.println(e.getDetails());
 	    }
-	    return response;
+	    return "notsuccess";
+	    
 	}
 }
 

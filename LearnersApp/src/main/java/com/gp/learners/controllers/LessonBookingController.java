@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -85,4 +86,12 @@ public class LessonBookingController {
 		return ResponseEntity.ok(studentLesson);
 	}
 	
+	@DeleteMapping("lessonbooking/cancelbooking/{id}")
+	public ResponseEntity<Void> cancelBooking(@PathVariable("id") Integer studentLessonId){
+		String reply=lessonBookingService.cancelBooking(studentLessonId);
+		if(reply.equals("success")) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
 }

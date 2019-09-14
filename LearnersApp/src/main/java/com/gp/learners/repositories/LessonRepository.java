@@ -2,6 +2,9 @@ package com.gp.learners.repositories;
 
 import java.util.List;
 
+import javax.persistence.ColumnResult;
+import javax.persistence.SqlResultSetMapping;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +14,7 @@ import com.gp.learners.entities.Lesson;
 import com.gp.learners.entities.Package;
 import com.gp.learners.entities.Path;
 import com.gp.learners.entities.TimeSlot;
+import com.gp.learners.entities.mapObject.LessonDistributionMap;
 
 public interface LessonRepository extends JpaRepository<Lesson,Integer>{
 	
@@ -44,5 +48,9 @@ public interface LessonRepository extends JpaRepository<Lesson,Integer>{
 	
 	@Query(value="select * from lesson l where l.day = :day and l.package_id = :packageId and l.time_slot_id = :timeSlotId and l.transmission = :transmission and status=1",nativeQuery=true)
 	public List<Lesson> findLesson(@Param("day") Integer day, @Param("packageId") Package packageId,@Param("transmission") Integer transmission,@Param("timeSlotId") TimeSlot timeSlotId );
+	
+	@Query("select new com.gp.learners.entities.mapObject.LessonDistributionMap(u.day,count(u)) from Lesson u where u.packageId = :packageId and u.transmission = :transmission " + 
+				 "group by u.day order by u.day ")
+	public List<LessonDistributionMap> findByPackageIdAndType(@Param("packageId") Package packageId,@Param("transmission") Integer transmission);
 	
 }

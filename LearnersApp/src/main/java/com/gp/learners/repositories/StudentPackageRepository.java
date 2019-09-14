@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import com.gp.learners.entities.Package;
 import com.gp.learners.entities.Student;
 import com.gp.learners.entities.StudentPackage;
 
@@ -37,4 +39,8 @@ public interface StudentPackageRepository extends JpaRepository<StudentPackage, 
 	
 	@Query(value="select * from student_package u WHERE u.student_package_id = :studentPackageId ",nativeQuery=true)
 	public StudentPackage findByStudentPackageId(@Param("studentPackageId")Integer studentPackageId);
+	
+	@Query(value="select count(student_package_id) from student_package p ,student s ,user u where p.package_id = :packageId and p.transmission = :transmission and "
+				+ "p.student_id = s.student_id and s.user_id = u.user_id and u.status=1 ",nativeQuery=true)
+	public Integer TotalStufindByPackgeId(@Param("packageId")Package packageId, @Param("transmission") Integer transmission);
 }
