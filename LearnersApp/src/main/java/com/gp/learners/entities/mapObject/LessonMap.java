@@ -73,4 +73,11 @@ public class LessonMap {
 		this.idData = idData;
 	}
 
+	@Override
+	public String toString() {
+		return "LessonMap [day=" + day + ", timeSlotData=" + timeSlotData + ", packageData=" + packageData
+				+ ", instructorData=" + instructorData + ", pathData=" + pathData + ", numStuData=" + numStuData
+				+ ", idData=" + idData + "]";
+	}
+
 }

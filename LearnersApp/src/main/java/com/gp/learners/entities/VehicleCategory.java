@@ -17,14 +17,14 @@ public class VehicleCategory {
 	private Integer vehicleCategoryId;
 
 	private String category;
+	private Integer numStudent;
 
 	public Integer getVehicleCategoryId() {
 		return vehicleCategoryId;
 	}
-	
-	
+
 	public VehicleCategory() {
-		
+
 	}
 
 	public void setVehicleCategoryId(Integer vehicleCategoryId) {
@@ -39,9 +39,18 @@ public class VehicleCategory {
 		this.category = category;
 	}
 
+	public Integer getNumStudent() {
+		return numStudent;
+	}
+
+	public void setNumStudent(Integer numStudent) {
+		this.numStudent = numStudent;
+	}
+
 	@Override
 	public String toString() {
-		return "VehicleCategory [vehicleCategoryId=" + vehicleCategoryId + ", category=" + category + "]";
+		return "VehicleCategory [vehicleCategoryId=" + vehicleCategoryId + ", category=" + category + ", numStudent="
+				+ numStudent + "]";
 	}
 
 }

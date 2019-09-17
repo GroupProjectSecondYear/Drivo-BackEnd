@@ -30,6 +30,7 @@ import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.entities.mapObject.InstructorMap;
 import com.gp.learners.entities.mapObject.LessonDistributionMap;
 import com.gp.learners.entities.mapObject.LessonMap;
+import com.gp.learners.entities.mapObject.PackageAnalysisDataMap;
 import com.gp.learners.service.TimeTableService;
 
 @RestController
@@ -233,5 +234,15 @@ public class TimeTableController {
 			}
 		}
 		return ResponseEntity.ok(lessonDistribution);
+	}
+	
+	@GetMapping("timetable/lesson/details/{packageId}/{transmission}")
+	public List<PackageAnalysisDataMap> getLessonsByPackageId(@PathVariable("packageId") Integer packageId ,@PathVariable("transmission") Integer transmission){
+		return timeTableService.getLessonsByPackageId(packageId,transmission);
+	}
+	
+	@GetMapping("timetable/lesson/timeslot/{packageId}/{transmission}")
+	public List<TimeSlot> getLessonTimeSlotByPackageId(@PathVariable("packageId") Integer packageId ,@PathVariable("transmission") Integer transmission){
+		return timeTableService.getLessonTimeSlotByPackageId(packageId,transmission);
 	}
 }

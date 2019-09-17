@@ -1,11 +1,10 @@
 package com.gp.learners.service;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-
+import javax.persistence.criteria.CriteriaBuilder.In;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +18,7 @@ import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.entities.mapObject.InstructorMap;
 import com.gp.learners.entities.mapObject.LessonDistributionMap;
 import com.gp.learners.entities.mapObject.LessonMap;
+import com.gp.learners.entities.mapObject.PackageAnalysisDataMap;
 import com.gp.learners.repositories.InstructorRepository;
 import com.gp.learners.repositories.LessonRepository;
 import com.gp.learners.repositories.PackageRepository;
@@ -207,6 +207,7 @@ public class TimeTableService {
 	
 	
 	
+	//type 0:Deactivated Lesson  / 1:Activated Lesson
 	public List<LessonMap> getLessonList(Integer type) {
 		
 		List<LessonMap> lessonList=new ArrayList<LessonMap>();
@@ -216,9 +217,10 @@ public class TimeTableService {
 			
 			List<Lesson> lessons= new ArrayList<Lesson>();
 			if(i==7) {
-				lessons=lessonRepository.getLessonASC(0,type);
+					lessons=lessonRepository.getLessonASC(0,type);
+				
 			}else {
-				lessons=lessonRepository.getLessonASC(i,type);
+					lessons=lessonRepository.getLessonASC(i,type);
 			}
 			
 			
@@ -385,7 +387,7 @@ public class TimeTableService {
 	public List<LessonDistributionMap> getLessonDistributionDetails(Integer packageId,Integer transmission) {
 		List<LessonDistributionMap> lessonDistribution = new ArrayList<LessonDistributionMap>();
 		if(packageRepository.existsById(packageId) && transmission>0 && transmission<3) {
-			lessonDistribution = lessonRepository.findByPackageIdAndType(packageRepository.findByPackageId(packageId), transmission);
+			lessonDistribution = lessonRepository.findByPackageIdAndTransmission(packageRepository.findByPackageId(packageId), transmission);
 			return lessonDistribution;
 		}
 		
@@ -394,6 +396,58 @@ public class TimeTableService {
 		lessonDistribution.add(object);
 		return lessonDistribution;
 	}
+	
+	public List<PackageAnalysisDataMap> getLessonsByPackageId(Integer packageId , Integer transmission){
+		
+		ArrayList<PackageAnalysisDataMap> packageAnalysisDataMapsList= new ArrayList<PackageAnalysisDataMap>();
+		
+		int i=1;
+		while(i<=7) {
+			
+			List<Lesson> lessonList = new ArrayList<Lesson>();
+			if(i==7) {
+				lessonList = lessonRepository.getLessonsASCByPackageId(0,1,packageRepository.findByPackageId(packageId),transmission);
+			}else {
+				lessonList = lessonRepository.getLessonsASCByPackageId(i,1,packageRepository.findByPackageId(packageId),transmission);
+			}
+			
+			PackageAnalysisDataMap object = new PackageAnalysisDataMap();
+			object.setDay(getDay(i));
+			
+			ArrayList<TimeSlot> timeSlot = new ArrayList<TimeSlot>();
+			ArrayList<Integer> student = new ArrayList<Integer>();
+			ArrayList<Double> stuPercentage = new ArrayList<Double>();
+			
+			if(lessonList.size()>0) {
+				for (Lesson lesson : lessonList) {
+					timeSlot.add(lesson.getTimeSlotId());
+					student.add(10);
+					stuPercentage.add(76.6);
+				}
+				object.setTimeSlot(timeSlot);
+				object.setStudent(student);
+				object.setStuPercentage(stuPercentage);
+				
+				packageAnalysisDataMapsList.add(object);
+			}
+			i++;
+		}
+		
+		return packageAnalysisDataMapsList;
+	}
+	
+	public List<TimeSlot> getLessonTimeSlotByPackageId(Integer packageId,Integer transmission){
+		List<TimeSlot> timeSlotList = new ArrayList<TimeSlot>();
+		List<Integer> timeSlotId = new ArrayList<Integer>();
+		
+		timeSlotId = lessonRepository.getLessonTimeSlot(1, packageRepository.findByPackageId(packageId), transmission);
+		for (Integer i : timeSlotId) {
+			timeSlotList.add(timeSlotRepository.findByTimeSlotId(i));
+		}
+		
+		return timeSlotList;
+	}
+	
 	
 	//Helping Function
 	
