@@ -1,6 +1,7 @@
 package com.gp.learners.controllers;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -244,5 +245,23 @@ public class TimeTableController {
 	@GetMapping("timetable/lesson/timeslot/{packageId}/{transmission}")
 	public List<TimeSlot> getLessonTimeSlotByPackageId(@PathVariable("packageId") Integer packageId ,@PathVariable("transmission") Integer transmission){
 		return timeTableService.getLessonTimeSlotByPackageId(packageId,transmission);
+	}
+	
+	@GetMapping("timetable/lesson/isanylesson/{packageId}/{transmission}")
+	public ResponseEntity<Boolean> isAnyLesson(@PathVariable("packageId") Integer packageId,@PathVariable("transmission") Integer transmission){
+		Integer reply = timeTableService.isAnyLesson(packageId,transmission);
+		if(reply == 0) {
+			return ResponseEntity.ok(false);
+		}
+		if(reply == 1) {
+			return ResponseEntity.ok(true);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("timetable/lesson/student/attendance")
+	public void getStudentAttendance() {
+		
+		System.out.println(Calendar.getInstance().get(Calendar.WEEK_OF_YEAR)-1);
 	}
 }

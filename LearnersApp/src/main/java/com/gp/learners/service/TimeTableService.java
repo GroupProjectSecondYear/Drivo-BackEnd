@@ -24,6 +24,7 @@ import com.gp.learners.repositories.LessonRepository;
 import com.gp.learners.repositories.PackageRepository;
 import com.gp.learners.repositories.PathRepository;
 import com.gp.learners.repositories.StudentLessonRepository;
+import com.gp.learners.repositories.StudentRepository;
 import com.gp.learners.repositories.SubPathRepository;
 import com.gp.learners.repositories.TimeSlotRepositroy;
 
@@ -397,6 +398,7 @@ public class TimeTableService {
 		return lessonDistribution;
 	}
 	
+	
 	public List<PackageAnalysisDataMap> getLessonsByPackageId(Integer packageId , Integer transmission){
 		
 		ArrayList<PackageAnalysisDataMap> packageAnalysisDataMapsList= new ArrayList<PackageAnalysisDataMap>();
@@ -414,16 +416,27 @@ public class TimeTableService {
 			PackageAnalysisDataMap object = new PackageAnalysisDataMap();
 			object.setDay(getDay(i));
 			
+			ArrayList<Integer> lessonId = new ArrayList<Integer>();
 			ArrayList<TimeSlot> timeSlot = new ArrayList<TimeSlot>();
 			ArrayList<Integer> student = new ArrayList<Integer>();
 			ArrayList<Double> stuPercentage = new ArrayList<Double>();
 			
 			if(lessonList.size()>0) {
 				for (Lesson lesson : lessonList) {
+					
+					lessonId.add(lesson.getLessonId());
 					timeSlot.add(lesson.getTimeSlotId());
-					student.add(10);
-					stuPercentage.add(76.6);
+					
+					//get last 2 week student's attendance(Number of student)
+					Integer count = studentLessonRepository.findStudentAttendanceForLesson(lesson.getLessonId());
+					student.add(count);
+					
+					//get percentage last 2 week student's attendance
+					Integer availableStudent = lesson.getNumStu()*2;
+					Double percentage = ((double)count/availableStudent)*100;
+					stuPercentage.add(percentage);
 				}
+				object.setLessonId(lessonId);
 				object.setTimeSlot(timeSlot);
 				object.setStudent(student);
 				object.setStuPercentage(stuPercentage);
@@ -446,6 +459,17 @@ public class TimeTableService {
 		}
 		
 		return timeSlotList;
+	}
+	
+	public Integer isAnyLesson(Integer packageId,Integer transmission) {
+		if(packageRepository.existsById(packageId)) {
+			List<LessonDistributionMap> object = lessonRepository.findByPackageIdAndTransmission(packageRepository.findByPackageId(packageId), transmission);
+			if(object!=null && object.size()>0) {
+				return 1;
+			}
+			return 0;
+		}
+		return -1;
 	}
 	
 	

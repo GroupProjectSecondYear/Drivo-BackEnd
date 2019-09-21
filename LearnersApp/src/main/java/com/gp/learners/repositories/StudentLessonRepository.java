@@ -29,4 +29,9 @@ public interface StudentLessonRepository extends JpaRepository<StudentLesson,Int
 	@Query(value="select * from student_lesson s,lesson l where s.lesson_id = l.lesson_id and s.student_id = :studentId and l.package_id = :packageId ORDER BY s.date ASC ",nativeQuery=true)
 	public List<StudentLesson> findByStudentIdAndPackageId(@Param("studentId") Student studentId,@Param("packageId") Package packageId);
 	
+	@Query(value="SELECT count(*) FROM student_lesson WHERE  " + 
+				 "WEEK   (date) = WEEK( current_date ) - 1 AND YEAR(date) = YEAR( current_date ) OR  " + 
+				 "WEEK   (date) = WEEK( current_date ) - 2 AND YEAR(date) = YEAR( current_date ) AND " +
+				 "lesson_id = :lessonId ",nativeQuery=true)
+	public Integer findStudentAttendanceForLesson(@Param("lessonId") Integer lessonId);
 }

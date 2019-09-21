@@ -11,6 +11,7 @@ import com.gp.learners.entities.TimeSlot;
 public class PackageAnalysisDataMap {
 
 	private String day;
+	private ArrayList<Integer> lessonId;
 	private ArrayList<TimeSlot> timeSlot;
 	private ArrayList<Integer> student;
 	private ArrayList<Double> stuPercentage;
@@ -19,13 +20,22 @@ public class PackageAnalysisDataMap {
 
 	}
 
-	public PackageAnalysisDataMap(String day, ArrayList<TimeSlot> timeSlot, ArrayList<Integer> student,
-			ArrayList<Double> stuPercentage) {
+	public PackageAnalysisDataMap(String day, ArrayList<Integer> lessonId, ArrayList<TimeSlot> timeSlot,
+			ArrayList<Integer> student, ArrayList<Double> stuPercentage) {
 		super();
 		this.day = day;
+		this.lessonId = lessonId;
 		this.timeSlot = timeSlot;
 		this.student = student;
 		this.stuPercentage = stuPercentage;
+	}
+
+	public ArrayList<Integer> getLessonId() {
+		return lessonId;
+	}
+
+	public void setLessonId(ArrayList<Integer> lessonId) {
+		this.lessonId = lessonId;
 	}
 
 	public String getDay() {
