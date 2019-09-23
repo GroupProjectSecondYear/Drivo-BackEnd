@@ -30,8 +30,18 @@ public interface StudentLessonRepository extends JpaRepository<StudentLesson,Int
 	public List<StudentLesson> findByStudentIdAndPackageId(@Param("studentId") Student studentId,@Param("packageId") Package packageId);
 	
 	@Query(value="SELECT count(*) FROM student_lesson WHERE  " + 
-				 "WEEK   (date) = WEEK( current_date ) - 1 AND YEAR(date) = YEAR( current_date ) OR  " + 
-				 "WEEK   (date) = WEEK( current_date ) - 2 AND YEAR(date) = YEAR( current_date ) AND " +
+				 "(WEEK   (date) = WEEK( current_date ) AND YEAR(date) = YEAR( current_date ) OR  " + 
+				 "WEEK   (date) = WEEK( current_date ) - 1 AND YEAR(date) = YEAR( current_date ) ) AND " +
 				 "lesson_id = :lessonId ",nativeQuery=true)
 	public Integer findStudentAttendanceForLesson(@Param("lessonId") Integer lessonId);
+	
+	@Query(value="SELECT count(*) FROM student_lesson WHERE  " + 
+			 	 "WEEK   (date) = WEEK( current_date ) - :weekNum AND YEAR(date) = YEAR( current_date ) AND " +
+			 	 "lesson_id = :lessonId ",nativeQuery=true)
+	public Integer findStudentAttendanceForLesson12WeeksPast(@Param("lessonId") Integer lessonId,@Param("weekNum") Integer weekNum);
+	
+	@Query(value="SELECT count(*) FROM student_lesson WHERE  " + 
+		 	 "WEEK   (date) = WEEK( current_date ) + :weekNum AND YEAR(date) = YEAR( current_date ) AND " +
+		 	 "lesson_id = :lessonId ",nativeQuery=true)
+	public Integer findStudentAttendanceForLesson12WeeksFuture(@Param("lessonId") Integer lessonId,@Param("weekNum") Integer weekNum);
 }

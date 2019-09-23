@@ -1,15 +1,23 @@
 package com.gp.learners.service;
 
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.persistence.criteria.CriteriaBuilder.In;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.gp.learners.entities.Lesson;
 import com.gp.learners.entities.Path;
 import com.gp.learners.entities.StudentLesson;
@@ -19,6 +27,7 @@ import com.gp.learners.entities.mapObject.InstructorMap;
 import com.gp.learners.entities.mapObject.LessonDistributionMap;
 import com.gp.learners.entities.mapObject.LessonMap;
 import com.gp.learners.entities.mapObject.PackageAnalysisDataMap;
+import com.gp.learners.entities.mapObject.StudentAttendanceWeeksMap;
 import com.gp.learners.repositories.InstructorRepository;
 import com.gp.learners.repositories.LessonRepository;
 import com.gp.learners.repositories.PackageRepository;
@@ -195,6 +204,7 @@ public class TimeTableService {
 				lesson.setInstructorId(instructorRepository.findByInstructorId(instructorId));
 				lesson.setNumStu(numStudent);
 				lesson.setStatus(1);
+				lesson.setDate(getLocalCurrentDate());
 				
 				if(notExistLesson(lesson)) {
 					lessonRepository.save(lesson);
@@ -472,6 +482,97 @@ public class TimeTableService {
 		return -1;
 	}
 	
+	public List<StudentAttendanceWeeksMap> getStudentAttendancePast(Integer lessonId) {
+		List<StudentAttendanceWeeksMap> studentAttendance = new ArrayList<StudentAttendanceWeeksMap>();
+		
+		if(lessonRepository.existsById(lessonId)) {
+			
+			Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Colombo"));
+			Date currentDate = calendar.getTime();
+			LocalDate today = currentDate.toInstant()
+				      .atZone(ZoneId.systemDefault())
+				      .toLocalDate();
+			
+			
+			int i=0;
+			int tempWeekNum=0;
+			while(i<12) {
+				WeekFields weekFields = WeekFields.of(Locale.getDefault()); 
+				int weekNumber = today.get(weekFields.weekOfMonth());
+				int numStudent = studentLessonRepository.findStudentAttendanceForLesson12WeeksPast(lessonId,i);
+				
+				if(weekNumber == 5) {
+					tempWeekNum=4;
+				}
+				
+				StudentAttendanceWeeksMap object = new StudentAttendanceWeeksMap();
+				if(weekNumber>=2 && tempWeekNum>=1) {
+					object.setWeek(today.getMonth()+" "+tempWeekNum+" WEEK");
+					object.setNumStudent(numStudent);
+					tempWeekNum--;
+				}else {
+					object.setWeek(today.getMonth()+" "+weekNumber+" WEEK");
+					object.setNumStudent(numStudent);
+					tempWeekNum=0;
+				}
+				studentAttendance.add(object);
+				
+				today = today.minusDays(7);
+				i++;
+			}
+			Collections.reverse(studentAttendance);
+			return studentAttendance;
+		}
+		
+		return null;
+	}
+	
+	
+	public List<StudentAttendanceWeeksMap> getStudentAttendanceFuture(Integer lessonId) {
+		List<StudentAttendanceWeeksMap> studentAttendance = new ArrayList<StudentAttendanceWeeksMap>();
+		
+		if(lessonRepository.existsById(lessonId)) {
+			
+			LocalDate today = getLocalCurrentDate();
+			
+			int i=1;
+			while(i<13) {
+				today = today.plusDays(7);
+				WeekFields weekFields = WeekFields.of(Locale.getDefault()); 
+				int weekNumber = today.get(weekFields.weekOfMonth());
+				int numStudent = studentLessonRepository.findStudentAttendanceForLesson12WeeksFuture(lessonId,i);
+				
+				StudentAttendanceWeeksMap object = new StudentAttendanceWeeksMap();
+				
+				if(weekNumber==5) {
+					LocalDate temDate = today.plusDays(7);
+					if(temDate.get(weekFields.weekOfMonth())==2) {
+						object.setWeek(temDate.getMonth()+" "+1+" WEEK");
+					}else {
+						object.setWeek(today.getMonth()+" "+weekNumber+" WEEK");
+					}
+				}else {
+					object.setWeek(today.getMonth()+" "+weekNumber+" WEEK");
+				}
+				
+				object.setNumStudent(numStudent);
+
+				studentAttendance.add(object);
+				i++;
+			}
+			return studentAttendance;
+		}
+		
+		return null;
+	}
+	
+	public LocalDate getLessonPublishDate(Integer lessonId) {
+		if(lessonRepository.existsById(lessonId)) {
+			Lesson lesson = lessonRepository.findByLessonId(lessonId);
+			return lesson.getDate();
+		}
+		return null;
+	}
 	
 	//Helping Function
 	
@@ -532,6 +633,16 @@ public class TimeTableService {
 			return true;
 		}
 		return false;
+	}
+	
+	public LocalDate getLocalCurrentDate() {
+		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Colombo"));
+		Date currentDate = calendar.getTime();
+		LocalDate today = currentDate.toInstant()
+			      .atZone(ZoneId.systemDefault())
+			      .toLocalDate();
+		
+		return today;
 	}
 	
 }

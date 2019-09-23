@@ -1,5 +1,6 @@
 package com.gp.learners.controllers;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -32,6 +33,7 @@ import com.gp.learners.entities.mapObject.InstructorMap;
 import com.gp.learners.entities.mapObject.LessonDistributionMap;
 import com.gp.learners.entities.mapObject.LessonMap;
 import com.gp.learners.entities.mapObject.PackageAnalysisDataMap;
+import com.gp.learners.entities.mapObject.StudentAttendanceWeeksMap;
 import com.gp.learners.service.TimeTableService;
 
 @RestController
@@ -259,9 +261,31 @@ public class TimeTableController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("timetable/lesson/student/attendance")
-	public void getStudentAttendance() {
-		
-		System.out.println(Calendar.getInstance().get(Calendar.WEEK_OF_YEAR)-1);
+	
+	//get Student attendance week by week(12 weeks)
+	//time 1 --> Past , 2--> Future
+	@GetMapping("timetable/lesson/student/attendance/{lessonId}/{time}")
+	public ResponseEntity<List<StudentAttendanceWeeksMap>> getStudentAttendance(@PathVariable("lessonId") Integer lessonId,@PathVariable("time") Integer time) {
+		List<StudentAttendanceWeeksMap> list= new ArrayList<StudentAttendanceWeeksMap>();
+		list = null;
+		if(time==1) {
+			 list = timeTableService.getStudentAttendancePast(lessonId);
+		}else {
+			 list = timeTableService.getStudentAttendanceFuture(lessonId);
+		}
+	
+		if(list != null) {
+			return ResponseEntity.ok(list);
+		}
+		return ResponseEntity.notFound().build();	
+	}
+	
+	@GetMapping("timetable/lesson/date/{lessonId}")
+	public ResponseEntity<LocalDate> lessonPublishDate(@PathVariable("lessonId") Integer lessonId){
+		LocalDate date = timeTableService.getLessonPublishDate(lessonId);
+		if(date != null) {
+			return ResponseEntity.ok(date);
+		}
+		return ResponseEntity.notFound().build();
 	}
 }

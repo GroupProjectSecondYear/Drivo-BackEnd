@@ -1,5 +1,7 @@
 package com.gp.learners.entities;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,7 +21,7 @@ public class Lesson {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="lesson_id")
+	@Column(name = "lesson_id")
 	private Integer lessonId;
 
 	@NotNull
@@ -36,6 +38,9 @@ public class Lesson {
 
 	@NotNull
 	private Integer status;
+
+	@NotNull
+	private LocalDate date;
 
 	@ManyToOne
 	@JoinColumn(name = "instructor_id", referencedColumnName = "instructor_id")
@@ -65,14 +70,15 @@ public class Lesson {
 			@NotNull @Range(min = 0, max = 6, message = "Day value should be between 0 and 6") Integer day,
 			@NotNull @Range(min = 1, max = 2, message = "Transmission value should be between 1 and 2") Integer transmission,
 			@NotNull @Range(min = 1, message = "Number of student should be greater than 0") Integer numStu,
-			@NotNull Integer status, @NotNull Instructor instructorId, @NotNull Package packageId,
-			@NotNull TimeSlot timeSlotId, @NotNull Path pathId) {
+			@NotNull Integer status, @NotNull LocalDate date, @NotNull Instructor instructorId,
+			@NotNull Package packageId, @NotNull TimeSlot timeSlotId, @NotNull Path pathId) {
 		super();
 		this.lessonId = lessonId;
 		this.day = day;
 		this.transmission = transmission;
 		this.numStu = numStu;
 		this.status = status;
+		this.date = date;
 		this.instructorId = instructorId;
 		this.packageId = packageId;
 		this.timeSlotId = timeSlotId;
@@ -151,11 +157,19 @@ public class Lesson {
 		this.pathId = pathId;
 	}
 
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
+
 	@Override
 	public String toString() {
 		return "Lesson [lessonId=" + lessonId + ", day=" + day + ", transmission=" + transmission + ", numStu=" + numStu
-				+ ", status=" + status + ", instructorId=" + instructorId + ", packageId=" + packageId + ", timeSlotId="
-				+ timeSlotId + ", pathId=" + pathId + "]";
+				+ ", status=" + status + ", date=" + date + ", instructorId=" + instructorId + ", packageId="
+				+ packageId + ", timeSlotId=" + timeSlotId + ", pathId=" + pathId + "]";
 	}
 
 }
