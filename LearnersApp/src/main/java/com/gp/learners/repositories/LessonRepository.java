@@ -41,6 +41,9 @@ public interface LessonRepository extends JpaRepository<Lesson,Integer>{
 	@Query(value="select * from lesson l,time_slot t  where l.day = :day and l.time_slot_id=t.time_slot_id and l.status = :type ORDER BY t.start_time ASC",nativeQuery=true)
 	public List<Lesson> getLessonASC(@Param("day")Integer day,@Param("type") Integer type);
 	
+	@Query(value="select * from lesson l,time_slot t  where l.day = :day and l.time_slot_id=t.time_slot_id and l.status = :type and l.instructor_id = :instructorId ORDER BY t.start_time ASC",nativeQuery=true)
+	public List<Lesson> getLessonByInstructorId(@Param("day")Integer day,@Param("type") Integer type,@Param("instructorId") Integer instructorId);
+	
 	@Query(value="select * from lesson l,time_slot t  where l.day = :day and l.time_slot_id=t.time_slot_id and l.status = :type and l.package_id = :packageId and l.transmission = :transmission ORDER BY t.start_time ASC",nativeQuery=true)
 	public List<Lesson> getLessonsASCByPackageId(@Param("day")  Integer day,@Param("type") Integer type, @Param("packageId") Package packageId,@PathVariable("transmission") Integer transmission);
 	
@@ -62,4 +65,5 @@ public interface LessonRepository extends JpaRepository<Lesson,Integer>{
 	
 	@Query(value="select * from lesson l where l.package_id = :packageId and l.transmission = :transmission order by day ",nativeQuery=true)
 	public List<Lesson> getLessonsfindByPackageIdAndTransmission(@PathVariable("packageId") Package packageId,@PathVariable("transmission") Integer transmission);
+	
 }

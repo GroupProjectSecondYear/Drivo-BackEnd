@@ -219,7 +219,7 @@ public class TimeTableService {
 	
 	
 	//type 0:Deactivated Lesson  / 1:Activated Lesson
-	public List<LessonMap> getLessonList(Integer type) {
+	public List<LessonMap> getLessonList(Integer type,Integer instructorId) {
 		
 		List<LessonMap> lessonList=new ArrayList<LessonMap>();
 		
@@ -229,9 +229,15 @@ public class TimeTableService {
 			List<Lesson> lessons= new ArrayList<Lesson>();
 			if(i==7) {
 					lessons=lessonRepository.getLessonASC(0,type);
+					if(instructorId!=-1) {
+						lessons = lessonRepository.getLessonByInstructorId(0,type,instructorId);
+					}
 				
 			}else {
 					lessons=lessonRepository.getLessonASC(i,type);
+					if(instructorId!=-1) {
+						lessons = lessonRepository.getLessonByInstructorId(i,type,instructorId);
+					}
 			}
 			
 			

@@ -32,4 +32,7 @@ public interface InstructorRepository extends JpaRepository<Instructor,Integer>{
 	public String nameFindByInstructorId(@Param("instructorId")Integer instructorId);
 	
 	public Instructor findByInstructorId(Integer instructorId);
+	
+	@Query(value="select * from instructor i where i.staff_id = :staffId ",nativeQuery=true)
+	public Instructor findByStaffId(Integer staffId);
 }

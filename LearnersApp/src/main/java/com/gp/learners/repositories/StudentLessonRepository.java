@@ -44,4 +44,17 @@ public interface StudentLessonRepository extends JpaRepository<StudentLesson,Int
 		 	 "WEEK   (date) = WEEK( current_date ) + :weekNum AND YEAR(date) = YEAR( current_date ) AND " +
 		 	 "lesson_id = :lessonId ",nativeQuery=true)
 	public Integer findStudentAttendanceForLesson12WeeksFuture(@Param("lessonId") Integer lessonId,@Param("weekNum") Integer weekNum);
+	
+	@Query(value="select * from student_lesson s,lesson l where " + 
+				 "s.lesson_id = l.lesson_id and s.lesson_id = :lessonId and l.instructor_id = :instructorId and " + 
+				 "(WEEK   (s.date) = WEEK( current_date ) AND YEAR(s.date) = YEAR( current_date ))",nativeQuery=true)
+	public List<StudentLesson> findByLessonIdAndInstructorId(@Param("lessonId") Integer lessonId,@Param("instructorId") Integer instructorId);
+	
+	@Query(value="select s.date from student_lesson s,lesson l where " + 
+			 "s.lesson_id = l.lesson_id and s.lesson_id = :lessonId and l.instructor_id = :instructorId and " + 
+			 "(WEEK   (s.date) = WEEK( current_date ) AND YEAR(s.date) = YEAR( current_date )) LIMIT 1 ",nativeQuery=true)
+	public LocalDate getDateByLessonIdAndInstructorId(@Param("lessonId") Integer lessonId,@Param("instructorId") Integer instructorId);
+	
+	@Query(value="select * from student_lesson s  where s.student_lesson_id = :studentLessonId ",nativeQuery=true)
+	public StudentLesson findByStudentLessonId(@Param("studentLessonId")Integer studentLessonId);
 }

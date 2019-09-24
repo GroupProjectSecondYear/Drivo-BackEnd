@@ -171,7 +171,7 @@ public class TimeTableController {
 	//type 0:Deactivated Lesson  / 1:Activated Lesson
 	@GetMapping("/timetable/lessons/{type}")
 	public List<LessonMap> getLessons(@PathVariable("type") Integer type) {
-		return timeTableService.getLessonList(type);
+		return timeTableService.getLessonList(type,-1);
 	}
 	
 	@GetMapping("/timetable/lesson/{id}")
