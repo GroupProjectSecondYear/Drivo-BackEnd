@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gp.learners.entities.mapObject.LessonAssingStudentMap;
 import com.gp.learners.entities.mapObject.LessonMap;
+import com.gp.learners.entities.mapObject.StudentPractricalChartDataMap;
 import com.gp.learners.service.InstructorService;
 
 @RestController
@@ -49,11 +50,20 @@ public class InstructorController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@PostMapping("instructor/student/lesson/mark/{studentLessonId}/{mark}")
+	@PostMapping("/instructor/student/lesson/mark/{studentLessonId}/{mark}")
 	public ResponseEntity<Void> markStudentLesson(@PathVariable("studentLessonId") Integer studentLessonId,@PathVariable("mark") Integer mark){
 		Integer reply = instructorService.markStudentLesson(studentLessonId, mark);
 		if(reply != -1) {
 			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("/instructor/student/practrical/lesson/{studentLessonId}")
+	public ResponseEntity<StudentPractricalChartDataMap> getPractricalLessonChartStudentData(@PathVariable("studentLessonId") Integer studentLessonId) {
+		StudentPractricalChartDataMap object = instructorService.getPractricalLessonChartStudentData(studentLessonId);
+		if(object != null) {
+			return ResponseEntity.ok(object);
 		}
 		return ResponseEntity.notFound().build();
 	}

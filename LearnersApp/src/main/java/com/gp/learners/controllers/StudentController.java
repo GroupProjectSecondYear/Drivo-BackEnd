@@ -64,7 +64,6 @@ public class StudentController {
 	//add student package details to the database
 	@PostMapping("student/package/{stuId}")
 	public ResponseEntity<Void> studentPackageAdd(@PathVariable("stuId") Integer stuId,@RequestBody StudentPackageMap object) {
-		System.out.println("stuId:"+stuId+" object:"+object);
 		String reply=studentService.packageAdd(stuId, object);
 		if(reply.equals("success")) {
 			return ResponseEntity.noContent().build();
@@ -77,10 +76,8 @@ public class StudentController {
 	public ResponseEntity<Void> studentPackageDelete(@PathVariable("stuId") Integer stuId,@PathVariable("pacId") Integer pacId ) {
 			
 		if(studentService.packageDelete(stuId,pacId).equals("success")) {
-			System.out.println("ok2");
 			return ResponseEntity.noContent().build();
 		}
-		System.out.println("Ok1");
 		return ResponseEntity.notFound().build();
 			
 	}
@@ -92,11 +89,11 @@ public class StudentController {
 	}
 	
 	@PostMapping("student/coursefee/{studentId}/{packageId}")//Bean Validation Not done
-	public ResponseEntity<Void> courseFeeAdd(@PathVariable("studentId") Integer stuId,@PathVariable("packageId") Integer pacId,@RequestBody CourseFee object) {
+	public ResponseEntity<Integer> courseFeeAdd(@PathVariable("studentId") Integer stuId,@PathVariable("packageId") Integer pacId,@RequestBody CourseFee object) {
 		
-		String reply= studentService.courseFeeAdd(stuId,pacId,object);
-		if(reply.equals("success")) {
-			return ResponseEntity.noContent().build();
+		Integer reply= studentService.courseFeeAdd(stuId,pacId,object);
+		if(reply != -1) {
+			return ResponseEntity.ok(reply);
 		}
 		return ResponseEntity.unprocessableEntity().build();
 	}
@@ -125,7 +122,7 @@ public class StudentController {
 	//delete Student
 	@DeleteMapping("student/{stuId}")
 	public ResponseEntity<Void> deleteStudent(@PathVariable("stuId") Integer studentId){
-		String reply=studentService.deleteStudent(studentId);
+		String reply=studentService.deleteStudent(studentId); 
 		if(reply.equals("success")) {
 			return ResponseEntity.noContent().build();
 		}

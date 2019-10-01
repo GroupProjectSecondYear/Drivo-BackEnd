@@ -1,8 +1,10 @@
 package com.gp.learners.service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +15,15 @@ import com.gp.learners.entities.Staff;
 import com.gp.learners.entities.StudentLesson;
 import com.gp.learners.entities.mapObject.LessonAssingStudentMap;
 import com.gp.learners.entities.mapObject.LessonMap;
+import com.gp.learners.entities.mapObject.StudentPractricalChartDataMap;
 import com.gp.learners.repositories.InstructorRepository;
 import com.gp.learners.repositories.LessonRepository;
 import com.gp.learners.repositories.StaffRepository;
 import com.gp.learners.repositories.StudentLessonRepository;
+import com.gp.learners.repositories.StudentRepository;
 import com.gp.learners.repositories.UserRepository;
+
+import ch.qos.logback.core.util.Duration;
 
 @Service
 public class InstructorService {
@@ -102,8 +108,52 @@ public class InstructorService {
 		return -1;
 	}
 	
+	public StudentPractricalChartDataMap getPractricalLessonChartStudentData(Integer studentLessonId) {
+		if(studentLessonRepository.existsById(studentLessonId)) {
+			StudentLesson studentLessonObject = studentLessonRepository.findByStudentLessonId(studentLessonId);
+			
+			//get student following package details
+			Integer packageId = studentLessonObject.getLessonId().getPackageId().getPackageId();
+			Integer studentId = studentLessonObject.getStudentId().getStudentId();
+			Integer transmission = studentLessonObject.getLessonId().getTransmission();
+			String packageName=studentLessonObject.getLessonId().getPackageId().getTitle();
+			LocalDate trialExamDate = studentLessonObject.getStudentId().getTrialDate();
+			Integer totalLesson=0;
+			if(packageId!=null && studentId!=null && transmission!=null && trialExamDate!=null) {
+				if(transmission == 1) {
+					totalLesson = studentLessonObject.getLessonId().getPackageId().getManualLes();
+				}else {
+					totalLesson = studentLessonObject.getLessonId().getPackageId().getAutoLes();
+				}
+				
+				Integer completeLesson = studentLessonRepository.getStudentLessonCountByStudentIdAndPackageId(studentId, packageId, 1);
+				Integer notCompleteLesson = studentLessonRepository.getStudentLessonCountByStudentIdAndPackageId(studentId, packageId, 0);
+				Integer bookLesson = studentLessonRepository.getStudentLessonBookFutureCountByStudentIdAndPackageId(studentId, packageId);
+				Integer remainLesson = totalLesson - (completeLesson+notCompleteLesson+bookLesson);
+				
+				//calculate remain days for trial examination
+				LocalDate currentDate = timeTableService.getLocalCurrentDate();
+				Long remainDays = currentDate.until(trialExamDate,ChronoUnit.DAYS);
+				
+				StudentPractricalChartDataMap object = new StudentPractricalChartDataMap();
+				object.setPackageName(packageName);
+				object.setCompleteLesson(completeLesson);
+				object.setNotCompleteLesson(notCompleteLesson);
+				object.setBookLesson(bookLesson);
+				object.setRemainLesson(remainLesson);
+				object.setTrialExamDate(trialExamDate);
+				object.setRemainDays(remainDays);
+				
+				return object;
+			}
+			
+		}
+		
+		return null;
+	}
+	
 	//Helping Functions
-	private Integer getInstructorId(Integer userId) {
+	public Integer getInstructorId(Integer userId) {
 		Staff staff = staffRepository.findByUserId(userId);
 		if(staff != null) {
 			Instructor instructor = instructorRepository.findByStaffId(staff.getStaffId());

@@ -16,6 +16,7 @@ import com.gp.learners.entities.Package;
 import com.gp.learners.entities.Student;
 import com.gp.learners.entities.StudentPackage;
 import com.gp.learners.entities.User;
+import com.gp.learners.entities.mapObject.PaymentEmailBodyMap;
 import com.gp.learners.entities.mapObject.StudentPackageMap;
 import com.gp.learners.entities.mapObject.StudentTrialMap;
 import com.gp.learners.repositories.CourseFeeRepository;
@@ -51,6 +52,9 @@ public class StudentService {
 	
 	@Autowired
 	EmailService emailService;
+	
+	@Autowired
+	TimeTableService timeTableService;
 	
 	public Integer studentRegister(Student student) {
 		if(isNotExistStudent(student.getNic())) {
@@ -212,7 +216,14 @@ public class StudentService {
 	}
 	
 	//Add Course Fee Details
-	public String courseFeeAdd(Integer studentId,Integer packageId,CourseFee object) {
+	/*
+	 * Return values
+	 * 1 -> Payment Success + Email Send
+	 * 2 -> Payment Success + Email Not Send
+	 * -1 -> Payment Not Success
+	 * 
+	 */
+	public Integer courseFeeAdd(Integer studentId,Integer packageId,CourseFee object) {
 		if(!notExistStudentIdAndPackageId(getStudent(studentId), getPackage(packageId))) {
 			
 			if(object.getAmount()>0) {
@@ -242,12 +253,17 @@ public class StudentService {
 					String from="drivo@gmail.com";
 					String to=user.getEmail();
 					String subject="Package Payment of "+packageObject.getTitle()+" in Drivo Learners";
-					String text="Package	:"+packageObject.getTitle()+
-								" "+object.getDate()+ "payed (Rs): "+object.getAmount();
 					
-					String reply=emailService.setUpEmailInstance(from, to , subject , text);
+					PaymentEmailBodyMap message = new PaymentEmailBodyMap();
+					message.setTitle(packageObject.getTitle());
+					message.setDate(timeTableService.getLocalCurrentDate());
+					message.setAmount(object.getAmount());
+					
+					String reply=emailService.setUpEmailInstance(from, to , subject , message);
 					if(reply.equals("success")) {
-						return "success";
+						return 1;
+					}else {
+						return 2;
 					}
 					
 				}
@@ -255,7 +271,7 @@ public class StudentService {
 			}
 			
 		}
-		return "notsuccess";
+		return 0;
 	}
 	
 	

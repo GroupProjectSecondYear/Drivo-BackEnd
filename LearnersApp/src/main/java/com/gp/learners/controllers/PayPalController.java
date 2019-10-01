@@ -30,13 +30,12 @@ public class PayPalController {
     
   
 	@PostMapping(value = "paypal/complete/payment/{paymentId}/{payerId}/{userId}/{packageId}/{amount}")
-    public ResponseEntity<Void> completePayment(@PathVariable("paymentId") String paymentId,@PathVariable("payerId") String payerId,
+    public ResponseEntity<Integer> completePayment(@PathVariable("paymentId") String paymentId,@PathVariable("payerId") String payerId,
     											@PathVariable("userId") Integer userId,@PathVariable Integer packageId,
     											@PathVariable("amount") Float amount){
-        String reply=payPalClient.completePayment(paymentId,payerId,userId,packageId,amount);
-        System.out.println(reply);
-        if(reply.equals("success")) {
-        	return ResponseEntity.noContent().build();
+        Integer reply=payPalClient.completePayment(paymentId,payerId,userId,packageId,amount);
+        if(reply != -1) {
+        	return ResponseEntity.ok(reply);
         }
         return ResponseEntity.notFound().build();
     }

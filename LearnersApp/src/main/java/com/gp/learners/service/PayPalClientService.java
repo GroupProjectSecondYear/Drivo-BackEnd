@@ -102,7 +102,7 @@ public class PayPalClientService {
 	}
 	
 	
-	public String completePayment(String paymentId,String payerId,Integer userId,Integer packageId,Float amount){
+	public Integer completePayment(String paymentId,String payerId,Integer userId,Integer packageId,Float amount){
 	   
 	   if(validateInformation(userId, packageId, amount)) {
 		    Payment payment = new Payment();
@@ -123,7 +123,7 @@ public class PayPalClientService {
 		        System.err.println(e.getDetails());
 		    }
 	   }
-	    return "notsuccess";
+	    return -1;
 	    
 	}
 	
@@ -156,7 +156,7 @@ public class PayPalClientService {
 		return false;
 	}
 	
-	private String savePayment(Integer userId,Integer packageId,Float amount) {
+	private Integer savePayment(Integer userId,Integer packageId,Float amount) {
 		CourseFee object = new CourseFee();
 		
 		Integer studentId=studentRepository.findByUserId(userRepository.findByUserId(userId));

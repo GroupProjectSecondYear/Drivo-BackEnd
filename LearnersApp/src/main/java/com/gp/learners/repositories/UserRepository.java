@@ -11,8 +11,8 @@ import com.gp.learners.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Integer>{
 	
-	
-	User findByEmailAndPassword(String email,String password);
+	@Query(value="select * from user u where u.email = :email limit 1",nativeQuery=true)
+	User findByEmail(@Param("email") String email);
 	
 	List<User> findUserIdStaffIdNameRoleStatusByRoleNot(Integer role);
 	

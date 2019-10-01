@@ -231,8 +231,9 @@ public class LessonBookingService {
 	
 	private Boolean notExistLessonBook(Integer lessonId,Integer studentPackageId,LocalDate date) {
 		
-		StudentLesson object=studentLessonRepository.findStudentIdPackageIdDate(lessonRepository.findByLessonId(lessonId),studentPackageRepository.findByStudentPackageId(studentPackageId).getStudentId(),date);
-		if(object != null) {
+		StudentLesson object1=studentLessonRepository.findStudentIdPackageIdDate(lessonRepository.findByLessonId(lessonId),studentPackageRepository.findByStudentPackageId(studentPackageId).getStudentId(),date);
+		StudentLesson object2=studentLessonRepository.findByStudentIdAndDateANDTime(studentPackageRepository.findByStudentPackageId(studentPackageId).getStudentId().getStudentId(),date,lessonRepository.findByLessonId(lessonId).getTimeSlotId().getStartTime(),lessonRepository.findByLessonId(lessonId).getTimeSlotId().getFinishTime());
+		if(object1 != null || object2!=null) {
 			return false;
 		}
 		return true;

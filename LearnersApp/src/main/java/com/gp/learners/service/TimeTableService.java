@@ -61,6 +61,9 @@ public class TimeTableService {
 	@Autowired
 	StudentLessonRepository studentLessonRepository;
 	
+	@Autowired
+	NotificationService notificationService;
+	
 	//Time Slot functions
 	public List<TimeSlot> getTimeSlotList(){
 		List<TimeSlot> timeSlotList=timeSlotRepository.findAll();
@@ -386,13 +389,24 @@ public class TimeTableService {
 		if( dayId>-1 && dayId<7  && numStudent>0) {
 			if(lessonRepository.existsById(lessonId) && timeSlotRepository.existsById(timeSlotId) && pathRepository.existsById(pathId) && instructorRepository.existsById(instructorId)) {
 				Lesson lesson=lessonRepository.findByLessonId(lessonId);
+				
+				
+				//Create Update LessonObject for notification Purpose
+				Lesson updateLesson = new Lesson(lessonId, dayId, -1, numStudent, -1, lesson.getDate(), instructorRepository.findByInstructorId(instructorId), lesson.getPackageId(), timeSlotRepository.findByTimeSlotId(timeSlotId), pathRepository.findByPathId(pathId));
+				//notification Service
+				Boolean reply=notificationService.lessonUpdateNotification(updateLesson);
+				if(!reply) {
+					System.out.println("**** Notification sending not successfull ****");
+				}
+				
+				
 				lesson.setDay(dayId);
 				lesson.setTimeSlotId(timeSlotRepository.findByTimeSlotId(timeSlotId));
 				lesson.setPathId(pathRepository.findByPathId(pathId));
 				lesson.setInstructorId(instructorRepository.findByInstructorId(instructorId));
 				lesson.setNumStu(numStudent);
 				lesson.setStatus(1);
-	
+				
 				lessonRepository.save(lesson);
 				return "success";
 		
@@ -616,7 +630,7 @@ public class TimeTableService {
 		}
 	}
 	
-	private String getDay(Integer i) {
+	public String getDay(Integer i) {
 		if(i==1)	return "Monday";
 		else if(i==2) return "Tuesday";
 		else if(i==3) return "Wednesday";

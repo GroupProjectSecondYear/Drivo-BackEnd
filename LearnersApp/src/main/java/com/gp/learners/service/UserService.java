@@ -16,26 +16,17 @@ public class UserService {
 	@Autowired
 	UserRepository userRepository;
 	
-	public User isValidLogin(String email,String password) {
-		User user=new User();
-		if( !email.equals("") && !password.equals("")) {
-			if(isExistUser(email, password)) {
-				user =userRepository.findByEmailAndPassword(email, password);
-				if(user.getStatus() == 1) {
-					return user;
-				}
-				user.setUserId(0);//user account is deactivate
-				return user;
+	public User isValidLogin(String email) {
+		if( !email.equals("")) {
+			if(isExistUser(email)) {
+				return userRepository.findByEmail(email);
 			}
-			user.setUserId(-1);//user record does not exist in the database
-			return user;
 		}
-		user.setUserId(-2);//validation failed
-		return user;
+		return null;
 	}
 	
-	private Boolean isExistUser(String email,String password) {
-		User user=userRepository.findByEmailAndPassword(email, password);
+	private Boolean isExistUser(String email) {
+		User user=userRepository.findByEmail(email);
 		if(user != null) {
 			return true;
 		}

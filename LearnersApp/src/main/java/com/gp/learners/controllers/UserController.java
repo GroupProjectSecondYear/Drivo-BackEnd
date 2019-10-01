@@ -26,14 +26,17 @@ public class UserController {
 	UserRepository userRepository;
 	
 	
-	@GetMapping("login/{email}/{password}")
-	public User loginUser( @PathVariable("email") String email,@PathVariable("password") String password) {	
-		return userService.isValidLogin(email, password);	
+	@GetMapping("login/{email}")
+	public ResponseEntity<User> loginUser( @PathVariable("email") String email) {	
+		User reply = userService.isValidLogin(email);	
+		if(reply != null) {
+			return ResponseEntity.ok(reply);
+		}
+		return ResponseEntity.notFound().build();
 	}
 	
 	@PostMapping("user/register")
 	public User userRegister(@RequestBody User user) {
-		System.out.println(user);
 		return userRepository.save(user);
 		
 	}
