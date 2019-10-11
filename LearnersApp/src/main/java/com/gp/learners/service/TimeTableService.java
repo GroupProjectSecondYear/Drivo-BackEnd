@@ -64,6 +64,7 @@ public class TimeTableService {
 	@Autowired
 	NotificationService notificationService;
 	
+	
 	//Time Slot functions
 	public List<TimeSlot> getTimeSlotList(){
 		List<TimeSlot> timeSlotList=timeSlotRepository.findAll();
@@ -210,7 +211,15 @@ public class TimeTableService {
 				lesson.setDate(getLocalCurrentDate());
 				
 				if(notExistLesson(lesson)) {
-					lessonRepository.save(lesson);
+					
+					Lesson object = lessonRepository.save(lesson);
+					
+					//generate notification
+					String reply=notificationService.lessonAddNotification(object);
+					if(!reply.equals("success")) {
+						System.out.println("**** Notification sending not successfull ****");
+					}
+					
 					return "success";
 				}
 				
@@ -362,6 +371,17 @@ public class TimeTableService {
 		if(lessonRepository.existsById(lessonId)) {
 			Lesson lesson=lessonRepository.findByLessonId(lessonId);
 			lesson.setStatus(0);
+			
+			//change inform to notification service
+			notificationService.lessonDeactivate(lesson);
+			
+			//delete student booking lesson(Future)
+			List<StudentLesson> studentLessonList = studentLessonRepository.findNotificationStudentListByLessonId(lessonRepository.findByLessonId(lessonId));
+			for (StudentLesson studentLesson : studentLessonList) {
+				studentLessonRepository.delete(studentLesson);
+			}
+			
+			
 			lessonRepository.save(lesson);
 			return "success";
 		}
@@ -394,9 +414,16 @@ public class TimeTableService {
 				//Create Update LessonObject for notification Purpose
 				Lesson updateLesson = new Lesson(lessonId, dayId, -1, numStudent, -1, lesson.getDate(), instructorRepository.findByInstructorId(instructorId), lesson.getPackageId(), timeSlotRepository.findByTimeSlotId(timeSlotId), pathRepository.findByPathId(pathId));
 				//notification Service
-				Boolean reply=notificationService.lessonUpdateNotification(updateLesson);
-				if(!reply) {
-					System.out.println("**** Notification sending not successfull ****");
+				try {
+					Boolean reply=notificationService.lessonUpdateNotification(updateLesson);
+					if(!reply) {
+						System.out.println("**** Notification sending not successfull ****");
+					}
+				} catch (Exception e) {
+					System.out.println("----------------------------------------------------------");
+					System.out.println("Notification Service's LessonUpdateNotification() has problem");
+					System.out.println(e.getMessage());
+					System.out.println("----------------------------------------------------------");
 				}
 				
 				
@@ -458,7 +485,7 @@ public class TimeTableService {
 					timeSlot.add(lesson.getTimeSlotId());
 					
 					//get last 2 week student's attendance(Number of student)
-					Integer count = studentLessonRepository.findStudentAttendanceForLesson(lesson.getLessonId());
+					Integer count = studentLessonRepository.findStudentAttendanceForLesson(lesson.getLessonId(),getLocalCurrentDate());
 					student.add(count);
 					
 					//get percentage last 2 week student's attendance

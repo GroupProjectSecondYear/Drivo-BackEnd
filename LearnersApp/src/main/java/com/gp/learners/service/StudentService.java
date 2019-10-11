@@ -10,6 +10,7 @@ import org.hibernate.type.LocalDateType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.gp.learners.controllers.StudentController;
 import com.gp.learners.entities.CourseFee;
 import com.gp.learners.entities.ExamResult;
 import com.gp.learners.entities.Package;
@@ -22,6 +23,8 @@ import com.gp.learners.entities.mapObject.StudentTrialMap;
 import com.gp.learners.repositories.CourseFeeRepository;
 import com.gp.learners.repositories.ExamResultRepository;
 import com.gp.learners.repositories.PackageRepository;
+import com.gp.learners.repositories.StudentLessonRepository;
+import com.gp.learners.repositories.StudentNotificationRepository;
 import com.gp.learners.repositories.StudentPackageRepository;
 import com.gp.learners.repositories.StudentRepository;
 import com.gp.learners.repositories.UserRepository;
@@ -56,6 +59,13 @@ public class StudentService {
 	@Autowired
 	TimeTableService timeTableService;
 	
+	@Autowired
+	StudentLessonRepository studentLessonRepository;
+	
+	@Autowired
+	StudentNotificationRepository studentNotificationRepository;
+	
+	
 	public Integer studentRegister(Student student) {
 		if(isNotExistStudent(student.getNic())) {
 			studentRepository.save(student);
@@ -65,8 +75,8 @@ public class StudentService {
 	}
 	
 	//getStudentList
-	public List<Student> getStudentList(){
-		return studentRepository.findActiveStudent();
+	public List<Student> getStudentList(Integer status){
+		return studentRepository.getStudent(status);
 	}
 	
 	//get StudentId
@@ -401,6 +411,66 @@ public class StudentService {
 		return student;
 	}
 	
+	public String deactivateStudentAccount() {
+		try {
+			List<Student> studentList = studentRepository.findByDate(timeTableService.getLocalCurrentDate());
+			System.out.println(studentList);
+			for (Student student : studentList) {
+				
+				student.setExamDate(null);
+				student.setTrialDate(null);
+				studentRepository.save(student);
+				
+				User object = student.getUserId();
+				object.setStatus(0);
+				userRepository.save(object);
+			}
+			
+		} catch (Exception e) {
+			System.out.println("------------------------");
+			System.out.println("There is a problem of student Serivce's deactivateStudentAccount() function");
+			System.out.println(e.getMessage());
+			System.out.println("------------------------");
+			return "success";
+		}
+		return "success";
+	}
+	
+	public Integer activateStudentAccount(Integer studentId) {
+		System.out.println("Hello1");
+		if(studentRepository.existsById(studentId)) {
+			Student student = studentRepository.findByStudentId(studentId);
+			System.out.println("Hello2");
+			//checkCourse Fees Complete or not
+			if(isAllCourseFeesComplete(student)) {
+				User user = student.getUserId();
+				user.setStatus(1);
+				userRepository.save(user);
+				
+				
+				return 1;
+			}else {
+				return 0;
+			}
+		}
+		return null;
+	}
+	
+	public List<Student> getpaymentNotCompleteStudent(){
+		
+		List<Student> courseFeeNotCompleteStudentList = new ArrayList<Student>();
+		
+		//get student who has trial examination this week or next week
+		List<Student> studentList = studentRepository.findTrialExaminationStudentByWeek(timeTableService.getLocalCurrentDate());
+		for (Student student : studentList) {
+			if(!isAllCourseFeesComplete(student)) {
+				courseFeeNotCompleteStudentList.add(student);
+			}
+		}
+		
+		return courseFeeNotCompleteStudentList;
+	}
+	
 	//Helping Function
 	
 	//if student and package exist the student Package table return false
@@ -462,6 +532,60 @@ public class StudentService {
 			return false;
 		}
 		return true;
+	}
+	
+	private Boolean isAllCourseFeesComplete(Student student) {
+
+		Boolean flag =false;
+		List<Integer> studentPackageList = studentPackageRepository.findByStudentId(student);
+		
+		for (Integer packageId : studentPackageList) {
+			StudentPackage object = studentPackageRepository.findByStudentIdAndPackageId(student, packageRepository.findByPackageId(packageId));
+			Float courseFee = object.getPackageId().getPrice();
+			Float totalPay = courseFeeRepository.getTotalFee(object);
+			
+		
+			if( (totalPay==null) || (courseFee != totalPay) && (courseFee>totalPay)) {
+				flag=true;
+				break;
+			}
+		}
+		
+		if(flag) {//course fee not completed
+			return false;
+		}else {//previous course fees completed.so delete all payment record
+			for (Integer packageId : studentPackageList) {		
+				StudentPackage object = studentPackageRepository.findByStudentIdAndPackageId(student, packageRepository.findByPackageId(packageId));
+				List<CourseFee> courseFeeList = courseFeeRepository.getCourseFeeListByStudentPackageId(object.getStudentPackageId());
+				for (CourseFee courseFee  : courseFeeList) {
+					courseFeeRepository.deleteById(courseFee.getCourseFeeId());
+				}
+			}
+		}
+		return true;
+	}
+	
+	public String clearStudentPreviousPayment(Integer studentId) {
+		if(studentRepository.existsById(studentId)) {
+	
+			
+			Student student = studentRepository.findByStudentId(studentId);
+			List<Integer> studentPackageList = studentPackageRepository.findByStudentId(student);
+			for (Integer packageId : studentPackageList) {
+				StudentPackage object = studentPackageRepository.findByStudentIdAndPackageId(student,packageRepository.findByPackageId(packageId));
+				List<CourseFee> courseFeeList = courseFeeRepository.getCourseFeeListByStudentPackageId(object.getStudentPackageId());
+				for (CourseFee courseFee  : courseFeeList) {
+					courseFeeRepository.deleteById(courseFee.getCourseFeeId());
+				}
+			}
+			
+			User user = student.getUserId();
+			user.setStatus(1);
+			userRepository.save(user);
+			
+			return "success";
+		}
+		return "null";
 	}
 	
 }

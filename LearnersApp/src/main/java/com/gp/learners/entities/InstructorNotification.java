@@ -1,6 +1,7 @@
 package com.gp.learners.entities;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,11 +23,13 @@ public class InstructorNotification {
 
 	/*
 	 * 1 --> Lesson Update(without instructor change) 
-	 * 2 --> Assign New Instructor(Instead of current Instructor)
-	 * 3 --> Add New Lesson
+	 * 2 --> Assign New Instructor(Instead of current Instructor) 
+	 * 3 --> Add New Lesson for instructor
+	 * 4 --> Lesson Deactivate
 	 */
 	private Integer notificationType;
 	private LocalDate date;
+	private LocalTime time;
 
 	@ManyToOne
 	@JoinColumn(name = "instructor_id", referencedColumnName = "instructor_id")
@@ -82,6 +85,14 @@ public class InstructorNotification {
 
 	public void setInstructorId(Instructor instructorId) {
 		this.instructorId = instructorId;
+	}
+
+	public LocalTime getTime() {
+		return time;
+	}
+
+	public void setTime(LocalTime time) {
+		this.time = time;
 	}
 
 	@Override

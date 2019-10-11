@@ -60,7 +60,7 @@ public interface LessonRepository extends JpaRepository<Lesson,Integer>{
 	public List<Lesson> findLesson(@Param("day") Integer day, @Param("packageId") Package packageId,@Param("transmission") Integer transmission,@Param("timeSlotId") TimeSlot timeSlotId );
 	
 	@Query("select new com.gp.learners.entities.mapObject.LessonDistributionMap(u.day,count(u)) from Lesson u where u.packageId = :packageId and u.transmission = :transmission " + 
-				 "group by u.day order by u.day ")
+				 "and u.status = 1 group by u.day order by u.day ")
 	public List<LessonDistributionMap> findByPackageIdAndTransmission(@Param("packageId") Package packageId,@Param("transmission") Integer transmission);
 	
 	@Query(value="select * from lesson l where l.package_id = :packageId and l.transmission = :transmission order by day ",nativeQuery=true)

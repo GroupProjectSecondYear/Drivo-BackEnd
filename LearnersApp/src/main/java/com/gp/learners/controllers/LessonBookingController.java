@@ -20,6 +20,7 @@ import com.gp.learners.entities.Package;
 import com.gp.learners.entities.Student;
 import com.gp.learners.entities.StudentLesson;
 import com.gp.learners.entities.StudentPackage;
+import com.gp.learners.entities.mapObject.LessonDayFeedbackChartDataMap;
 import com.gp.learners.service.LessonBookingService;
 
 @RestController
@@ -49,7 +50,6 @@ public class LessonBookingController {
 	
 	@GetMapping("/lessonbooking/{date}/{studentPackageId}/{timeSlotId}")
 	public ResponseEntity<Lesson> getAvailableLesson(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable("date") LocalDate date,@PathVariable("studentPackageId") Integer studentPackageId,@PathVariable("timeSlotId") Integer timeSlotId) {
-		
 		Lesson lesson = lessonBookingService.getAvailableLesson(date,studentPackageId,timeSlotId);
 		if(lesson.getLessonId() != null) {
 			return ResponseEntity.ok(lesson);
@@ -91,6 +91,29 @@ public class LessonBookingController {
 		String reply=lessonBookingService.cancelBooking(studentLessonId);
 		if(reply.equals("success")) {
 			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@PostMapping("lessonbooking/lessonday/feedback/{userId}/{packageId}/{day1}/{time1}/{day2}/{time2}")
+	public ResponseEntity<Void> lessonDayFeedback(@PathVariable("userId") Integer userId,@PathVariable("packageId") Integer packageId,
+												  @PathVariable("day1") Integer day1,@PathVariable("time1") Integer time1,
+												  @PathVariable("day2") Integer day2,@PathVariable("time2") Integer time2){
+		
+		String reply = lessonBookingService.lessonDayFeedback(userId,packageId,day1,time1,day2,time2);
+		if(reply.equals("success")) {
+			return ResponseEntity.ok().build();
+		}
+		return ResponseEntity.notFound().build();
+		
+	}
+	
+	@GetMapping("lessonbooking/lessonday/feedback/chart/{packageId}/{transmission}/{time}")
+	public ResponseEntity<List<LessonDayFeedbackChartDataMap>> lessonDayFeedbackChartData(@PathVariable("packageId") Integer packageId,@PathVariable("transmission") Integer transmission,@PathVariable("time") Integer time) {
+
+		List<LessonDayFeedbackChartDataMap> list = lessonBookingService.lessonDayFeedbackChartData(packageId,transmission,time);
+		if(list!=null) {
+			return ResponseEntity.ok(list);
 		}
 		return ResponseEntity.notFound().build();
 	}

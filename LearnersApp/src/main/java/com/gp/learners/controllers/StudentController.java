@@ -42,9 +42,9 @@ public class StudentController {
 		return studentService.studentRegister(student);
 	}
 	
-	@GetMapping("/students")
-	public List<Student> getStudetsList(){
-		return studentService.getStudentList();
+	@GetMapping("/students/{status}")
+	public List<Student> getStudetsList(@PathVariable("status") Integer status){
+		return studentService.getStudentList(status);
 	}
 	
 	
@@ -186,6 +186,29 @@ public class StudentController {
 			return ResponseEntity.ok(student);
 		}
 		return ResponseEntity.notFound().build();
+	}
+	
+	@PutMapping("student/activate/account/{studentId}")
+	public ResponseEntity<Integer> activateStudentAccount(@PathVariable("studentId") Integer studentId){
+		Integer reply = studentService.activateStudentAccount(studentId);
+		if(reply!=null) {
+			return ResponseEntity.ok(reply);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@DeleteMapping("student/clear/payment/{studentId}")
+	public ResponseEntity<Void> clearStudentPreviousPayment(@PathVariable("studentId") Integer studentId){
+		String reply = studentService.clearStudentPreviousPayment(studentId);
+		if(reply!=null) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("student/payment/notcomplete")
+	public List<Student> getpaymentNotCompleteStudent(){
+		return studentService.getpaymentNotCompleteStudent();
 	}
 	
 }

@@ -11,12 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gp.learners.entities.Lesson;
+import com.gp.learners.entities.LessonDayFeedback;
 import com.gp.learners.entities.Package;
 import com.gp.learners.entities.Student;
 import com.gp.learners.entities.StudentLesson;
 import com.gp.learners.entities.StudentPackage;
 import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.entities.User;
+import com.gp.learners.entities.mapObject.LessonDayFeedbackChartDataMap;
+import com.gp.learners.repositories.LessonDayFeedbackRepository;
 import com.gp.learners.repositories.LessonRepository;
 import com.gp.learners.repositories.PackageRepository;
 import com.gp.learners.repositories.StudentLessonRepository;
@@ -51,6 +54,9 @@ public class LessonBookingService {
 	
 	@Autowired
 	StudentService studentService;
+	
+	@Autowired
+	LessonDayFeedbackRepository lessonDayFeedbackRepository;
 	
 	//get student following lesson details
 	public List<StudentPackage> getStudentPackageData(Integer userId){
@@ -218,6 +224,55 @@ public class LessonBookingService {
 		return "notsuccess";
 	}
 	
+	public String lessonDayFeedback(Integer userId,Integer packageId,Integer day1,Integer time1,Integer day2,Integer time2) {
+		if(userRepository.existsById(userId) && packageRepository.existsById(packageId)) {
+			if(day1>-1 && day1<7 && day2>-1 && day2<7 && time1>0 && time1<3 && time2>0 && time2<3) {
+				Integer studentId = studentRepository.findByUserId(userRepository.findByUserId(userId));
+				StudentPackage studentPackage = studentPackageRepository.findByStudentIdAndPackageId(studentRepository.findByStudentId(studentId), packageRepository.findByPackageId(packageId));
+				
+				LessonDayFeedback object = lessonDayFeedbackRepository.findByStudentPackageId(studentPackage);
+				if(object==null) {
+					object = new LessonDayFeedback();
+				}
+				
+				object.setDay1(day1);
+				object.setTime1(time1);
+				object.setDay2(day2);
+				object.setTime2(time2);
+				object.setStudentPackageId(studentPackage);
+				
+				lessonDayFeedbackRepository.save(object);
+				
+				return "success";
+			}
+		}
+		return null;
+	}
+	
+	public List<LessonDayFeedbackChartDataMap> lessonDayFeedbackChartData(Integer packageId,Integer transmission,Integer time) {
+		
+		if(packageRepository.existsById(packageId) && transmission>0 && transmission<3 && time>0 && time<3) {
+			List<LessonDayFeedbackChartDataMap> chartData = new ArrayList<LessonDayFeedbackChartDataMap>();
+			for(int i=0 ; i<7 ; i++) {
+				LessonDayFeedbackChartDataMap object = new LessonDayFeedbackChartDataMap();
+				object.setDay(i);
+				object.setCount(0L);
+				
+				chartData.add(object);
+			}
+			
+			List<LessonDayFeedbackChartDataMap> countList1 = lessonDayFeedbackRepository.CountDay1(packageRepository.findByPackageId(packageId), transmission, time);
+			chartData = lessonDayFeedbackChartDataCalculation(countList1,chartData);
+			
+			List<LessonDayFeedbackChartDataMap> countList2 = lessonDayFeedbackRepository.CountDay2(packageRepository.findByPackageId(packageId), transmission, time);
+			chartData = lessonDayFeedbackChartDataCalculation(countList2,chartData);
+			
+			return chartData;
+		}
+		
+		return null;
+	}
+	
 	//Helping Functions
 	private Student getStudent(Integer userId) {
 		Student student=null;
@@ -237,5 +292,17 @@ public class LessonBookingService {
 			return false;
 		}
 		return true;
+	}
+	
+	private List<LessonDayFeedbackChartDataMap> lessonDayFeedbackChartDataCalculation(List<LessonDayFeedbackChartDataMap> dbList,List<LessonDayFeedbackChartDataMap> list){
+		for (LessonDayFeedbackChartDataMap object1 : dbList) {
+			Integer dayId = object1.getDay();
+					
+			LessonDayFeedbackChartDataMap object2 = list.get(dayId);
+			Long count = object2.getCount();
+			object2.setCount(count + object1.getCount());
+			
+		}
+		return list;
 	}
 }

@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -33,10 +34,10 @@ public interface StudentLessonRepository extends JpaRepository<StudentLesson,Int
 	public List<StudentLesson> findByStudentIdAndPackageId(@Param("studentId") Student studentId,@Param("packageId") Package packageId);
 	
 	@Query(value="SELECT count(*) FROM student_lesson WHERE  " + 
-				 "(WEEK   (date) = WEEK( current_date ) AND YEAR(date) = YEAR( current_date ) OR  " + 
-				 "WEEK   (date) = WEEK( current_date ) - 1 AND YEAR(date) = YEAR( current_date ) ) AND " +
+				 "( WEEK(date) = WEEK( :currentDate )   OR   WEEK(date) = WEEK( :currentDate ) - 1 ) AND " + 
+				 "YEAR(date) = YEAR( :currentDate )  AND " + 
 				 "lesson_id = :lessonId ",nativeQuery=true)
-	public Integer findStudentAttendanceForLesson(@Param("lessonId") Integer lessonId);
+	public Integer findStudentAttendanceForLesson(@Param("lessonId") Integer lessonId,@Param("currentDate") LocalDate currentDate);
 	
 	@Query(value="SELECT count(*) FROM student_lesson WHERE  " + 
 			 	 "WEEK   (date) = WEEK( current_date ) - :weekNum AND YEAR(date) = YEAR( current_date ) AND " +
@@ -97,6 +98,9 @@ public interface StudentLessonRepository extends JpaRepository<StudentLesson,Int
 			 ,nativeQuery=true)
 	public Integer getStudentLessonBookFutureCountByStudentIdAndPackageId(@Param("studentId") Integer studentId,@Param("packageId") Integer packageId);
 	
-	@Query(value="select * from student_lesson l where l.lesson_id = :lessonId and l.date > (current_date)",nativeQuery=true)
+	@Query(value="select * from student_lesson l where l.lesson_id = :lessonId and l.date > (current_date) ",nativeQuery=true)
 	public List<StudentLesson> findNotificationStudentListByLessonId(@Param("lessonId") Lesson lessonId);
+	
+	
+	public void deleteByStudentId(Student studentId);
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.gp.learners.entities.CourseFee;
@@ -17,4 +18,9 @@ public interface CourseFeeRepository extends JpaRepository<CourseFee, Integer>{
 	
 	@Query(value="select sum(amount) from course_fee u WHERE u.student_package_id = :studentPackageId",nativeQuery=true)
 	public Float getTotalFee(@PathVariable("studentPackageId")StudentPackage studentPackageId );
+	
+	@Query(value="select * from course_fee where student_package_id = :studentPackageId",nativeQuery=true)
+	public List<CourseFee> getCourseFeeListByStudentPackageId(@Param("studentPackageId") Integer studentPackageId);
+	
+	//public void deleteByStudentPackageId(StudentPackage studentPackageId);
 }

@@ -43,4 +43,10 @@ public interface StudentPackageRepository extends JpaRepository<StudentPackage, 
 	@Query(value="select count(student_package_id) from student_package p ,student s ,user u where p.package_id = :packageId and p.transmission = :transmission and "
 				+ "p.student_id = s.student_id and s.user_id = u.user_id and u.status=1 ",nativeQuery=true)
 	public Integer TotalStufindByPackgeId(@Param("packageId")Package packageId, @Param("transmission") Integer transmission);
+
+	@Query("select p.studentId from Student s,StudentPackage p,User u where "+
+				 "p.studentId = s.studentId and s.userId = u.userId and "+
+				 "p.transmission = :transmission and p.packageId = :packageId and "+
+				 "u.status = 1 ")
+	public List<Student> findByPackageIdAndTransmission(@Param("packageId") Package packageId,@Param("transmission") Integer transmission);
 }
