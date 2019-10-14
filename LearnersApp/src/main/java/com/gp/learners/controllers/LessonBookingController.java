@@ -33,7 +33,7 @@ public class LessonBookingController {
 	@GetMapping("/lessonbooking/studentpackage/{id}")
 	public ResponseEntity<List<StudentPackage>> getStudentPackageData(@PathVariable("id") Integer userId){
 		List<StudentPackage> studentPackageList=lessonBookingService.getStudentPackageData(userId);
-		if(studentPackageList.size()>0) {
+		if(studentPackageList != null) {
 			return ResponseEntity.ok(studentPackageList);
 		}
 		return ResponseEntity.notFound().build();

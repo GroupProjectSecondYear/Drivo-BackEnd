@@ -26,9 +26,9 @@ public class UserController {
 	UserRepository userRepository;
 	
 	
-	@GetMapping("login/{email}")
-	public ResponseEntity<User> loginUser( @PathVariable("email") String email) {	
-		User reply = userService.isValidLogin(email);	
+	@GetMapping("user/details/{email}")
+	public ResponseEntity<User> getUser( @PathVariable("email") String email) {	
+		User reply = userService.getUser(email);	
 		if(reply != null) {
 			return ResponseEntity.ok(reply);
 		}
@@ -36,9 +36,12 @@ public class UserController {
 	}
 	
 	@PostMapping("user/register")
-	public User userRegister(@RequestBody User user) {
-		return userRepository.save(user);
-		
+	public ResponseEntity<User> userRegister(@RequestBody User user) {
+		User reply = userService.userRegister(user);
+		if(reply != null) {
+			return ResponseEntity.ok(reply);
+		}
+		return ResponseEntity.notFound().build();
 	}
 	
 	//delete user

@@ -19,8 +19,8 @@ public interface CourseFeeRepository extends JpaRepository<CourseFee, Integer>{
 	@Query(value="select sum(amount) from course_fee u WHERE u.student_package_id = :studentPackageId",nativeQuery=true)
 	public Float getTotalFee(@PathVariable("studentPackageId")StudentPackage studentPackageId );
 	
-	@Query(value="select * from course_fee where student_package_id = :studentPackageId",nativeQuery=true)
-	public List<CourseFee> getCourseFeeListByStudentPackageId(@Param("studentPackageId") Integer studentPackageId);
+	//@Query(value="select * from course_fee where student_package_id = :studentPackageId",nativeQuery=true)
+	//public List<CourseFee> getCourseFeeListByStudentPackageId(@Param("studentPackageId") Integer studentPackageId);
 	
-	//public void deleteByStudentPackageId(StudentPackage studentPackageId);
+	public void deleteByStudentPackageId(StudentPackage studentPackageId);
 }

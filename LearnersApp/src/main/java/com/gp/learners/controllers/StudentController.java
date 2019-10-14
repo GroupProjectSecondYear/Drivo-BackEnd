@@ -103,7 +103,7 @@ public class StudentController {
 	@GetMapping("student/{stuId}")
 	public ResponseEntity<Student> getStudent(@PathVariable("stuId") Integer studentId) {
 		Student student=studentService.getStudentDetails(studentId);
-		if(student.getStudentId() != null) {
+		if(student != null) {
 			return ResponseEntity.ok(student);
 		}
 		return ResponseEntity.noContent().build();
@@ -111,10 +111,10 @@ public class StudentController {
 	
 	//update student Details
 	@PutMapping("student/update")
-	public ResponseEntity<Student> updateStudent(@Valid @RequestBody Student object){
-		Student student=studentService.studentUpdate(object);
-		if(student.getStudentId() != null) {
-			return ResponseEntity.ok(student);
+	public ResponseEntity<Integer> updateStudent(@Valid @RequestBody Student object){
+		Integer reply=studentService.studentUpdate(object);
+		if(reply != null) {
+			return ResponseEntity.ok(reply);
 		}
 		return ResponseEntity.notFound().build();
 	}

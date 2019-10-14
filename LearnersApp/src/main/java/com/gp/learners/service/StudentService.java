@@ -6,10 +6,14 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.hibernate.type.LocalDateType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.gp.learners.config.security.JwtInMemoryUserDetailsService;
 import com.gp.learners.controllers.StudentController;
 import com.gp.learners.entities.CourseFee;
 import com.gp.learners.entities.ExamResult;
@@ -65,9 +69,12 @@ public class StudentService {
 	@Autowired
 	StudentNotificationRepository studentNotificationRepository;
 	
+	@Autowired
+	JwtInMemoryUserDetailsService jwtInMemoryUserDetailsService;
+	
 	
 	public Integer studentRegister(Student student) {
-		if(isNotExistStudent(student.getNic())) {
+		if( isNotExistStudent(student.getNic()) ) {
 			studentRepository.save(student);
 			return 1;
 		}
@@ -97,20 +104,43 @@ public class StudentService {
 				return studentRepository.findByStudentId(studentId);
 			}
 		}
-		return new Student(); 
+		return null; 
 	}
 	
 	//update Student Details
-	public Student studentUpdate(Student student) {
-		if(userRepository.existsById(student.getUserId().getUserId()) && student.getExamDate()!= null ) {
-			User user=userRepository.findByUserId(student.getUserId().getUserId());
-			if(user.getRole()==5 && user.getStatus()==1) {
-				if(studentRepository.existsById(student.getStudentId())) {
-					return studentRepository.save(student);
-				}
+	public Integer studentUpdate(Student student) {
+		Boolean isPasswordChanged=false;
+		if(userRepository.existsById(student.getUserId().getUserId()) && studentRepository.existsById(student.getStudentId())) {
+			Integer userId = student.getUserId().getUserId();
+			User newUser = student.getUserId();
+			User currentUser = userRepository.findByUserId(userId);
+			
+			//check password change or not.If password change change then encode the password.
+			String newPassword = newUser.getPassword();
+			String currentPassword = currentUser.getPassword();
+			if(!currentPassword.equals(newPassword)) {
+				BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+				newPassword = encoder.encode(newPassword);
+				newUser.setPassword(newPassword);
+				isPasswordChanged=true;
 			}
+			
+			//check update email is unique
+			String email = student.getUserId().getEmail();
+			User user1 = userRepository.findByEmail(email);
+			if(user1 != null && !user1.getUserId().equals(userId)) {
+				return 2;//Same Email has another person.Save unsuccessful
+			}else {
+				studentRepository.save(student);
+				if(isPasswordChanged) {
+					jwtInMemoryUserDetailsService.setUserInMemory();
+				}
+				return 1;//save successful
+			}
+			
+			
 		}
-		return new Student();
+		return null;
 	}
 	
 	//delete Student
@@ -411,10 +441,11 @@ public class StudentService {
 		return student;
 	}
 	
+	@Transactional
 	public String deactivateStudentAccount() {
 		try {
 			List<Student> studentList = studentRepository.findByDate(timeTableService.getLocalCurrentDate());
-			System.out.println(studentList);
+			
 			for (Student student : studentList) {
 				
 				student.setExamDate(null);
@@ -424,6 +455,12 @@ public class StudentService {
 				User object = student.getUserId();
 				object.setStatus(0);
 				userRepository.save(object);
+				
+				//delete studentLesson Details
+				studentLessonRepository.deleteByStudentId(student);
+				
+				//update JWT UserList
+				jwtInMemoryUserDetailsService.setUserInMemory();
 			}
 			
 		} catch (Exception e) {
@@ -437,16 +474,17 @@ public class StudentService {
 	}
 	
 	public Integer activateStudentAccount(Integer studentId) {
-		System.out.println("Hello1");
+		
 		if(studentRepository.existsById(studentId)) {
 			Student student = studentRepository.findByStudentId(studentId);
-			System.out.println("Hello2");
+			
 			//checkCourse Fees Complete or not
 			if(isAllCourseFeesComplete(student)) {
 				User user = student.getUserId();
 				user.setStatus(1);
-				userRepository.save(user);
+				user = userRepository.save(user);
 				
+				jwtInMemoryUserDetailsService.addNewUserInMemory(user);
 				
 				return 1;
 			}else {
@@ -534,6 +572,8 @@ public class StudentService {
 		return true;
 	}
 	
+	
+	@Transactional
 	private Boolean isAllCourseFeesComplete(Student student) {
 
 		Boolean flag =false;
@@ -556,32 +596,27 @@ public class StudentService {
 		}else {//previous course fees completed.so delete all payment record
 			for (Integer packageId : studentPackageList) {		
 				StudentPackage object = studentPackageRepository.findByStudentIdAndPackageId(student, packageRepository.findByPackageId(packageId));
-				List<CourseFee> courseFeeList = courseFeeRepository.getCourseFeeListByStudentPackageId(object.getStudentPackageId());
-				for (CourseFee courseFee  : courseFeeList) {
-					courseFeeRepository.deleteById(courseFee.getCourseFeeId());
-				}
+				courseFeeRepository.deleteByStudentPackageId(object);
 			}
 		}
 		return true;
 	}
 	
+	@Transactional
 	public String clearStudentPreviousPayment(Integer studentId) {
-		if(studentRepository.existsById(studentId)) {
-	
-			
+		if(studentRepository.existsById(studentId)) {			
 			Student student = studentRepository.findByStudentId(studentId);
 			List<Integer> studentPackageList = studentPackageRepository.findByStudentId(student);
 			for (Integer packageId : studentPackageList) {
 				StudentPackage object = studentPackageRepository.findByStudentIdAndPackageId(student,packageRepository.findByPackageId(packageId));
-				List<CourseFee> courseFeeList = courseFeeRepository.getCourseFeeListByStudentPackageId(object.getStudentPackageId());
-				for (CourseFee courseFee  : courseFeeList) {
-					courseFeeRepository.deleteById(courseFee.getCourseFeeId());
-				}
+				courseFeeRepository.deleteByStudentPackageId(object);
 			}
 			
 			User user = student.getUserId();
 			user.setStatus(1);
 			userRepository.save(user);
+			
+			jwtInMemoryUserDetailsService.addNewUserInMemory(user);
 			
 			return "success";
 		}
