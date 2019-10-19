@@ -74,5 +74,6 @@ public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/h2-console/**/**");// Should not be done in Production!
 		
 	   webSecurity.ignoring().antMatchers("/ws/**");
+	   webSecurity.ignoring().antMatchers("/api/file/**");
 	}
 }

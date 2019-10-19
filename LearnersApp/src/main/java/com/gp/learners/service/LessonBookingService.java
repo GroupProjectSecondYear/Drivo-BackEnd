@@ -19,6 +19,7 @@ import com.gp.learners.entities.StudentPackage;
 import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.entities.User;
 import com.gp.learners.entities.mapObject.LessonDayFeedbackChartDataMap;
+import com.gp.learners.repositories.CourseFeeRepository;
 import com.gp.learners.repositories.LessonDayFeedbackRepository;
 import com.gp.learners.repositories.LessonRepository;
 import com.gp.learners.repositories.PackageRepository;
@@ -57,6 +58,9 @@ public class LessonBookingService {
 	
 	@Autowired
 	LessonDayFeedbackRepository lessonDayFeedbackRepository;
+	
+	@Autowired
+	CourseFeeRepository courseFeeRepository;
 	
 	//get student following lesson details
 	public List<StudentPackage> getStudentPackageData(Integer userId){
@@ -270,6 +274,43 @@ public class LessonBookingService {
 			return chartData;
 		}
 		
+		return null;
+	}
+	
+	public Integer checkCoursePayment(Integer studentPackageId) {
+		if(studentPackageRepository.existsById(studentPackageId)) {
+			
+			
+			StudentPackage studentPackage = studentPackageRepository.findByStudentPackageId(studentPackageId);
+			Float payment = courseFeeRepository.getTotalFee(studentPackage) ;
+			Float courseFee = studentPackage.getPackageId().getPrice();
+			
+			Integer lessons = studentLessonRepository.findAlreadyBookLesson(studentPackage.getStudentId(), studentPackage.getPackageId());
+			Integer numOfLessonForPackage = 0;
+			if(studentPackage.getTransmission()==1) {
+				numOfLessonForPackage = studentPackage.getPackageId().getManualLes();
+			}else {
+				numOfLessonForPackage = studentPackage.getPackageId().getAutoLes();
+			}
+			
+			if(payment!=null) {
+				if( (courseFee/2) <= payment ) {//If student pay 50% of course fee then , he can do trail lesson (1/2) of total lessons
+					if( (numOfLessonForPackage/2) > (lessons) ) {
+						return 1;//can book lesson
+					}else {
+						if( courseFee<=payment ) {
+							return 1;//can book lesson
+						}else {//Cannot book lessons
+							return -2;
+						}
+					}
+				}else {//Cannot book lessons
+					return -1;
+				}
+			}else {//payment not pay yet.Cannot book lessons
+				return 0;
+			}
+		}
 		return null;
 	}
 	

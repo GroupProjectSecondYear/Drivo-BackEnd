@@ -109,9 +109,11 @@ public class StudentService {
 	
 	//update Student Details
 	public Integer studentUpdate(Student student) {
+		
 		Boolean isPasswordChanged=false;
 		if(userRepository.existsById(student.getUserId().getUserId()) && studentRepository.existsById(student.getStudentId())) {
 			Integer userId = student.getUserId().getUserId();
+			Integer studentId = student.getStudentId();
 			User newUser = student.getUserId();
 			User currentUser = userRepository.findByUserId(userId);
 			
@@ -126,16 +128,24 @@ public class StudentService {
 			}
 			
 			//check update email is unique
-			String email = student.getUserId().getEmail();
+			String email = newUser.getEmail();
 			User user1 = userRepository.findByEmail(email);
 			if(user1 != null && !user1.getUserId().equals(userId)) {
 				return 2;//Same Email has another person.Save unsuccessful
 			}else {
-				studentRepository.save(student);
-				if(isPasswordChanged) {
-					jwtInMemoryUserDetailsService.setUserInMemory();
+				
+				//check update nic has another person
+				String nic = student.getNic();
+				Student student1= studentRepository.findByNic(nic);
+				if(student1 != null && !student1.getStudentId().equals(studentId)) {
+					return 3;//same nic has another person.Save unsuccessful
+				}else {
+					studentRepository.save(student);
+					if(isPasswordChanged) {
+						jwtInMemoryUserDetailsService.setUserInMemory();
+					}
+					return 1;//save successful
 				}
-				return 1;//save successful
 			}
 			
 			

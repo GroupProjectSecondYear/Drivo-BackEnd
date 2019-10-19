@@ -117,4 +117,13 @@ public class LessonBookingController {
 		}
 		return ResponseEntity.notFound().build();
 	}
+	
+	@GetMapping("lessonbooking/course/payment/{studentPackageId}")
+	public ResponseEntity<Integer> checkCoursePayment(@PathVariable("studentPackageId") Integer studentPackageId){
+		Integer reply = lessonBookingService.checkCoursePayment(studentPackageId);
+		if(reply!=null) {
+			return ResponseEntity.ok(reply);
+		}
+		return ResponseEntity.notFound().build();
+	}
 }

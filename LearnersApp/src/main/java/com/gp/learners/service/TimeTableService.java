@@ -2,6 +2,7 @@ package com.gp.learners.service;
 
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
@@ -690,6 +691,12 @@ public class TimeTableService {
 			      .toLocalDate();
 		
 		return today;
+	}
+	
+	public LocalTime getLocalCurrentTime() {
+		  ZoneId zoneId = ZoneId.of("Asia/Colombo");
+		  LocalTime time = LocalTime.now(zoneId);
+		  return time;
 	}
 	
 }
