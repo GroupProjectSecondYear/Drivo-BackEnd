@@ -27,16 +27,13 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 @Service
 public class S3Service {
 	
-private Logger logger = LoggerFactory.getLogger(S3Service.class);
+	private Logger logger = LoggerFactory.getLogger(S3Service.class);
 	
 	@Autowired
 	private AmazonS3 s3client;
  
-	@Value("${gkz.s3.bucket}")
-	private String bucketName;
- 
 	
-	public ByteArrayOutputStream downloadFile(String keyName) {
+	public ByteArrayOutputStream downloadFile(String keyName, String bucketName) {
 		try {
             S3Object s3object = s3client.getObject(new GetObjectRequest(bucketName, keyName));
             
@@ -69,7 +66,7 @@ private Logger logger = LoggerFactory.getLogger(S3Service.class);
 	}
  
 	
-	public void uploadFile(String keyName, MultipartFile file) {
+	public void uploadFile(String keyName, MultipartFile file, String bucketName) {
 		try {
 			ObjectMetadata metadata = new ObjectMetadata();
 			metadata.setContentLength(file.getSize());
@@ -91,7 +88,7 @@ private Logger logger = LoggerFactory.getLogger(S3Service.class);
         }
 	}
 	
-	public List<String> listFiles() {
+	public List<String> listFiles(String bucketName) {
 		
 	  ListObjectsRequest listObjectsRequest = 
               new ListObjectsRequest()

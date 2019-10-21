@@ -30,15 +30,30 @@ public class FileController {
 	 	
 	@Autowired
 	UserService userService;
-    /*
+    
+	/*
      * Download Files
+     * type --> 1 = UserProfileImage
+     * type --> 2 = PDF
      */
-	@GetMapping("/api/file/{userId}")
-	public ResponseEntity<byte[]> downloadFile(@PathVariable("userId") Integer userId) {
-		ByteArrayOutputStream downloadInputStream = userService.downLoadProfileImage(userId);
+	@GetMapping("/api/file/{userId}/{type}")
+	public ResponseEntity<byte[]> downloadFile(@PathVariable("userId") Integer userId ,@PathVariable("type") Integer type) {
+		
+		ByteArrayOutputStream downloadInputStream = new ByteArrayOutputStream(); 
+		if(type==1) {
+			downloadInputStream = userService.downLoadProfileImage(userId);
+		}else {
+			//pdf service
+		}
 		
 		if(downloadInputStream!=null) {
-			String keyname = userService.getFileKeyName(userId);
+			String keyname ="";
+			if(type==1) {
+				keyname = userService.getFileKeyName(userId);
+			}else {
+				//pdf service
+			}
+			  
 			return ResponseEntity.ok()
 					.contentType(contentType(keyname))
 					.header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + keyname + "\"")
@@ -50,10 +65,10 @@ public class FileController {
 	/*
 	 * List ALL Files
 	 */
-	@GetMapping("/api/file/all")
-	public List<String> listAllFiles(){
-		return s3Service.listFiles();
-	}
+//	@GetMapping("/api/file/all")
+//	public List<String> listAllFiles(){
+//		return s3Service.listFiles();
+//	}
 	
 	private MediaType contentType(String keyname) {
 		String[] arr = keyname.split("\\.");
@@ -68,13 +83,29 @@ public class FileController {
 	
 	/*
 	 * Upload file
+	 * type --> 1 = UserProfileImage
+     * type --> 2 = PDF
 	 */
-	@PostMapping("file/upload/{userId}")
-    public ResponseEntity<Integer> uploadMultipartFile(@RequestParam("file") MultipartFile file ,@PathVariable("userId") Integer userId) {
+	@PostMapping("file/upload/{userId}/{type}")
+    public ResponseEntity<Integer> uploadMultipartFile(@RequestParam("file") MultipartFile file ,@PathVariable("userId") Integer userId,@PathVariable("type") Integer type) {
 		try {
 			Long fileSize = file.getSize();
-			if(fileSize<=9437184L) {
-				String reply = userService.uploadUserProfileImage(file, userId);
+			Long maxFileSize = 1L;
+			
+			if(type==1) {
+				maxFileSize=9437184L;//9MB
+			}else {
+				//pdf max file size
+			}
+			
+			if(fileSize<=maxFileSize) {
+				String reply=null;
+				if(type==1) {
+					reply = userService.uploadUserProfileImage(file, userId);
+				}else {
+					//pdf Service
+				}
+				
 				if(reply!=null) {
 					return ResponseEntity.ok(1);
 				}
