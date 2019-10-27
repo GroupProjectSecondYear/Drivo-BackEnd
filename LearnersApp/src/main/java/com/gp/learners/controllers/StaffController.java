@@ -1,18 +1,25 @@
 package com.gp.learners.controllers;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gp.learners.entities.AdminStaff;
+import com.gp.learners.entities.SalaryInformation;
 import com.gp.learners.entities.Staff;
 import com.gp.learners.entities.User;
 import com.gp.learners.repositories.AdministrativeStaffRepository;
@@ -87,4 +94,50 @@ public class StaffController {
 		}
 		return ResponseEntity.notFound().build();
 	}
+	
+	@GetMapping("/staff/salary/information")
+	public ResponseEntity<List<SalaryInformation>> getStaffSalaryInforamtion(){
+		List<SalaryInformation> salaryInformationList = staffService.getStaffSalaryInforamtion();
+		if(salaryInformationList!=null) {
+			return ResponseEntity.ok(salaryInformationList);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("/staff/salary/information/{salaryInformationId}")
+	public ResponseEntity<SalaryInformation> getStaffSalaryInformation(@PathVariable("salaryInformationId") Integer salaryInformationId){
+		SalaryInformation object = staffService.getStaffSalaryInformation(salaryInformationId);
+		if(object!=null) {
+			return ResponseEntity.ok(object);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@PostMapping("staff/salary/information")
+	public ResponseEntity<Void> addStaffSalaryInformation(@RequestBody SalaryInformation object) {
+		String reply = staffService.addStaffSalaryInformation(object);
+		if(reply!=null) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.badRequest().build();
+	}
+	
+	@PutMapping("staff/salary/information")
+	public ResponseEntity<Void> updateStaffSalaryInformation(@Valid @RequestBody SalaryInformation object){
+		String reply = staffService.updateStaffSalaryInformation(object);
+		if(reply.equals("success")) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@DeleteMapping("staff/salary/information/{salaryInformationId}")
+	public ResponseEntity<Void> deleteStaffSalaryInformation(@PathVariable("salaryInformationId") Integer salaryInformationId){
+		String reply = staffService.deleteStaffSalaryInformation(salaryInformationId);
+		if(reply!=null) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
 }

@@ -54,4 +54,13 @@ public class UserController {
 		}
 		return ResponseEntity.notFound().build();
 	}
+	
+	@GetMapping("user/name/{userId}/{userRole}")
+	public ResponseEntity<String> getUserName(@PathVariable("userId") Integer userId,@PathVariable("userRole") Integer userRole){
+		String name = userService.getUserName(userId, userRole);
+		if(name!=null) {
+			return ResponseEntity.ok(name);
+		}
+		return ResponseEntity.notFound().build();
+	}
 }

@@ -160,7 +160,7 @@ public class NotificationService {
 			checkLessonChanges(updateLesson,existLesson,lessonChangeArray);
 			
 			
-			String msg = existLesson.getPackageId().getTitle()+" Lesson on "+timeTableService.getDay(existLesson.getDay())+
+			String msg = "\""+existLesson.getPackageId().getTitle()+"\" lesson's on "+timeTableService.getDay(existLesson.getDay())+
 						 " at "+existLesson.getTimeSlotId().getStartTime()+":"+existLesson.getTimeSlotId().getFinishTime()+" Which ";
 			String oldInstructorsMsg="";
 			String newInstructorsMsg="";
@@ -327,11 +327,11 @@ public class NotificationService {
 			String day = timeTableService.getDay(newLesson.getDay());
 			String time = newLesson.getTimeSlotId().getStartTime()+"-"+newLesson.getTimeSlotId().getFinishTime();
 			
-			String studentNotificationMsg = "New "+packageTitle+"'s <br>"+
-											"lesson publish on "+day+"<br>"+
+			String studentNotificationMsg = "\""+packageTitle+"\" " +
+											"new lesson publish on "+day+
 											" at "+time; 
-			String instructorNotificationMsg="Assign new " +packageTitle +"<br>"+
-											 "lesson for you on "+day+"<br>"+
+			String instructorNotificationMsg="Assign new \"" +packageTitle +"\" "+
+											 "lesson for you on "+day+
 											 " at "+time;
 			
 			//process student notification 

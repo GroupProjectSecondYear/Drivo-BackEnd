@@ -13,7 +13,6 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-
 @Entity
 public class User {
 
@@ -22,28 +21,29 @@ public class User {
 	@Column(name = "user_id")
 	private Integer userId;
 
-	@Email(message="Email Should be valid")
-	@NotNull(message="Email is mandatory")
+	@Email(message = "Email Should be valid")
+	@NotNull(message = "Email is mandatory")
 	private String email;
-	
-	@NotNull(message="Password is mandatory")
+
+	@NotNull(message = "Password is mandatory")
 	private String password;
 
 	@Column(name = "reg_date")
-	@DateTimeFormat(pattern="MM-dd-YYYY")
+	@DateTimeFormat(pattern = "MM-dd-YYYY")
 	private Date regDate;
-	
+
 	@NotNull
 	private Integer status;
 	@NotNull
 	private Integer role;
+	@NotNull
+	private Integer profileImage;
 
-	
-	//constructor
+	// constructor
 	public User() {
-		
+
 	}
-	
+
 	public Integer getUserId() {
 		return userId;
 	}
@@ -92,13 +92,18 @@ public class User {
 		this.role = role;
 	}
 
-	
+	public Integer getProfileImage() {
+		return profileImage;
+	}
+
+	public void setProfileImage(Integer profileImage) {
+		this.profileImage = profileImage;
+	}
+
 	@Override
 	public String toString() {
 		return "User [userId=" + userId + ", email=" + email + ", password=" + password + ", regDate=" + regDate
-				+ ", status=" + status + ", role=" + role + "]";
+				+ ", status=" + status + ", role=" + role + ", profileImage=" + profileImage + "]";
 	}
-	
-	
 
 }

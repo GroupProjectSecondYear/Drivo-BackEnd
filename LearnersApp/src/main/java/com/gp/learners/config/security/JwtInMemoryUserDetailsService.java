@@ -24,10 +24,10 @@ public class JwtInMemoryUserDetailsService implements UserDetailsService {
 	static List<JwtUserDetails> inMemoryUserList = new ArrayList<>();
 	static int num=0;
 
-	static {
-		inMemoryUserList.add(new JwtUserDetails(0L, "admin",
-				"$2a$10$KUY5FZfoUuaOzFKbXZ6gyOk.3ErD4GKdqSuDesQyugMbfHfuZ7i6O", "1"));
-	}
+//	static {
+//		inMemoryUserList.add(new JwtUserDetails(0L, "admin",
+//				"$2a$10$KUY5FZfoUuaOzFKbXZ6gyOk.3ErD4GKdqSuDesQyugMbfHfuZ7i6O", "1"));
+//	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
