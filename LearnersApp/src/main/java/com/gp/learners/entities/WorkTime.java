@@ -1,5 +1,6 @@
 package com.gp.learners.entities;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -7,6 +8,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "work_time")
@@ -14,8 +18,17 @@ public class WorkTime {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="work_time_id")
 	private Integer workTimeId;
+	
+	@NotNull
+	@Min(0)
+	@Max(24)
 	private Integer fullDay;
+	
+	@NotNull
+	@Min(0)
+	@Max(24)
 	private Integer halfDay;
 
 	@ManyToOne

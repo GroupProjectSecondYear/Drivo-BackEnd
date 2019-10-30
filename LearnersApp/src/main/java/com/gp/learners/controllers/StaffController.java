@@ -22,6 +22,7 @@ import com.gp.learners.entities.AdminStaff;
 import com.gp.learners.entities.SalaryInformation;
 import com.gp.learners.entities.Staff;
 import com.gp.learners.entities.User;
+import com.gp.learners.entities.WorkTime;
 import com.gp.learners.repositories.AdministrativeStaffRepository;
 import com.gp.learners.repositories.StaffRepository;
 import com.gp.learners.repositories.UserRepository;
@@ -136,6 +137,24 @@ public class StaffController {
 		String reply = staffService.deleteStaffSalaryInformation(salaryInformationId);
 		if(reply!=null) {
 			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("staff/work/time")
+	public ResponseEntity<WorkTime> getStaffWorkTime(){
+		WorkTime workTime = staffService.getStaffWorkTime();
+		if(workTime!=null) {
+			return ResponseEntity.ok(workTime);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@PutMapping("staff/work/time/{fullDay}/{halfDay}")
+	public ResponseEntity<Void> updateStaffWorkTime(@PathVariable("fullDay")Integer fullDay,@PathVariable("halfDay") Integer halfDay){
+		String reply = staffService.updateStaffWorkTime(fullDay,halfDay);
+		if(reply!=null) {
+			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.notFound().build();
 	}

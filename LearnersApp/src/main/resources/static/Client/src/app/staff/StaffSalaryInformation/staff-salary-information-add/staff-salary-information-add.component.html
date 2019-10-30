@@ -1,0 +1,91 @@
+<div class="panel-header panel-header-sm">
+  </div>
+  <div class="main-content">
+  
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="row">
+      <div class="card">
+          <div class="card-body">
+              <div class="alert alert-danger">
+                  <button (click)=closeError() type="button" aria-hidden="true" class="close">
+                    <i class="now-ui-icons ui-1_simple-remove"></i>
+                  </button>
+                  <span>{{errorMessage}}</span>
+                </div>
+          </div>
+      </div>
+    </div>
+  
+    <!-- Error Message End -->
+  
+    <div class="row">
+      <!-- First Column -->
+      <div class="col-md-1"></div>
+  
+      <!-- Second Coulmn -->
+      <div class="col-md-10">
+        <div class="card">
+          <div class="card-header">
+            <h5 *ngIf="type==1" class="title">Staff Salary Information Add</h5>
+            <h5 *ngIf="type==2" class="title">Staff Salary Information Update</h5>
+          </div>
+          <div class="card-body">
+            <form  (ngSubmit)="registerStaffSalaryInformation()">
+              
+              <!-- Staff Roles -->
+              <div class="row">
+                <div class="col-sm-6 col-lg-12">
+                    <div>    
+                          <label for="sel1">Staff Roles:</label>
+                          <select *ngIf="type==1"  class="form-control" [(ngModel)]="selectRoleId" name="staffRoleList">
+                            <option [ngValue]="undefined" selected disabled>Select a Staff Role</option>
+                            <option *ngFor="let role of staffRoleList"  [ngValue]="role.roleId" >{{role.roleName}}</option>
+                          </select>
+                          <select *ngIf="type==2" class="form-control" name="selectRoleId" [(ngModel)]="selectRoleId" [disabled]="true">
+                              <option [ngValue]="selectRoleId"  selected >{{selectedRoleName}}</option>
+                          </select>
+                          <small *ngIf="errorSelectRoleId" class="text-danger">{{errorSelectRoleId}}</small>
+                    </div>
+                </div>
+              </div>
+              <!-- Finish Staff Roles -->
+              <br>
+  
+              <!-- Secon Row -->
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Full Day Salary</label>
+                    <input [(ngModel)]="fullDayaSalary" type="number" class="form-control" placeholder="Rs" name="fullDayaSalary">
+                    <small *ngIf="errorFullDayaSalary" class="text-danger">{{errorFullDayaSalary}}</small>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Half Day Salary</label>
+                      <input [(ngModel)]="halfDayaSalary" type="number" class="form-control" placeholder="Rs" name="halfDayaSalary">
+                      <small *ngIf="errorHalfDayaSalary" class="text-danger">{{errorHalfDayaSalary}}</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                      <label>NoPay</label>
+                      <input [(ngModel)]="noPay" type="number" class="form-control" placeholder="Rs" name="noPay">
+                      <small *ngIf="errorNoPay" class="text-danger">{{errorNoPay}}</small>
+                    </div>
+                </div>
+              </div>
+              <!-- End Second Row -->
+              
+                <button  type="submit" class="btn btn-secondary btn-round">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Third Column -->
+      <div class="col-md-2"></div>
+  
+    </div>
+  </div>
+  

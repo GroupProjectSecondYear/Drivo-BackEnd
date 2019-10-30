@@ -1,0 +1,142 @@
+<div class="panel-header panel-header-sm">
+</div>
+<div class="main-content">
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="row">
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-danger">
+                <button (click)=closeError() type="button" aria-hidden="true" class="close">
+                  <i class="now-ui-icons ui-1_simple-remove"></i>
+                </button>
+                <span>{{errorMessage}}</span>
+              </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Error Message End -->
+
+  <div class="row">
+    <!-- First Column -->
+    <div class="col-md-1"></div>
+
+    <!-- Second Coulmn -->
+    <div class="col-md-10">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="title">Register New Package</h5>
+        </div>
+        <div class="card-body">
+          <form  (ngSubmit)="registerPackage()">
+            
+            <!-- First Row -->
+            <div class="col-sm-8 col-lg-12">
+                <div class="form-group">
+                  <label>Title</label>
+                  <input type="text"  class="form-control" placeholder="Package Title"  name="title"   [(ngModel)]="title">
+                  <small *ngIf="errorTitle" class="text-danger">{{errorTitle}}</small>
+                </div>
+            </div> 
+            <!-- End First Row -->
+
+            <!-- Second Row -->
+            <div class="col-sm-6 col-lg-8">
+              <div>    
+                    <label for="sel1">Vehicle Category:</label>
+                    <select  class="form-control" [(ngModel)]="selectVehicleCategory" name="selectVehicleCategory">
+                      <option [ngValue]="undefined" selected disabled>Select a Vehicle Category</option>
+                      <option (click)="showTransmission(vehicleCategory)" *ngFor="let vehicleCategory of vehicleCategoryListData"  [ngValue]="vehicleCategory" >{{vehicleCategory.category}}</option>
+                    </select>
+                    <small *ngIf="errorSelectPackage" class="text-danger">{{errorSelectPackage}}</small>
+              </div>
+           </div>
+
+            <!-- Transmission Selection -->
+            <div *ngIf="isTransmissionSelect" class="form-check">
+              <label class="form-check-label">
+                  <input  (click)="selectTransmission(1)" class="form-check-input" type="checkbox"  name="transmissionManual"  checked> 
+                  Manual
+                  <span class="form-check-sign"></span>
+              </label>
+            </div>
+            <div *ngIf="isTransmissionSelect" class="form-check">
+              <label class="form-check-label">
+                  <input  (click)="selectTransmission(2)" class="form-check-input" type="checkbox"  name="transmissionAuto"> 
+                  Auto
+                  <span class="form-check-sign"></span>
+              </label>
+            </div>
+            <small *ngIf="!isTransmissionSelect && !isErrorTransmission && transmission!=''">Transmission :{{transmission}}</small>
+            <small *ngIf="isErrorTransmission" class="text-danger">{{errorTransmission}}</small>
+            <!-- Finish Transmission Selection -->
+            <!-- End Second Row -->
+
+            <!-- Number of lesson -->
+            <div class="col-sm-2 col-lg-4">
+                <div class="form-group">
+                  <label>Manual Lessons</label>
+                  <input type="number"  class="form-control" placeholder="Number of manual lessons"  name="title"   [(ngModel)]="manualLesson" [attr.disabled] = " isDisableManualLesson ? 'disabled' : null">
+                  <small *ngIf="errorManualLesson" class="text-danger">{{errorManualLesson}}</small>
+                </div>
+            </div> 
+
+            <div class="col-sm-2 col-lg-4">
+                <div class="form-group">
+                  <label>Auto Lessons</label>
+                  <input type="number"  class="form-control" placeholder="Number of auto lessons"  name="title"   [(ngModel)]="autoLesson" [attr.disabled] = " isDisableAutoLesson ? 'disabled' : null">
+                  <small *ngIf="errorAutoLesson" class="text-danger">{{errorAutoLesson}}</small>
+                </div>
+            </div> 
+            <!-- Finish number of lesson -->
+
+            <!-- price -->
+            <div class="col-sm-2 col-lg-4">
+              <div class="form-group">
+                <label>Package Price(Rs:)</label>
+                <input type="number"  class="form-control" placeholder="Enter Price"  name="title"   [(ngModel)]="price">
+                <small *ngIf="errorPrice" class="text-danger">{{errorPrice}}</small>
+              </div>
+            </div> 
+            <!-- End price -->
+
+             <!-- price -->
+             <div class="col-sm-2 col-lg-4">
+              <label>Package Image</label>
+              <input type="file" name="photo" id="inputImage" (change)="selectFile($event)"/>
+            </div> 
+            <!-- End price -->
+
+            <br>
+            <!-- Description -->
+            <div class="col-sm-2 col-lg-4">
+              <div class="form-group">
+                <label>Description</label>
+                <textarea class="form-control" name="name" rows="4" cols="600" placeholder="Write details of the package....."></textarea>
+              </div>
+            </div> 
+            <!-- Description -->
+
+            <!-- Student Payment Percentage -->
+            <div class="col-sm-2 col-lg-4">
+              <div class="form-group">
+                <label>Student Basic Payment(%)</label>
+                <input type="number"  class="form-control" placeholder="25%"  name="studentBasicPayment" min="1" max="100"  [(ngModel)]="studentBasicPayment">
+                <small *ngIf="errorStudentBasicPayment" class="text-danger">{{errorStudentBasicPayment}}</small>
+              </div>
+            </div> 
+            <!-- Student Payment percentage -->
+      
+            <br>
+            <button  type="submit" class="btn btn-secondary btn-round">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Third Column -->
+    <div class="col-md-2"></div>
+
+  </div>
+</div>

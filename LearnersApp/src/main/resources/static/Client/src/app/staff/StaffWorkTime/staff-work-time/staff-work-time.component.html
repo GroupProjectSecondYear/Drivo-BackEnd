@@ -1,0 +1,86 @@
+<div class="panel-header panel-header-sm" >
+</div>
+  
+<div class="main-content">
+  <div class="card">
+    <div class="card-header">
+      <h5 class="card-title">Staff Work Time</h5>
+    </div>
+    <div class="card-body">
+
+          
+
+            <div class="row">
+
+                
+                  <div class="col-md-6">
+                      
+                      <!-- Table Start -->
+                      <div class="table-responsive">
+                          <table class="table table-striped table-bordered">
+                            <thead class=" text-primary thead-dark">
+                              <th></th>
+                              <th>Day Type</th>
+                              <th>Work Time(Hrs)</th>
+                              <th>Option</th>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>1)</td>
+                                <td>Full Day</td>
+                                <td>{{workTimeData.fullDay}}</td>
+                                <td>
+                                    <a  (click)=staffWorkTimeUpdate(1)><button type="button" class="btn btn-secondary btn-sm" title="Edit"><i class="fas fa-edit"></i></button></a>  
+                                    <a  (click)=staffSalary(1,0)><button type="button" class="btn btn-danger btn-sm" title="Delete"><i class="fas fa-trash"></i></button></a>  
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td>2)</td>
+                                  <td>Half Day</td>
+                                  <td>{{workTimeData.halfDay}}</td>
+                                  <td>
+                                      <a  (click)=staffWorkTimeUpdate(2)><button type="button" class="btn btn-secondary btn-sm" title="Edit"><i class="fas fa-edit"></i></button></a>  
+                                      <a  (click)=staffSalary(1,0)><button type="button" class="btn btn-danger btn-sm" title="Delete"><i class="fas fa-trash"></i></button></a>  
+                                  </td>
+                                </tr>
+                            </tbody>
+                          </table>
+                      </div>
+                      <!-- Table Finish -->
+                  </div>
+
+                  <div *ngIf="isUpdate" class="col-md-6">
+                    <div class="card">
+                      <div class="card-header">
+                        <h6 class="card-title">Update Work Time</h6>
+                      </div>
+                      <div class="card-body">
+
+                        <div class="row">
+                          
+                          <div class="col-md-6">
+                              <div class="form-group">
+                                  <label>DayType</label>
+                                  <input [(ngModel)]="updateWorkType" type="text" class="form-control" name="updateWorkType" [attr.disabled] = " true ? 'disabled' : null">
+                              </div>
+                          </div>
+                          <div class="col-md-6">
+                              <div class="form-group">
+                                  <label>Work Time(Hrs)</label>
+                                  <input [(ngModel)]="updateWorkTime" type="number" class="form-control" placeholder="" name="updateWorkTime">
+                                  <small *ngIf="errorUpdateWorkTime" class="text-danger">{{errorUpdateWorkTime}}</small>
+                              </div>
+                          </div>
+                         
+                        </div>
+                        <button (click)="update()"  type="submit" class="btn btn-secondary btn-round">Submit</button>
+
+                      </div>
+                    </div>
+                  </div>
+
+            </div>
+
+    </div>
+  </div>
+</div>

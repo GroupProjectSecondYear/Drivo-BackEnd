@@ -6,6 +6,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +48,7 @@ public class StaffService {
 	
 	@Autowired
 	AdminRepository adminRepository;
+	
 	
 	
 	//Get Staff Details
@@ -129,6 +132,26 @@ public class StaffService {
 		if(salaryInformationRepository.existsById(salaryInformationId)) {
 			SalaryInformation object = salaryInformationRepository.findBySalaryInformationId(salaryInformationId);
 			salaryInformationRepository.delete(object);
+			return "success";
+		}
+		return null;
+	}
+	
+	public WorkTime getStaffWorkTime() {
+		List<WorkTime> workTimeList = workTimeRepository.findAll();
+		if(workTimeList!=null && workTimeList.size()>0) {
+			return workTimeList.get(0);
+		}
+		return null;
+	}
+	
+	public String updateStaffWorkTime(Integer fullDay,Integer halfDay) {
+		if(fullDay!=null && halfDay!=null) {
+		    WorkTime object = workTimeRepository.findByWorkTimeId(1);
+		    object.setFullDay(fullDay);
+		    object.setHalfDay(halfDay);
+		    
+		    workTimeRepository.save(object);
 			return "success";
 		}
 		return null;
