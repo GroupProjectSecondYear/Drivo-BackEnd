@@ -101,10 +101,14 @@ public class UserService {
 			String keyName = getFileKeyName(userId);
 			if(keyName!=null) {
 				User user = userRepository.findByUserId(userId);
-				if(user.getProfileImage()==1) {
-					return s3Service.downloadFile(keyName,bucketName);
-				}else {
-					return s3Service.downloadFile("defaultprofile.jpg",bucketName);
+				try {
+					if(user.getProfileImage()==1) {
+						return s3Service.downloadFile(keyName,bucketName);
+					}else {
+						return s3Service.downloadFile("defaultprofile.jpg",bucketName);
+					}
+				} catch (Exception e) {
+					System.out.println("There is a problem in s3 bucket");
 				}
 				
 			}

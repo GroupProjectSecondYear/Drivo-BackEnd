@@ -13,4 +13,5 @@ public interface SalaryInformationRepository extends JpaRepository<SalaryInforma
 	
 	@Query(value="select * from salary_information s where s.staff_type = :staffType",nativeQuery=true)
 	public SalaryInformation findByStaffType(@Param("staffType") Integer staffType);
+
 }

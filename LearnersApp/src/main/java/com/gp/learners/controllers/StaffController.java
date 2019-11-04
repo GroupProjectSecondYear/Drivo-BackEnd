@@ -19,11 +19,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gp.learners.entities.AdminStaff;
+import com.gp.learners.entities.Salary;
 import com.gp.learners.entities.SalaryInformation;
 import com.gp.learners.entities.Staff;
 import com.gp.learners.entities.User;
 import com.gp.learners.entities.WorkTime;
+import com.gp.learners.entities.mapObject.StaffWorkDaysDataMap;
 import com.gp.learners.repositories.AdministrativeStaffRepository;
+import com.gp.learners.repositories.SalaryRepository;
 import com.gp.learners.repositories.StaffRepository;
 import com.gp.learners.repositories.UserRepository;
 import com.gp.learners.service.StaffService;
@@ -43,6 +46,7 @@ public class StaffController {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
 	
 	@PostMapping("/administrativestaff/register")
 	public Object addAdministrativeStaff(@RequestParam Map<String,String> data) {
@@ -155,6 +159,39 @@ public class StaffController {
 		String reply = staffService.updateStaffWorkTime(fullDay,halfDay);
 		if(reply!=null) {
 			return ResponseEntity.ok().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("staff/salary/{month}")
+	public ResponseEntity<List<Salary>> getStaffSalaryDetails(@PathVariable("month") Integer month){
+		List<Salary> salaryList = staffService.getStaffSalaryList(month);
+		return ResponseEntity.ok(salaryList);
+	}
+	
+	@GetMapping("staff/salary/data/{staffId}/{month}")
+	public ResponseEntity<Salary> getStaffSalaryDetails(@PathVariable("staffId") Integer staffId,@PathVariable("month") Integer month) {
+		Salary salary = staffService.getStaffSalaryData(staffId,month);
+		if(salary!=null) {
+			return ResponseEntity.ok(salary);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@PutMapping("staff/pay/salary")
+	public ResponseEntity<Void> payStaffSalary(@Valid @RequestBody Salary object){
+		String reply = staffService.payStaffSalary(object);
+		if(reply!=null) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("staff/work/days/{staffId}/{month}")
+	public ResponseEntity<StaffWorkDaysDataMap> getStaffWorkDays(@PathVariable("staffId") Integer staffId,@PathVariable("month") Integer month){
+		StaffWorkDaysDataMap object = staffService.getStaffWorkDays(staffId, month);
+		if(object!=null) {
+			return ResponseEntity.ok(object);
 		}
 		return ResponseEntity.notFound().build();
 	}

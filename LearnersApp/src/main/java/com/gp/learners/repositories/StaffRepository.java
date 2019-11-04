@@ -1,5 +1,7 @@
 package com.gp.learners.repositories;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +18,7 @@ public interface StaffRepository extends JpaRepository<Staff, Integer>{
 	
 	@Query(value="select * from staff where staff_id = :staffId",nativeQuery=true)
 	public Staff findByStaffId(@Param("staffId")Integer staffId);
+	
+	@Query(value="select * from staff s,user u where s.user_id=u.user_id and u.role = :role and u.status = 1",nativeQuery=true)
+	public List<Staff> findStaffListByRole(@PathVariable("role")Integer role);
 }
