@@ -3,7 +3,9 @@ package com.gp.learners.repositories;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import org.omg.CORBA.IntHolder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -23,4 +25,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
 
 	@Query(value="select count(*) from attendance where hour(leave_time-come_time) < :hours and MONTH(date) = :month and YEAR(date) = YEAR(current_date) and staff_id = :staffId",nativeQuery=true)
 	public Integer findNotCompleteDaysByStaffId(@Param("hours") Integer hours ,@Param("staffId") Staff staffId ,@Param("month") Integer month);
+	
+	@Query(value="select * from attendance where staff_id = :staffId and MONTH(date) = :month and YEAR(date) = YEAR(current_date)",nativeQuery=true)
+	public List<Attendance> findByStaffIdAndMonth(@Param("staffId")Staff staffId ,@Param("month")Integer month);
 }

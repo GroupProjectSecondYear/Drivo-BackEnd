@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gp.learners.entities.AdminStaff;
+import com.gp.learners.entities.Attendance;
 import com.gp.learners.entities.Salary;
 import com.gp.learners.entities.SalaryInformation;
 import com.gp.learners.entities.Staff;
@@ -190,6 +191,33 @@ public class StaffController {
 	@GetMapping("staff/work/days/{staffId}/{month}")
 	public ResponseEntity<StaffWorkDaysDataMap> getStaffWorkDays(@PathVariable("staffId") Integer staffId,@PathVariable("month") Integer month){
 		StaffWorkDaysDataMap object = staffService.getStaffWorkDays(staffId, month);
+		if(object!=null) {
+			return ResponseEntity.ok(object);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("staff/role/salary/information/{staffId}")
+	public ResponseEntity<SalaryInformation> getStaffRoleSalaryInformation(@PathVariable("staffId") Integer staffId){
+		SalaryInformation object = staffService.getStaffRoleSalaryInformation(staffId);
+		if(object!=null) {
+			return ResponseEntity.ok(object);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("staff/data/{userId}")
+	public ResponseEntity<Staff> getStaffData(@PathVariable("userId") Integer userId){
+		Staff object = staffService.getStaffData(userId);
+		if(object!=null) {
+			return ResponseEntity.ok(object);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("staff/attendance/{staffId}/{month}")
+	public ResponseEntity<List<Attendance>> getStaffAttendance(@PathVariable("staffId")Integer staffId,@PathVariable("month") Integer month){
+		List<Attendance> object = staffService.getStaffAttendance(staffId, month);
 		if(object!=null) {
 			return ResponseEntity.ok(object);
 		}
