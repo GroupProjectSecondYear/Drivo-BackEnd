@@ -8,13 +8,12 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.hibernate.type.LocalDateType;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.gp.learners.config.security.JwtInMemoryUserDetailsService;
-import com.gp.learners.controllers.StudentController;
 import com.gp.learners.entities.CourseFee;
 import com.gp.learners.entities.ExamResult;
 import com.gp.learners.entities.Package;
@@ -33,7 +32,6 @@ import com.gp.learners.repositories.StudentPackageRepository;
 import com.gp.learners.repositories.StudentRepository;
 import com.gp.learners.repositories.UserRepository;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 
 @Service
@@ -74,7 +72,7 @@ public class StudentService {
 	
 	
 	public Integer studentRegister(Student student) {
-		if( isNotExistStudent(student.getNic()) ) {
+		if( isExistUser(student.getUserId().getNic()) ) {
 			studentRepository.save(student);
 			return 1;
 		}
@@ -135,9 +133,9 @@ public class StudentService {
 			}else {
 				
 				//check update nic has another person
-				String nic = student.getNic();
-				Student student1= studentRepository.findByNic(nic);
-				if(student1 != null && !student1.getStudentId().equals(studentId)) {
+				String nic = student.getUserId().getNic();
+				User user2= userRepository.findByNic(nic);
+				if(user2 != null && !user2.getUserId().equals(userId)) {
 					return 3;//same nic has another person.Save unsuccessful
 				}else {
 					studentRepository.save(student);
@@ -333,7 +331,7 @@ public class StudentService {
 		List<StudentTrialMap> studentTrialList=new ArrayList<StudentTrialMap>();
 		
 		for(Student student : studentList) {
-			studentTrialList.add(new StudentTrialMap(student.getName(),student.getNic()));
+			studentTrialList.add(new StudentTrialMap(student.getUserId().getFirstName(),student.getUserId().getFirstName()));
 		}
 		
 		return studentTrialList;
@@ -347,7 +345,7 @@ public class StudentService {
 		List<StudentTrialMap> studentExamList=new ArrayList<StudentTrialMap>();
 		
 		for(Student student : studentList) {
-			studentExamList.add(new StudentTrialMap(student.getName(),student.getNic()));
+			studentExamList.add(new StudentTrialMap(student.getUserId().getFirstName(),student.getUserId().getNic()));
 		}
 		
 		return studentExamList;
@@ -574,12 +572,12 @@ public class StudentService {
 		return false;
 	}
 	
-	private Boolean isNotExistStudent(String nic) {
-		Student student = studentRepository.findByNic(nic);
-		if(student != null ) {
-			return false;
+	private Boolean isExistUser(String nic) {
+		User user = userRepository.findByNic(nic);
+		if(user != null ) {
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	

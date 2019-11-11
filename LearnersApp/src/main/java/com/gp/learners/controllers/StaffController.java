@@ -49,43 +49,42 @@ public class StaffController {
 	private UserRepository userRepository;
 	
 	
-	@PostMapping("/administrativestaff/register")
-	public Object addAdministrativeStaff(@RequestParam Map<String,String> data) {
-		
-		//validation
-		
-		//Insert data to staff table
-		Staff staff=new Staff();
-		staff.setName(data.get("name"));
-		staff.setNic(data.get("nic"));
-		staff.setTel(data.get("tel"));
-		staff.setAddress(data.get("address"));
-			
-		
-		staff=staffRepostitory.save(staff);
-		
-		//Insert data to employee table
-		AdminStaff administrativeStaff=new AdminStaff();
-		//administrativeStaff.setStaffId(staff.getStaffId());
-		administrativeStaff.setType(Integer.parseInt(data.get("role")));
-		administrativeStaff.setQualification(data.get("qualification"));
-		
-		administrativeStaffRepository.save(administrativeStaff);
-		
-		
-		//insert data to user
-		User user=new User();
-		user.setEmail(data.get("email"));
-		user.setPassword(data.get("password"));
-		user.setRegDate(new Date());
-		user.setRole(Integer.parseInt(data.get("role")));
-		user.setStatus(1);
-		//user.setStaffId(staff.getStaffId());
-		
-		userRepository.save(user);
-		
-		return true;
-	}
+//	@PostMapping("/administrativestaff/register")
+//	public Object addAdministrativeStaff(@RequestParam Map<String,String> data) {
+//		
+//		
+//		//Insert data to staff table
+//		Staff staff=new Staff();
+//		staff.setName(data.get("name"));
+//		staff.setNic(data.get("nic"));
+//		staff.setTel(data.get("tel"));
+//		staff.setAddress(data.get("address"));
+//			
+//		
+//		staff=staffRepostitory.save(staff);
+//		
+//		//Insert data to employee table
+//		AdminStaff administrativeStaff=new AdminStaff();
+//		//administrativeStaff.setStaffId(staff.getStaffId());
+//		administrativeStaff.setType(Integer.parseInt(data.get("role")));
+//		administrativeStaff.setQualification(data.get("qualification"));
+//		
+//		administrativeStaffRepository.save(administrativeStaff);
+//		
+//		
+//		//insert data to user
+//		User user=new User();
+//		user.setEmail(data.get("email"));
+//		user.setPassword(data.get("password"));
+//		user.setRegDate(new Date());
+//		user.setRole(Integer.parseInt(data.get("role")));
+//		user.setStatus(1);
+//		//user.setStaffId(staff.getStaffId());
+//		
+//		userRepository.save(user);
+//		
+//		return true;
+//	}
 	
 	@GetMapping("/staff")
 	public Object getStaffDetails() {

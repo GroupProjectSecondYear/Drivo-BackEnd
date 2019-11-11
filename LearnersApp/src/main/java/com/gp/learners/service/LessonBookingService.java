@@ -89,7 +89,7 @@ public class LessonBookingService {
 			Student student = getStudent(userId);
 			return student;
 		}
-		return new Student();
+		return null;
 	}
 	
 	public Lesson getAvailableLesson(LocalDate date,Integer studentPackageId,Integer timeSlotId) {

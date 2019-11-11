@@ -42,7 +42,7 @@ public class LessonBookingController {
 	@GetMapping("/lessonbooking/trialdate/{id}")
 	public ResponseEntity<LocalDate> getTrialDate(@PathVariable("id") Integer userId){
 		Student student=lessonBookingService.getTrialDate(userId);
-		if(student.getStudentId() != null) {
+		if(student != null) {
 			return ResponseEntity.ok(student.getTrialDate());
 		}
 		return ResponseEntity.notFound().build();

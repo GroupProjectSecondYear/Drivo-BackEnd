@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,17 +25,6 @@ public class Student {
 	@Column(name = "student_id")
 	private Integer studentId;
 
-	@NotBlank(message = "Name is mandatory")
-	String name;
-
-	@Size(min = 10, max = 10, message = "Telephone number should be 10 numners")
-	@NotBlank(message = "Telephone number is mandatory")
-	String tel;
-
-	@Size(min = 10, max = 10, message = "NIC number should be 10 numners")
-	@NotBlank(message = "NIC is mandatory")
-	String nic;
-
 	// @FutureOrPresent(message = "Not Valid Exam Date")
 	@DateTimeFormat(pattern = "MM-dd-YYYY")
 	LocalDate examDate;
@@ -43,31 +33,20 @@ public class Student {
 	@DateTimeFormat(pattern = "MM-dd-YYYY")
 	LocalDate trialDate;
 
-	@NotBlank(message = "Address is mandatory")
-	String address;
-
+	@NotNull
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id", referencedColumnName = "user_id")
 	private User userId;
 
-	// constructor
 	public Student() {
 
 	}
 
-	public Student(Integer studentId, @NotBlank(message = "Name is mandatory") String name,
-			@Size(min = 10, max = 10, message = "Telephone number should be 10 numners") @NotBlank(message = "Telephone number is mandatory") String tel,
-			@Size(min = 10, max = 10, message = "NIC number should be 10 numners") @NotBlank(message = "NIC is mandatory") String nic,
-			LocalDate examDate, LocalDate trialDate, @NotBlank(message = "Address is mandatory") String address,
-			User userId) {
+	public Student(Integer studentId, LocalDate examDate, LocalDate trialDate, @NotNull User userId) {
 		super();
 		this.studentId = studentId;
-		this.name = name;
-		this.tel = tel;
-		this.nic = nic;
 		this.examDate = examDate;
 		this.trialDate = trialDate;
-		this.address = address;
 		this.userId = userId;
 	}
 
@@ -77,30 +56,6 @@ public class Student {
 
 	public void setStudentId(Integer studentId) {
 		this.studentId = studentId;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getTel() {
-		return tel;
-	}
-
-	public void setTel(String tel) {
-		this.tel = tel;
-	}
-
-	public String getNic() {
-		return nic;
-	}
-
-	public void setNic(String nic) {
-		this.nic = nic;
 	}
 
 	public LocalDate getExamDate() {
@@ -119,14 +74,6 @@ public class Student {
 		this.trialDate = trialDate;
 	}
 
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
 	public User getUserId() {
 		return userId;
 	}
@@ -137,8 +84,8 @@ public class Student {
 
 	@Override
 	public String toString() {
-		return "Student [studentId=" + studentId + ", name=" + name + ", tel=" + tel + ", nic=" + nic + ", examDate="
-				+ examDate + ", trialDate=" + trialDate + ", address=" + address + ", userId=" + userId + "]";
+		return "Student [studentId=" + studentId + ", examDate=" + examDate + ", trialDate=" + trialDate + ", userId="
+				+ userId + "]";
 	}
 
 }

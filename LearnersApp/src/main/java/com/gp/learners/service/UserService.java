@@ -123,11 +123,11 @@ public class UserService {
 			   return user.getName();
 		   }else if(userRole==2 || userRole==3 || userRole==4) {
 			   Staff user = staffRepository.findByUserId(userId);
-			   return user.getName();
+			   return user.getUserId().getFirstName();
 		   }else if(userRole==5) {
 			   Integer studentId = studentRepository.findByUserId(userRepository.findByUserId(userId));
 			   Student user = studentRepository.findByStudentId(studentId);
-			   return user.getName();
+			   return user.getUserId().getFirstName();
 		   }else {
 			   return null;
 		   }
