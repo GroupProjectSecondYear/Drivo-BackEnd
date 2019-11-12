@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gp.learners.entities.AdminStaff;
+import com.gp.learners.entities.Attendance;
 import com.gp.learners.entities.Salary;
 import com.gp.learners.entities.SalaryInformation;
 import com.gp.learners.entities.Staff;
@@ -48,43 +49,42 @@ public class StaffController {
 	private UserRepository userRepository;
 	
 	
-	@PostMapping("/administrativestaff/register")
-	public Object addAdministrativeStaff(@RequestParam Map<String,String> data) {
-		
-		//validation
-		
-		//Insert data to staff table
-		Staff staff=new Staff();
-		staff.setName(data.get("name"));
-		staff.setNic(data.get("nic"));
-		staff.setTel(data.get("tel"));
-		staff.setAddress(data.get("address"));
-			
-		
-		staff=staffRepostitory.save(staff);
-		
-		//Insert data to employee table
-		AdminStaff administrativeStaff=new AdminStaff();
-		//administrativeStaff.setStaffId(staff.getStaffId());
-		administrativeStaff.setType(Integer.parseInt(data.get("role")));
-		administrativeStaff.setQualification(data.get("qualification"));
-		
-		administrativeStaffRepository.save(administrativeStaff);
-		
-		
-		//insert data to user
-		User user=new User();
-		user.setEmail(data.get("email"));
-		user.setPassword(data.get("password"));
-		user.setRegDate(new Date());
-		user.setRole(Integer.parseInt(data.get("role")));
-		user.setStatus(1);
-		//user.setStaffId(staff.getStaffId());
-		
-		userRepository.save(user);
-		
-		return true;
-	}
+//	@PostMapping("/administrativestaff/register")
+//	public Object addAdministrativeStaff(@RequestParam Map<String,String> data) {
+//		
+//		
+//		//Insert data to staff table
+//		Staff staff=new Staff();
+//		staff.setName(data.get("name"));
+//		staff.setNic(data.get("nic"));
+//		staff.setTel(data.get("tel"));
+//		staff.setAddress(data.get("address"));
+//			
+//		
+//		staff=staffRepostitory.save(staff);
+//		
+//		//Insert data to employee table
+//		AdminStaff administrativeStaff=new AdminStaff();
+//		//administrativeStaff.setStaffId(staff.getStaffId());
+//		administrativeStaff.setType(Integer.parseInt(data.get("role")));
+//		administrativeStaff.setQualification(data.get("qualification"));
+//		
+//		administrativeStaffRepository.save(administrativeStaff);
+//		
+//		
+//		//insert data to user
+//		User user=new User();
+//		user.setEmail(data.get("email"));
+//		user.setPassword(data.get("password"));
+//		user.setRegDate(new Date());
+//		user.setRole(Integer.parseInt(data.get("role")));
+//		user.setStatus(1);
+//		//user.setStaffId(staff.getStaffId());
+//		
+//		userRepository.save(user);
+//		
+//		return true;
+//	}
 	
 	@GetMapping("/staff")
 	public Object getStaffDetails() {
@@ -190,6 +190,33 @@ public class StaffController {
 	@GetMapping("staff/work/days/{staffId}/{month}")
 	public ResponseEntity<StaffWorkDaysDataMap> getStaffWorkDays(@PathVariable("staffId") Integer staffId,@PathVariable("month") Integer month){
 		StaffWorkDaysDataMap object = staffService.getStaffWorkDays(staffId, month);
+		if(object!=null) {
+			return ResponseEntity.ok(object);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("staff/role/salary/information/{staffId}")
+	public ResponseEntity<SalaryInformation> getStaffRoleSalaryInformation(@PathVariable("staffId") Integer staffId){
+		SalaryInformation object = staffService.getStaffRoleSalaryInformation(staffId);
+		if(object!=null) {
+			return ResponseEntity.ok(object);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("staff/data/{userId}")
+	public ResponseEntity<Staff> getStaffData(@PathVariable("userId") Integer userId){
+		Staff object = staffService.getStaffData(userId);
+		if(object!=null) {
+			return ResponseEntity.ok(object);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("staff/attendance/{staffId}/{month}")
+	public ResponseEntity<List<Attendance>> getStaffAttendance(@PathVariable("staffId")Integer staffId,@PathVariable("month") Integer month){
+		List<Attendance> object = staffService.getStaffAttendance(staffId, month);
 		if(object!=null) {
 			return ResponseEntity.ok(object);
 		}

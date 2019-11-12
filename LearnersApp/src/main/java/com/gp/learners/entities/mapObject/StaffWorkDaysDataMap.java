@@ -9,6 +9,7 @@ public class StaffWorkDaysDataMap {
 	private Integer halfDays;
 	private Integer notCompleteDays;
 	private Integer leaveDays;
+	private Integer noPayDays;
 
 	public Integer getFullDays() {
 		return fullDays;
@@ -42,10 +43,18 @@ public class StaffWorkDaysDataMap {
 		this.leaveDays = leaveDays;
 	}
 
+	public Integer getNoPayDays() {
+		return noPayDays;
+	}
+
+	public void setNoPayDays(Integer noPayDays) {
+		this.noPayDays = noPayDays;
+	}
+
 	@Override
 	public String toString() {
 		return "StaffWorkDaysDataMap [fullDays=" + fullDays + ", halfDays=" + halfDays + ", notCompleteDays="
-				+ notCompleteDays + ", leaveDays=" + leaveDays + "]";
+				+ notCompleteDays + ", leaveDays=" + leaveDays + ", noPayDays=" + noPayDays + "]";
 	}
 
 }

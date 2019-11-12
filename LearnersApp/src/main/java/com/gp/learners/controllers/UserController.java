@@ -3,6 +3,7 @@ package com.gp.learners.controllers;
 //Hello
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,9 @@ public class UserController {
 	}
 	
 	@PostMapping("user/register")
-	public ResponseEntity<User> userRegister(@RequestBody User user) {
+	public ResponseEntity<User> userRegister(@Validated @RequestBody User user) {
+		System.out.println("-----------");
+		System.out.println("user");
 		User reply = userService.userRegister(user);
 		if(reply != null) {
 			return ResponseEntity.ok(reply);

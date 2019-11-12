@@ -25,18 +25,19 @@ import com.gp.learners.service.PdfService;
 @RestController
 @CrossOrigin(origins="*",allowedHeaders="*",maxAge=3600)
 public class PdfController {
-	
+
 	@Autowired
 	PdfService pdfService;
-	
+
 	@Autowired
 	PdfRepository pdfRepository;
-	
+
+
 	@GetMapping("/pdfs")
 	public List<Pdf> getPdfList(){
 		return pdfService.getPdfList();
 	}
-	
+
 	@GetMapping("pdf/{pdfId}")
 	public ResponseEntity<Pdf> getPdf(@PathVariable("pdfId") Integer pdfId) {
 		Pdf pdf=pdfService.getPdfByID(pdfId);
@@ -45,12 +46,12 @@ public class PdfController {
 		}
 		return ResponseEntity.noContent().build();
 	}
-	
+
 	//add pdf
 		@PostMapping("pdf/add")
 		public ResponseEntity<Void> addPdf(@RequestBody Pdf pdf) {
 			//System.out.println("stuId:"+stuId+" object:"+object);
-			
+
 			String reply=pdfService.addPdf(pdf);
 			if(reply.equals("success")) {
 				System.out.println(reply);
@@ -59,7 +60,7 @@ public class PdfController {
 			System.out.println(reply);
 			return ResponseEntity.notFound().build();
 		}
-		
+
 		//delete Pdf
 		@DeleteMapping("pdf/delete/{pdfId}")
 		public ResponseEntity<Void> deletePdf(@PathVariable("pdfId") Integer pdfId){
@@ -80,6 +81,6 @@ public class PdfController {
 			}
 			return ResponseEntity.notFound().build();
 		}
-	
-	
+
 }
+

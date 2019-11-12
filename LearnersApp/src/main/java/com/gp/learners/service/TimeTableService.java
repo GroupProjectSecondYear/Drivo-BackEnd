@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.gp.learners.entities.Instructor;
 import com.gp.learners.entities.Lesson;
 import com.gp.learners.entities.Path;
 import com.gp.learners.entities.StudentLesson;
@@ -185,8 +186,8 @@ public class TimeTableService {
 					
 					
 					for (Integer id : instructorIdList) {
-						String name=instructorRepository.nameFindByInstructorId(id);
-						instructorList.add(new InstructorMap(id,name));
+						Instructor instructor=instructorRepository.findByInstructorId(id);
+						instructorList.add(new InstructorMap(id,instructor.getStaffId().getUserId().getFirstName()));
 					}
 					
 				}
@@ -277,7 +278,7 @@ public class TimeTableService {
 				for (Lesson lesson : lessons) {
 					if(timeSlot.equals(lesson.getTimeSlotId())) {
 						packageDataRow.add(lesson.getPackageId().getTitle()+"("+getTransmission(lesson.getTransmission())+")");
-						instructorDataRow.add(lesson.getInstructorId().getStaffId().getName());
+						instructorDataRow.add(lesson.getInstructorId().getStaffId().getUserId().getFirstName());
 						pathDataRow.add(lesson.getPathId().getOrigin()+" : "+lesson.getPathId().getDestination());
 						numStuDataRow.add(lesson.getNumStu());
 						idDataRow.add(lesson.getLessonId());
@@ -299,7 +300,7 @@ public class TimeTableService {
 						idDataRow = new ArrayList<Integer>();
 						
 						packageDataRow.add(lesson.getPackageId().getTitle()+"("+getTransmission(lesson.getTransmission())+")");
-						instructorDataRow.add(lesson.getInstructorId().getStaffId().getName());
+						instructorDataRow.add(lesson.getInstructorId().getStaffId().getUserId().getFirstName());
 						pathDataRow.add(lesson.getPathId().getOrigin()+" : "+lesson.getPathId().getDestination());
 						numStuDataRow.add(lesson.getNumStu());
 						idDataRow.add(lesson.getLessonId());

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.gp.learners.entities.Admin;
 import com.gp.learners.entities.Attendance;
+import com.gp.learners.entities.LeaveSetting;
 import com.gp.learners.entities.Salary;
 import com.gp.learners.entities.SalaryInformation;
 import com.gp.learners.entities.Staff;
@@ -22,6 +23,7 @@ import com.gp.learners.entities.WorkTime;
 import com.gp.learners.entities.mapObject.StaffWorkDaysDataMap;
 import com.gp.learners.repositories.AdminRepository;
 import com.gp.learners.repositories.AttendanceRepository;
+import com.gp.learners.repositories.LeaveSettingRepository;
 import com.gp.learners.repositories.StaffLeaveRepository;
 import com.gp.learners.repositories.SalaryInformationRepository;
 import com.gp.learners.repositories.SalaryRepository;
@@ -60,6 +62,9 @@ public class StaffService {
 	
 	@Autowired
 	SalaryRepository salaryRepository;
+	
+	@Autowired
+	LeaveSettingRepository leaveSettingRepository;
 	
 	
 	//Get Staff Details
@@ -215,13 +220,36 @@ public class StaffService {
 	public void calaculateSalary(List<Staff> staffList,SalaryInformation salaryInformation,Integer month,WorkTime workTime,Integer type){
 		for (Staff staff : staffList) {
 			
-			//get number of leave in the month
-			Integer numLeaves = staffLeaveRepository.findByStaffId(staff,month);
+			List<LeaveSetting> recommendedLeaveList = leaveSettingRepository.findAll();
+			Integer recommendedLeave=0;//recommended leave for year
+			if(recommendedLeave!=null && recommendedLeaveList.size()>0) {
+				recommendedLeave = recommendedLeaveList.get(0).getNumLeave();
+			}
+			
+			
+			Integer totalNumLeaves = staffLeaveRepository.findByStaffId(staff);//total leave calculate including this month leaves
+			Integer numLeaves = staffLeaveRepository.findByStaffIdAndMonth(staff,month);//get number of leave in this month
 			Integer numFullDays = attendanceRepository.findFullDaysByStaffId(workTime.getFullDay(), staff, month);
 			Integer numHalfDays = attendanceRepository.findHalfDaysByStaffId(workTime.getHalfDay(),workTime.getFullDay(),staff, month);
 			
 			Double totalPayment = numFullDays*salaryInformation.getFullDaySalary() + numHalfDays*salaryInformation.getHalfDaySalary();
-			Double nopay = numLeaves*salaryInformation.getNopay();
+			Integer noPayDays = 0;
+			Double nopay=0D;
+			
+			//calculate leave and nopay payemnts
+			if(totalNumLeaves>recommendedLeave) {//calculate nopay
+				Integer diffLeave = totalNumLeaves-recommendedLeave;
+				if(diffLeave >= numLeaves) {
+					noPayDays=numLeaves;
+				}else {
+					noPayDays=diffLeave;
+					totalPayment+=(numLeaves-diffLeave)*salaryInformation.getFullDaySalary();
+				}
+				nopay = noPayDays*salaryInformation.getNopay();
+			}else {
+				totalPayment +=numLeaves*salaryInformation.getFullDaySalary(); 
+			}
+			
 			
 			Salary object = new Salary();
 			object.setMonth(month);
@@ -276,7 +304,26 @@ public class StaffService {
 			if(workTimeList!=null) {
 				WorkTime workTime = workTimeList.get(0);
 				
-				Integer numLeaves = staffLeaveRepository.findByStaffId(staff,month);
+				//calculate noPayDays and Leave Days
+				List<LeaveSetting> recommendedLeaveList = leaveSettingRepository.findAll();
+				Integer recommendedLeave=0;//recommended leave for year
+				if(recommendedLeave!=null && recommendedLeaveList.size()>0) {
+					recommendedLeave = recommendedLeaveList.get(0).getNumLeave();
+				}
+				Integer totalNumLeaves = staffLeaveRepository.findByStaffId(staff);//total leave calculate including this month leaves
+				Integer numLeaves = staffLeaveRepository.findByStaffIdAndMonth(staff,month);//get number of leave in this month
+				Integer noPayDays=0;
+				if(totalNumLeaves>recommendedLeave) {//calculate nopayDays
+					Integer diffLeave = totalNumLeaves-recommendedLeave;
+					if(diffLeave >= numLeaves) {
+						noPayDays=numLeaves;
+						numLeaves=0;
+					}else {
+						noPayDays=diffLeave;
+						numLeaves=numLeaves-diffLeave;
+					}
+				}
+				
 				Integer numFullDays = attendanceRepository.findFullDaysByStaffId(workTime.getFullDay(), staff, month);
 				Integer numHalfDays = attendanceRepository.findHalfDaysByStaffId(workTime.getHalfDay(),workTime.getFullDay(),staff, month);
 				Integer notCompleteDays = attendanceRepository.findNotCompleteDaysByStaffId(workTime.getHalfDay(),staff,month);
@@ -286,10 +333,37 @@ public class StaffService {
 				object.setHalfDays(numHalfDays);
 				object.setLeaveDays(numLeaves);
 				object.setNotCompleteDays(notCompleteDays);
+				object.setNoPayDays(noPayDays);
 				
 				return object;
 			}
 			
+		}
+		return null;
+	}
+	
+	public SalaryInformation getStaffRoleSalaryInformation(Integer staffId) {
+		if(staffId!=null && staffRepository.existsById(staffId)) {
+			Staff staff = staffRepository.findByStaffId(staffId);
+			SalaryInformation salaryInformation = salaryInformationRepository.findByStaffType(staff.getUserId().getRole());
+			return salaryInformation;
+		}
+		return null;
+	}
+	
+	public Staff getStaffData(Integer userId) {
+		if(userId!=null && userRepository.existsById(userId)) {
+			Staff staff = staffRepository.findByUserId(userId);
+			return staff;
+		}
+		return null;
+	}
+	
+	public List<Attendance> getStaffAttendance(Integer staffId,Integer month){
+		if(staffId!=null && staffRepository.existsById(staffId) && month!=null) {
+			Staff staff = staffRepository.findByStaffId(staffId);
+			List<Attendance> attendanceList = attendanceRepository.findByStaffIdAndMonth(staff, month);
+			return attendanceList;
 		}
 		return null;
 	}

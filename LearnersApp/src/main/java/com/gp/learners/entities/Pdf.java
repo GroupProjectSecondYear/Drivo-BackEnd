@@ -16,7 +16,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 public class Pdf {
 
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "pdf_id")
@@ -35,7 +34,7 @@ public class Pdf {
 	private AdminStaff adminStaffId;
 
 	private LocalDate addedDate;
-	
+
 	@DateTimeFormat(pattern = "MM-dd-YYYY" )
 	public LocalDate getAddedDate() {
 		return addedDate;
@@ -73,14 +72,14 @@ public class Pdf {
 	void setResource(String resource) {
 		this.resource = resource;
 	}
-	
+
 	public String getDescription() {
 		return description;
 	}
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	public String getTags() {
 		return tags;
 	}
@@ -101,6 +100,4 @@ public class Pdf {
 		return "Pdf [pdfId=" + pdfId + ", resource=" + resource + ", description=" + description + ", tags=" + tags
 				+ ", adminStaffId=" + adminStaffId + ", addedDate=" + addedDate + "]";
 	}
-	
-
 }

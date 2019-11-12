@@ -8,10 +8,10 @@ import com.gp.learners.repositories.PdfRepository;
 
 @Service
 public class PdfService {
-	
+
 	@Autowired
 	PdfRepository pdfRepository;
-	
+
 	//getPdfList
 	public List<Pdf> getPdfList(){
 		System.out.println("IN pdfrepo");
@@ -19,7 +19,7 @@ public class PdfService {
 		//Pdf pdf1=pdfList.get(0);
 		return pdfList;
 	}
-	
+
 	public Pdf getPdfByID(Integer pdfId) {
 		if(pdfId != null) {
 			if(pdfRepository.existsById(pdfId)) {
@@ -28,17 +28,18 @@ public class PdfService {
 		}
 		return new Pdf(); 
 	}
-	
+
 	//Add PDF
 		public String addPdf(Pdf pdf) {
-			
+
+
 			Pdf result=pdfRepository.save(pdf);
 			if(result!=null)
 				return "success";
 			else
 				return "notsuccess"; 
 		}
-		
+
 		//delete Pdf
 		public String deletePdf(Integer pdfId) {
 			System.out.println("Delete Pdf Serv");
@@ -50,8 +51,6 @@ public class PdfService {
 			}
 			return "error";
 		}
-		
-		
 
 		//update Student Details
 		public Pdf updatePdf(Pdf pdf) {
@@ -59,8 +58,9 @@ public class PdfService {
 				//Pdf pdf1=pdfRepository.getPdfById(pdf.getPdfId());
 						return pdfRepository.save(pdf);
 					}
-			
+	
 			return new Pdf();
 		}
 			
 }
+

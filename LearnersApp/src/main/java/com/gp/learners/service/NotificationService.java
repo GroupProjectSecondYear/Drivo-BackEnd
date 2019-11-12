@@ -201,7 +201,7 @@ public class NotificationService {
 				}else {
 					flag=true;
 				}
-				studentMsg+=" Assign new instructor "+updateLesson.getInstructorId().getStaffId().getName()+ " instead of "+existLesson.getInstructorId().getStaffId().getName()+" ";
+				studentMsg+=" Assign new instructor "+updateLesson.getInstructorId().getStaffId().getUserId().getFirstName()+ " instead of "+existLesson.getInstructorId().getStaffId().getUserId().getFirstName()+" ";
 				oldInstructorsMsg="New instructor assign for your lesson("+existLesson.getPackageId().getTitle()+") on "+timeTableService.getDay(existLesson.getDay())+" at "+existLesson.getTimeSlotId().getStartTime()+"-"+existLesson.getTimeSlotId().getFinishTime();
 				newInstructorsMsg="Assign new " +updateLesson.getPackageId().getTitle()+" lesson for you on "+timeTableService.getDay(updateLesson.getDay())+" at "+updateLesson.getTimeSlotId().getStartTime()+"-"+updateLesson.getTimeSlotId().getFinishTime();
 			}

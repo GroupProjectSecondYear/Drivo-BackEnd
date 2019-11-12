@@ -28,8 +28,8 @@ public interface InstructorRepository extends JpaRepository<Instructor,Integer>{
 			,nativeQuery=true)
 	public List<Integer> getRelevantInstructors(@Param("dayId")Integer dayId  ,@Param("packageId")Integer packageId	,@Param("timeSlotId")Integer timeSlotId ,@Param("transmission")Integer transmission);
 	
-	@Query(value="select name from instructor i ,staff s where i.staff_id=s.staff_id and i.instructor_id = :instructorId",nativeQuery=true)
-	public String nameFindByInstructorId(@Param("instructorId")Integer instructorId);
+//	@Query(value="select name from instructor i ,staff s where i.staff_id=s.staff_id and i.instructor_id = :instructorId",nativeQuery=true)
+//	public String nameFindByInstructorId(@Param("instructorId")Integer instructorId);
 	
 	public Instructor findByInstructorId(Integer instructorId);
 	

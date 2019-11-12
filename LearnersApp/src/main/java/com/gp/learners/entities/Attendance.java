@@ -21,7 +21,7 @@ public class Attendance {
 	private LocalDate date;
 	private LocalTime comeTime;
 	private LocalTime leaveTime;
-
+	
 	@ManyToOne
 	@JoinColumn(name = "staff_id", referencedColumnName = "staff_id")
 	private Staff staffId;

@@ -79,8 +79,8 @@ public class InstructorService {
 			for (StudentLesson studentLesson : studentLessonList) {
 				LessonAssingStudentMap object = new LessonAssingStudentMap();
 				object.setStudentLessonId(studentLesson.getStudentLessonId());
-				object.setName(studentLesson.getStudentId().getName());
-				object.setNic(studentLesson.getStudentId().getNic());
+				object.setName(studentLesson.getStudentId().getUserId().getFirstName());
+				object.setNic(studentLesson.getStudentId().getUserId().getNic());
 				object.setComplete(studentLesson.getComplete());
 				
 				studentList.add(object);

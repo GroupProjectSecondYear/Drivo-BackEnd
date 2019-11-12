@@ -8,8 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -20,6 +20,23 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	private Integer userId;
+
+	@NotNull(message = "First Name is mandatory")
+	private String firstName;
+
+	@NotNull(message = "Last Name is mandatory")
+	private String lastName;
+
+	@NotNull(message = "Telephone number mandatory")
+	@Size(min = 10, max = 10, message = "Telephone number should have 10 digits")
+	private String tel;
+
+	@NotNull(message = "NIC is mandatory")
+	@Size(min = 10, max = 10, message = "NIC number should have 10 characters")
+	private String nic;
+
+	@NotNull(message = "Address is mandatory")
+	private String address;
 
 	@Email(message = "Email Should be valid")
 	@NotNull(message = "Email is mandatory")
@@ -39,17 +56,52 @@ public class User {
 	@NotNull
 	private Integer profileImage;
 
-	// constructor
-	public User() {
-
-	}
-
 	public Integer getUserId() {
 		return userId;
 	}
 
 	public void setUserId(Integer userId) {
 		this.userId = userId;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getTel() {
+		return tel;
+	}
+
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+
+	public String getNic() {
+		return nic;
+	}
+
+	public void setNic(String nic) {
+		this.nic = nic;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 	public String getEmail() {
@@ -102,8 +154,9 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [userId=" + userId + ", email=" + email + ", password=" + password + ", regDate=" + regDate
-				+ ", status=" + status + ", role=" + role + ", profileImage=" + profileImage + "]";
+		return "User [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", tel=" + tel
+				+ ", nic=" + nic + ", address=" + address + ", email=" + email + ", password=" + password + ", regDate="
+				+ regDate + ", status=" + status + ", role=" + role + ", profileImage=" + profileImage + "]";
 	}
 
 }
