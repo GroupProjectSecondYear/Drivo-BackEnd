@@ -28,18 +28,14 @@ public class AdminStaffController {
 
 	@Autowired
 	private StaffService staffService;
-
 	@Autowired
 	private AdminStaffService adminStaffService;
 	@Autowired
 	private StaffRepository staffRepostitory;
-
 	@Autowired 
 	private AdministrativeStaffRepository adminiStaffRepository;
-
 	@Autowired
 	private UserRepository userRepository;
-
 
 	@GetMapping("adminByUserId/{userId}")
 	public ResponseEntity<AdminStaff> getAdminstaffbyUserId(@PathVariable("userId") Integer userId) {
@@ -52,3 +48,4 @@ public class AdminStaffController {
 	}
 
 }
+

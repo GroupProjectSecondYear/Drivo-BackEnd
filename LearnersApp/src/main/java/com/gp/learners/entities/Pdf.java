@@ -16,7 +16,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 public class Pdf {
 
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "pdf_id")
@@ -101,6 +100,4 @@ public class Pdf {
 		return "Pdf [pdfId=" + pdfId + ", resource=" + resource + ", description=" + description + ", tags=" + tags
 				+ ", adminStaffId=" + adminStaffId + ", addedDate=" + addedDate + "]";
 	}
-
-
 }

@@ -14,7 +14,5 @@ public interface PdfRepository extends JpaRepository<Pdf, Integer>{
 	//get pdf by id
 	@Query("from Pdf where pdfId = :pdfId")
 	public Pdf getPdfById(@Param("pdfId")Integer pdfId);
-
-
-
 }
+

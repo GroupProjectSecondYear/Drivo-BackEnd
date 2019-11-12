@@ -12,5 +12,4 @@ public interface AdministrativeStaffRepository extends JpaRepository<AdminStaff,
 	//get AdminStaff by StaffId
 			@Query(value="Select * from admin_staff where staff_id = :staffId",nativeQuery=true)
 			public AdminStaff getAdminStaffByStaffId(@Param("staffId")Integer staffId);
-
 }

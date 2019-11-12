@@ -32,6 +32,7 @@ public class PdfController {
 	@Autowired
 	PdfRepository pdfRepository;
 
+
 	@GetMapping("/pdfs")
 	public List<Pdf> getPdfList(){
 		return pdfService.getPdfList();
@@ -81,5 +82,5 @@ public class PdfController {
 			return ResponseEntity.notFound().build();
 		}
 
-
 }
+
