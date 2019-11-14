@@ -68,9 +68,9 @@ public class StaffService {
 	
 	
 	//Get Staff Details
-	public Object getStaff() {
-		return userRepository.findUserIdStaffIdNameRoleStatusByRoleNot(5);
-	}
+//	public Object getStaff() {
+//		return userRepository.findUserIdStaffIdNameRoleStatusByRoleNot(5);
+//	}
 	
 	public Integer markStaffAttendance(Integer staffId) {
 		if(staffRepository.existsById(staffId)) {

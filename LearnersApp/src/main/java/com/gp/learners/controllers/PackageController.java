@@ -2,11 +2,16 @@ package com.gp.learners.controllers;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gp.learners.entities.VehicleCategory;
@@ -52,6 +57,16 @@ public class PackageController {
 		Integer reply = packageService.getVehcleCategoryTransmission(vehicleCategoryId);
 		if(reply!=null) {
 			return ResponseEntity.ok(reply);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@PostMapping("package/register")
+	public ResponseEntity<com.gp.learners.entities.Package> registerPackage(@Validated @RequestBody com.gp.learners.entities.Package packageData) {
+		System.out.println(packageData);
+		com.gp.learners.entities.Package object = packageService.registerPackage(packageData);
+		if(object!=null) {
+			return ResponseEntity.ok(object);
 		}
 		return ResponseEntity.notFound().build();
 	}

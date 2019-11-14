@@ -22,8 +22,9 @@ public class Notification {
 
 	/*
 	 * 1 -->Update Lesson Notification 
-	 * 2 -->New Package add Notification
+	 * 2 -->New Lesson add Notification
 	 * 3 -->Lesson Deactivate Notification
+	 * 4 -->New Package Add Notification
 	 */
 	@NotNull
 	private Integer notificationType;
