@@ -20,14 +20,14 @@ public class Pdf {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "pdf_id")
 	private Integer pdfId;
-
-	@NotBlank(message = "resourse is mandatory")
-	private String resource;             //Is this a URL???If its a url should validate
-
-	@NotBlank(message = "description is mandatory")
+	
+	@NotBlank(message = "Title is mandatory")
+	private String title;
+	
 	private String description;
 
-	private String title;
+		@NotBlank(message = "resourse is mandatory")
+	private String resource;             //Is this a URL???If its a url should validate
 
 	@ManyToOne
 	@JoinColumn(name = "admin_staff_id", referencedColumnName = "admin_staff_id")
@@ -50,11 +50,18 @@ public class Pdf {
 
 	}
 
-	public Pdf(Integer pdfId, @NotBlank(message = "resourse is mandatory") String resource, AdminStaff adminStaffId) {
+
+
+	public Pdf(Integer pdfId, @NotBlank(message = "Title is mandatory") String title, String description,
+			@NotBlank(message = "resourse is mandatory") String resource, AdminStaff adminStaffId,
+			LocalDate addedDate) {
 		super();
 		this.pdfId = pdfId;
+		this.title = title;
+		this.description = description;
 		this.resource = resource;
 		this.adminStaffId = adminStaffId;
+		this.addedDate = addedDate;
 	}
 
 	public Integer getPdfId() {
@@ -95,9 +102,11 @@ public class Pdf {
 	public void setAdminStaffId(AdminStaff adminStaffId) {
 		this.adminStaffId = adminStaffId;
 	}
+
 	@Override
 	public String toString() {
-		return "Pdf [pdfId=" + pdfId + ", resource=" + resource + ", description=" + description + ", title=" + title
+		return "Pdf [pdfId=" + pdfId + ", title=" + title + ", description=" + description + ", resource=" + resource
 				+ ", adminStaffId=" + adminStaffId + ", addedDate=" + addedDate + "]";
 	}
+	
 }

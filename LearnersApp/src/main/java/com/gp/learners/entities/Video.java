@@ -21,12 +21,14 @@ public class Video {
 	@Column(name = "video_id")
 	private Integer videoId;
 
+	@NotBlank(message = "Title is mandatory")
+	String title;
+	
+	String description;
+	
 	@NotBlank(message = "URL is mandatory")
 	String url;
 	
-	@NotBlank(message = "Description is mandatory")
-	String description;
-
 	@ManyToOne
 	@JoinColumn(name = "admin_staff_id", referencedColumnName = "admin_staff_id")
 	private AdminStaff adminStaffId;
@@ -40,13 +42,14 @@ public class Video {
 
 	}
 
-	public Video(Integer videoId, @NotBlank(message = "URL is mandatory") String url,
-			@NotBlank(message = "Description is mandatory") String description, AdminStaff adminStaffId,
-			LocalDate addedDate) {
+	public Video(Integer videoId, @NotBlank(message = "Title is mandatory") String title,
+			@NotBlank(message = "Description is mandatory") String description,
+			@NotBlank(message = "URL is mandatory") String url, AdminStaff adminStaffId, LocalDate addedDate) {
 		super();
 		this.videoId = videoId;
-		this.url = url;
+		this.title = title;
 		this.description = description;
+		this.url = url;
 		this.adminStaffId = adminStaffId;
 		this.addedDate = addedDate;
 	}
@@ -59,12 +62,12 @@ public class Video {
 		this.videoId = videoId;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getDescription() {
@@ -73,6 +76,14 @@ public class Video {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	public AdminStaff getAdminStaffId() {
@@ -93,10 +104,11 @@ public class Video {
 
 	@Override
 	public String toString() {
-		return "Video [videoId=" + videoId + ", url=" + url + ", description=" + description + ", adminStaffId="
-				+ adminStaffId + ", addedDate=" + addedDate + "]";
+		return "Video [videoId=" + videoId + ", title=" + title + ", description=" + description + ", url=" + url
+				+ ", adminStaffId=" + adminStaffId + ", addedDate=" + addedDate + "]";
 	}
 
+	
 	
 
 }
