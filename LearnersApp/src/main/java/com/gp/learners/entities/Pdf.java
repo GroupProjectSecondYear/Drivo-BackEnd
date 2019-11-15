@@ -27,7 +27,7 @@ public class Pdf {
 	@NotBlank(message = "description is mandatory")
 	private String description;
 
-	private String tags;
+	private String title;
 
 	@ManyToOne
 	@JoinColumn(name = "admin_staff_id", referencedColumnName = "admin_staff_id")
@@ -80,12 +80,12 @@ public class Pdf {
 		this.description = description;
 	}
 
-	public String getTags() {
-		return tags;
+	public String gettitle() {
+		return title;
 	}
 
-	public void setTags(String tags) {
-		this.tags = tags;
+	public void settitle(String title) {
+		this.title = title;
 	}
 
 	public AdminStaff getAdminStaffId() {
@@ -97,7 +97,7 @@ public class Pdf {
 	}
 	@Override
 	public String toString() {
-		return "Pdf [pdfId=" + pdfId + ", resource=" + resource + ", description=" + description + ", tags=" + tags
+		return "Pdf [pdfId=" + pdfId + ", resource=" + resource + ", description=" + description + ", title=" + title
 				+ ", adminStaffId=" + adminStaffId + ", addedDate=" + addedDate + "]";
 	}
 }
