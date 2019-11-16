@@ -1,7 +1,5 @@
 package com.gp.learners.entities;
 
-
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,7 +7,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Entity
 public class Package {
@@ -19,22 +22,37 @@ public class Package {
 	@Column(name = "package_id")
 	private Integer packageId;
 
+	@NotBlank(message = "Title is mandatory")
 	private String title;
+
+	@NotBlank(message = "Description is mandatory")
 	private String description;
-	private String url;
+
+	private Integer packageImage;
+
+	@Min(0)
+	@NotNull(message = "Price is mandatory")
 	private Float price;
+
+	@Min(0)
+	@Max(1)
 	private Integer status;
+
 	@Column(name = "manual_les")
 	private Integer manualLes;
 	@Column(name = "auto_les")
 	private Integer autoLes;
 
+	@Min(0)
+	@Max(100)
+	@NotNull(message = "Basic Payment is mandatory")
+	@Column(name = "basic_payment")
+	private Integer basicPayment;
+
 	@ManyToOne
 	@JoinColumn(name = "vehicle_category_id", referencedColumnName = "vehicle_category_id")
 	private VehicleCategory vehicleCategoryId;
 
-	
-	
 	public Package() {
 
 	}
@@ -63,12 +81,12 @@ public class Package {
 		this.description = description;
 	}
 
-	public String getUrl() {
-		return url;
+	public Integer getPackageImage() {
+		return packageImage;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setPackageImage(Integer packageImage) {
+		this.packageImage = packageImage;
 	}
 
 	public Float getPrice() {
@@ -103,6 +121,14 @@ public class Package {
 		this.autoLes = autoLes;
 	}
 
+	public Integer getBasicPayment() {
+		return basicPayment;
+	}
+
+	public void setBasicPayment(Integer basicPayment) {
+		this.basicPayment = basicPayment;
+	}
+
 	public VehicleCategory getVehicleCategoryId() {
 		return vehicleCategoryId;
 	}
@@ -113,11 +139,10 @@ public class Package {
 
 	@Override
 	public String toString() {
-		return "Package [packageId=" + packageId + ", title=" + title + ", description=" + description + ", url=" + url
-				+ ", price=" + price + ", status=" + status + ", manualLes=" + manualLes + ", autoLes=" + autoLes
-				+ ", vehicleCategoryId=" + vehicleCategoryId + "]";
+		return "Package [packageId=" + packageId + ", title=" + title + ", description=" + description
+				+ ", packageImage=" + packageImage + ", price=" + price + ", status=" + status + ", manualLes="
+				+ manualLes + ", autoLes=" + autoLes + ", basicPayment=" + basicPayment + ", vehicleCategoryId="
+				+ vehicleCategoryId + "]";
 	}
-
-	
 
 }

@@ -62,7 +62,7 @@ public class UserService {
 		}).start();
 
 		if( !email.equals("")) {
-			if(isExistUser(email)) {
+			if(isExistUserByEmail(email)) {
 				return userRepository.findByEmail(email);
 			}
 		}
@@ -70,7 +70,7 @@ public class UserService {
 	}
 	
 	public User userRegister(User user) {
-		if(!isExistUser(user.getEmail())) {
+		if( !isExistUser(user.getEmail(),user.getNic())) {
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 			user.setPassword(encoder.encode(user.getPassword()));
 			user = userRepository.save(user);
@@ -84,7 +84,7 @@ public class UserService {
 	
 	public String uploadUserProfileImage(MultipartFile file,Integer userId) {
 		if(userRepository.existsById(userId)) {
-			String keyName = getFileKeyName(userId);
+			String keyName = userId+".jpg";
 			if(keyName!=null) {
 				s3Service.uploadFile(keyName, file,bucketName);
 				User user = userRepository.findByUserId(userId);
@@ -98,7 +98,7 @@ public class UserService {
 	
 	public ByteArrayOutputStream downLoadProfileImage(Integer userId) {
 		if(userRepository.existsById(userId)) {
-			String keyName = getFileKeyName(userId);
+			String keyName = userId+".jpg";
 			if(keyName!=null) {
 				User user = userRepository.findByUserId(userId);
 				try {
@@ -136,7 +136,21 @@ public class UserService {
    }
 	
 	//Helping function
-	private Boolean isExistUser(String email) {
+	private Boolean isExistUser(String email,String nic) {//use for user registration
+		User user1=userRepository.findByEmail(email);
+		User user2=userRepository.findByNic(nic);
+		System.out.println("---------------------");
+		System.out.println(user1);
+		System.out.println(user2);
+		if(user1 != null || user2 != null) {
+			System.out.println("------------------------");
+			return true;
+		}
+			
+		return false;
+	}
+	
+	private Boolean isExistUserByEmail(String email) {
 		User user=userRepository.findByEmail(email);
 		if(user != null) {
 			return true;
@@ -144,10 +158,10 @@ public class UserService {
 		return false;
 	}
 	
-	public String getFileKeyName(Integer userId) {
-		User user = userRepository.findByUserId(userId);
-		String keyName = user.getUserId()+".jpg";
-		return keyName;	
-	}
+//	public String getFileKeyName(Integer userId) {
+//		User user = userRepository.findByUserId(userId);
+//		String keyName = user.getUserId()+".jpg";
+//		return keyName;	
+//	}
 	
 }

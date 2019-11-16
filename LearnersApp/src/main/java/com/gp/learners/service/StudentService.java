@@ -72,7 +72,7 @@ public class StudentService {
 	
 	
 	public Integer studentRegister(Student student) {
-		if( isExistUser(student.getUserId().getNic()) ) {
+		if( isExistUser(student.getUserId().getNic(),student.getUserId().getEmail())) {
 			studentRepository.save(student);
 			return 1;
 		}
@@ -331,7 +331,8 @@ public class StudentService {
 		List<StudentTrialMap> studentTrialList=new ArrayList<StudentTrialMap>();
 		
 		for(Student student : studentList) {
-			studentTrialList.add(new StudentTrialMap(student.getUserId().getFirstName(),student.getUserId().getFirstName()));
+			String studentName = student.getUserId().getFirstName()+" "+student.getUserId().getLastName();
+			studentTrialList.add(new StudentTrialMap(studentName,student.getUserId().getNic()));
 		}
 		
 		return studentTrialList;
@@ -345,7 +346,8 @@ public class StudentService {
 		List<StudentTrialMap> studentExamList=new ArrayList<StudentTrialMap>();
 		
 		for(Student student : studentList) {
-			studentExamList.add(new StudentTrialMap(student.getUserId().getFirstName(),student.getUserId().getNic()));
+			String studentName = student.getUserId().getFirstName()+student.getUserId().getLastName();
+			studentExamList.add(new StudentTrialMap(studentName,student.getUserId().getNic()));
 		}
 		
 		return studentExamList;
@@ -465,7 +467,7 @@ public class StudentService {
 				userRepository.save(object);
 				
 				//delete studentLesson Details
-				studentLessonRepository.deleteByStudentId(student);
+				//studentLessonRepository.deleteByStudentId(student);
 				
 				//update JWT UserList
 				jwtInMemoryUserDetailsService.setUserInMemory();
@@ -515,6 +517,22 @@ public class StudentService {
 		}
 		
 		return courseFeeNotCompleteStudentList;
+	}
+	
+	public String continueStudentAccount(Integer studentId) {
+		if(studentRepository.existsById(studentId)) {
+			Student student = studentRepository.findByStudentId(studentId);
+			if(student!=null) {
+				User user = student.getUserId();
+				if(user!=null) {
+					user.setStatus(1);
+					userRepository.save(user);
+					jwtInMemoryUserDetailsService.addNewUserInMemory(user);
+					return "success";
+				}
+			}
+		}
+		return null;
 	}
 	
 	//Helping Function
@@ -572,8 +590,8 @@ public class StudentService {
 		return false;
 	}
 	
-	private Boolean isExistUser(String nic) {
-		User user = userRepository.findByNic(nic);
+	private Boolean isExistUser(String nic,String email) {
+		User user = userRepository.findByEmailAndNic(email,nic);
 		if(user != null ) {
 			return true;
 		}
@@ -601,11 +619,15 @@ public class StudentService {
 		
 		if(flag) {//course fee not completed
 			return false;
-		}else {//previous course fees completed.so delete all payment record
+		}else {
+			//previous course fees completed.so delete all payment record
 			for (Integer packageId : studentPackageList) {		
 				StudentPackage object = studentPackageRepository.findByStudentIdAndPackageId(student, packageRepository.findByPackageId(packageId));
 				courseFeeRepository.deleteByStudentPackageId(object);
 			}
+			
+			//delete student previous lesson details
+			studentLessonRepository.deleteByStudentId(student);
 		}
 		return true;
 	}
@@ -619,6 +641,9 @@ public class StudentService {
 				StudentPackage object = studentPackageRepository.findByStudentIdAndPackageId(student,packageRepository.findByPackageId(packageId));
 				courseFeeRepository.deleteByStudentPackageId(object);
 			}
+			
+			//delete student previous lesson details
+			studentLessonRepository.deleteByStudentId(student);
 			
 			User user = student.getUserId();
 			user.setStatus(1);

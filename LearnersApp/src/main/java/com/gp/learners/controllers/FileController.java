@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.simpleworkflow.flow.core.TryCatch;
+import com.gp.learners.service.PackageService;
 import com.gp.learners.service.S3Service;
 import com.gp.learners.service.UserService;
 
@@ -30,11 +31,15 @@ public class FileController {
 	 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	PackageService packageService;
     
 	/*
      * Download Files
      * type --> 1 = UserProfileImage
      * type --> 2 = PDF
+     * type --> 3 = Package's Image
      */
 	@GetMapping("/api/file/{userId}/{type}")
 	public ResponseEntity<byte[]> downloadFile(@PathVariable("userId") Integer userId ,@PathVariable("type") Integer type) {
@@ -49,7 +54,8 @@ public class FileController {
 		if(downloadInputStream!=null) {
 			String keyname ="";
 			if(type==1) {
-				keyname = userService.getFileKeyName(userId);
+				 keyname=userId+".jpg";
+				//keyname = userService.getFileKeyName(userId);
 			}else {
 				//pdf service
 			}
@@ -86,24 +92,28 @@ public class FileController {
 	 * type --> 1 = UserProfileImage
      * type --> 2 = PDF
 	 */
-	@PostMapping("file/upload/{userId}/{type}")
-    public ResponseEntity<Integer> uploadMultipartFile(@RequestParam("file") MultipartFile file ,@PathVariable("userId") Integer userId,@PathVariable("type") Integer type) {
+	@PostMapping("file/upload/{id}/{type}")
+    public ResponseEntity<Integer> uploadMultipartFile(@RequestParam("file") MultipartFile file ,@PathVariable("id") Integer id,@PathVariable("type") Integer type) {
 		try {
 			Long fileSize = file.getSize();
 			Long maxFileSize = 1L;
 			
 			if(type==1) {
+				maxFileSize=9000000L;//9MB
+			}else if(type==2){
 				maxFileSize=9437184L;//9MB
-			}else {
-				//pdf max file size
+			}else {//type=3
+				maxFileSize=20000000L;//20MB
 			}
 			
 			if(fileSize<=maxFileSize) {
 				String reply=null;
 				if(type==1) {
-					reply = userService.uploadUserProfileImage(file, userId);
-				}else {
+					reply = userService.uploadUserProfileImage(file, id);
+				}else if(type==2){
 					//pdf Service
+				}else {//type==3
+					reply = packageService.uploadPackageImage(file, id);
 				}
 				
 				if(reply!=null) {

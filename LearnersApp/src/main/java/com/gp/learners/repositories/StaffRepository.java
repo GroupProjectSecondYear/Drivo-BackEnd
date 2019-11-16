@@ -21,4 +21,7 @@ public interface StaffRepository extends JpaRepository<Staff, Integer>{
 	
 	@Query(value="select * from staff s,user u where s.user_id=u.user_id and u.role = :role and u.status = 1",nativeQuery=true)
 	public List<Staff> findStaffListByRole(@PathVariable("role")Integer role);
+	
+	@Query("from Staff s,User u where s.userId=u.userId  order by u.status desc")
+	public List<Staff> getStaffList();
 }

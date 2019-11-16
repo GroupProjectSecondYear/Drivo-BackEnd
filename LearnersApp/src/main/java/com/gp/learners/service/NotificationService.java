@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.gp.learners.entities.InstructorNotification;
 import com.gp.learners.entities.Lesson;
 import com.gp.learners.entities.Notification;
+import com.gp.learners.entities.Package;
 import com.gp.learners.entities.Student;
 import com.gp.learners.entities.StudentLesson;
 import com.gp.learners.entities.StudentNotification;
@@ -127,13 +128,16 @@ public class NotificationService {
 						title="Update Lesson";
 					}else if(studentNotification.getNotificationId().getNotificationType()==2) {
 						title="New Lesson Publish";
-					}else {
+					}else if(studentNotification.getNotificationId().getNotificationType()==3) {
 						title="Cancel Lesson";
+					}else {
+						title="New Course(Package) Published";
 					}
 					object.setTitle(title);
 					
 					notificationList.add(object);
 				}
+				
 			}
 			
 			return notificationList;
@@ -141,6 +145,8 @@ public class NotificationService {
 		
 		return null;
 	}
+	
+	
 	
 	public Boolean lessonUpdateNotification(Lesson updateLesson) throws Exception{
 		Integer lessonId = updateLesson.getLessonId();
@@ -410,6 +416,28 @@ public class NotificationService {
 			
 			instructorNotificationRepository.save(object);
 			
+		}
+	}
+	
+	public void registerNewPackage(Package packageData) {
+		
+		String message = "New "+packageData.getTitle() +" Package(Course) Published";
+				
+		Notification notification = new Notification();
+		notification.setMessage(message);
+		notification.setDate(timeTableService.getLocalCurrentDate());
+		notification.setNotificationType(4);
+		notification.setTime(timeTableService.getLocalCurrentTime());
+		notificationRepository.save(notification);
+		
+		List<Student> studentList = studentRepository.getStudent(1);
+		for (Student student : studentList) {
+			StudentNotification object = new  StudentNotification();
+			object.setNotificationId(notification);
+			object.setStudentId(student);
+			object.setView(0);
+			
+			studentNotificationRepository.save(object);
 		}
 	}
 	

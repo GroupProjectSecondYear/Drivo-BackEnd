@@ -86,9 +86,14 @@ public class StaffController {
 //		return true;
 //	}
 	
+//	@GetMapping("/staff")
+//	public Object getStaffDetails() {
+//		return staffService.getStaff();
+//	}
+	
 	@GetMapping("/staff")
-	public Object getStaffDetails() {
-		return staffService.getStaff();
+	public List<Staff> getStaffList(){
+		return staffRepostitory.getStaffList();
 	}
 	
 	@PostMapping("/staff/attendance/{staffId}")
