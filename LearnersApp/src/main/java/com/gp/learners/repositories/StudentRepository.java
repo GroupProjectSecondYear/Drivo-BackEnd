@@ -16,7 +16,7 @@ import com.gp.learners.entities.mapObject.StudentTrialMap;
 public interface StudentRepository extends JpaRepository<Student, Integer>{
 
 	//get All Active Student
-	@Query(value="select * from student u ,user v where u.user_id=v.user_id and v.status = :status",nativeQuery=true)
+	@Query(value="select * from student u ,user v where u.user_id=v.user_id and v.status = :status order by v.first_name ASC",nativeQuery=true)
 	public List<Student> getStudent(@Param("status") Integer status);
 	
 	//getstudent by id

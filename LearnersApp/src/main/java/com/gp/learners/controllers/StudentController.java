@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gp.learners.entities.CourseFee;
 import com.gp.learners.entities.Package;
 import com.gp.learners.entities.Student;
+import com.gp.learners.entities.StudentPackage;
 import com.gp.learners.entities.mapObject.StudentPackageMap;
 import com.gp.learners.entities.mapObject.StudentTrialMap;
 import com.gp.learners.repositories.StudentRepository;
@@ -151,9 +152,14 @@ public class StudentController {
 		return studentService.getStudentExamList(date);
 	}
 	
-	@GetMapping("student/writtenexam/result")
-	public List<Double> getWrittenExamResult(){
-		return studentService.getWrittenExamResult();
+	
+	/*
+	 *  type 1-->Written Exam
+	 * 		 2-->Trial Exam
+	 */
+	@GetMapping("student/exam/result/{type}")
+	public List<Double> getWrittenExamResult(@PathVariable("type") Integer type){
+		return studentService.getWrittenExamResult(type);
 	}
 	
 	@PostMapping("student/writtenexam/result")
@@ -197,6 +203,15 @@ public class StudentController {
 		return ResponseEntity.notFound().build();
 	}
 	
+	@PutMapping("student/continue/account/{studentId}")
+	public ResponseEntity<Void> continueStudentAccount(@PathVariable("studentId") Integer studentId){
+		String reply = studentService.continueStudentAccount(studentId);
+		if(reply!=null) {
+			return ResponseEntity.ok().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
 	@DeleteMapping("student/clear/payment/{studentId}")
 	public ResponseEntity<Void> clearStudentPreviousPayment(@PathVariable("studentId") Integer studentId){
 		String reply = studentService.clearStudentPreviousPayment(studentId);
@@ -209,6 +224,15 @@ public class StudentController {
 	@GetMapping("student/payment/notcomplete")
 	public List<Student> getpaymentNotCompleteStudent(){
 		return studentService.getpaymentNotCompleteStudent();
+	}
+	
+	@GetMapping("student/package/data/{id}/{role}/{packageId}")
+	public ResponseEntity<StudentPackage> getStudentPackageData(@PathVariable("id")Integer id,@PathVariable("role")Integer role,@PathVariable("packageId")Integer packageId){
+		StudentPackage object = studentService.getStudentPackageData(id, role, packageId);
+		if(object!=null) {
+			return ResponseEntity.ok(object);
+		}
+		return ResponseEntity.notFound().build();
 	}
 	
 }

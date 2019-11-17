@@ -32,7 +32,6 @@ public class PdfService {
 	//Add PDF
 		public String addPdf(Pdf pdf) {
 
-
 			Pdf result=pdfRepository.save(pdf);
 			if(result!=null)
 				return "success";
@@ -52,15 +51,16 @@ public class PdfService {
 			return "error";
 		}
 
+
+
 		//update Student Details
 		public Pdf updatePdf(Pdf pdf) {
 			if(pdfRepository.existsById(pdf.getPdfId())) {
 				//Pdf pdf1=pdfRepository.getPdfById(pdf.getPdfId());
 						return pdfRepository.save(pdf);
 					}
-	
+
 			return new Pdf();
 		}
-			
-}
 
+}
