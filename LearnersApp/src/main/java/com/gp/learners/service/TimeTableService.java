@@ -187,7 +187,7 @@ public class TimeTableService {
 					
 					for (Integer id : instructorIdList) {
 						Instructor instructor=instructorRepository.findByInstructorId(id);
-						instructorList.add(new InstructorMap(id,instructor.getStaffId().getUserId().getFirstName()));
+						instructorList.add(new InstructorMap(id,instructor.getStaffId().getUserId().getFirstName()+" "+instructor.getStaffId().getUserId().getLastName()));
 					}
 					
 				}
@@ -278,7 +278,7 @@ public class TimeTableService {
 				for (Lesson lesson : lessons) {
 					if(timeSlot.equals(lesson.getTimeSlotId())) {
 						packageDataRow.add(lesson.getPackageId().getTitle()+"("+getTransmission(lesson.getTransmission())+")");
-						instructorDataRow.add(lesson.getInstructorId().getStaffId().getUserId().getFirstName());
+						instructorDataRow.add(lesson.getInstructorId().getStaffId().getUserId().getFirstName()+" "+lesson.getInstructorId().getStaffId().getUserId().getLastName());
 						pathDataRow.add(lesson.getPathId().getOrigin()+" : "+lesson.getPathId().getDestination());
 						numStuDataRow.add(lesson.getNumStu());
 						idDataRow.add(lesson.getLessonId());
@@ -300,7 +300,7 @@ public class TimeTableService {
 						idDataRow = new ArrayList<Integer>();
 						
 						packageDataRow.add(lesson.getPackageId().getTitle()+"("+getTransmission(lesson.getTransmission())+")");
-						instructorDataRow.add(lesson.getInstructorId().getStaffId().getUserId().getFirstName());
+						instructorDataRow.add(lesson.getInstructorId().getStaffId().getUserId().getFirstName()+" "+lesson.getInstructorId().getStaffId().getUserId().getLastName());
 						pathDataRow.add(lesson.getPathId().getOrigin()+" : "+lesson.getPathId().getDestination());
 						numStuDataRow.add(lesson.getNumStu());
 						idDataRow.add(lesson.getLessonId());

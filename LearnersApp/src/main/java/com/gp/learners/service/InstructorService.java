@@ -11,11 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gp.learners.entities.Instructor;
-import com.gp.learners.entities.Pdf;
 import com.gp.learners.entities.Staff;
-import com.gp.learners.entities.Student;
 import com.gp.learners.entities.StudentLesson;
-import com.gp.learners.entities.Video;
 import com.gp.learners.entities.mapObject.LessonAssingStudentMap;
 import com.gp.learners.entities.mapObject.LessonMap;
 import com.gp.learners.entities.mapObject.StudentPractricalChartDataMap;
@@ -166,21 +163,4 @@ public class InstructorService {
 		}
 		return null;
 	}
-	
-	//get Instructor List
-			public List<Instructor> getInstructorList(){
-				System.out.println("In Instructor Repo");
-				return instructorRepository.findAll();
-				
-			}
-			
-			// Get Instructor using instructorId
-			public Instructor getInstructorByID(Integer instructorId) {
-				if(instructorId != null) {
-					if(instructorRepository.existsById(instructorId)) {
-						return instructorRepository.getInstructorById(instructorId);
-					}
-				}
-				return new Instructor(); 
-			}
 }

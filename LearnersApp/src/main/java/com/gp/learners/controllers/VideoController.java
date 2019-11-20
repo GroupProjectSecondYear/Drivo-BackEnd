@@ -20,61 +20,61 @@ import com.gp.learners.repositories.VideoRepository;
 import com.gp.learners.service.VideoService;
 
 @RestController
-@CrossOrigin(origins="*",allowedHeaders="*",maxAge=3600)
+@CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
 public class VideoController {
-	
+
 	@Autowired
 	VideoService videoService;
-	
+
 	@Autowired
 	VideoRepository videoRepository;
-	
-	
+
 	@GetMapping("/videos")
-	public List<Video> getVideoList(){
+	public List<Video> getVideoList() {
 		System.out.println("In Video Controller");
 		return videoService.getVideoList();
-		
+
 	}
-	//get Specific Video data
-		@GetMapping("video/{videoId}") 
-		public ResponseEntity<Video> getVideo(@PathVariable("videoId") Integer videoId) {
-			System.out.println("In Video Controller VmoreDetails");
-			Video video=videoService.getVideoDetails(videoId);
-			if(video.getVideoId() != null) {
-				return ResponseEntity.ok(video);
-			}
-			return ResponseEntity.noContent().build();
+
+	// get Specific Video data
+	@GetMapping("video/{videoId}")
+	public ResponseEntity<Video> getVideo(@PathVariable("videoId") Integer videoId) {
+		System.out.println("In Video Controller VmoreDetails");
+		Video video = videoService.getVideoDetails(videoId);
+		if (video.getVideoId() != null) {
+			return ResponseEntity.ok(video);
 		}
-		
-	//save video
+		return ResponseEntity.noContent().build();
+	}
+
+	// save video
 	@PostMapping("/video/add")
-	   
-		public Video saveVideo(@RequestBody Video video) {
+
+	public Video saveVideo(@RequestBody Video video) {
 		System.out.println("In video controller Adding method");
 		return videoRepository.save(video);
 	}
-	
-	//delete Video
-		@DeleteMapping("video/{videoId}")
-		public ResponseEntity<Void> deleteVideo(@PathVariable("videoId") Integer videoId){
-			System.out.println("In video controller delete method");
 
-			String reply=videoService.deleteVideo(videoId);
-			if(reply.equals("success")) {
-				return ResponseEntity.noContent().build();
-			}
-			return ResponseEntity.notFound().build();
+	// delete Video
+	@DeleteMapping("video/{videoId}")
+	public ResponseEntity<Void> deleteVideo(@PathVariable("videoId") Integer videoId) {
+		System.out.println("In video controller delete method");
+
+		String reply = videoService.deleteVideo(videoId);
+		if (reply.equals("success")) {
+			return ResponseEntity.noContent().build();
 		}
-		
-		//update video Details
-		@PutMapping("video/update")
-		public ResponseEntity<Video> updateVideo(@Valid @RequestBody Video object){
-			Video video=videoService.updateVideo(object);
-			if(video.getVideoId() != null) {
-				return ResponseEntity.ok(video);
-			}
-			return ResponseEntity.notFound().build();
+		return ResponseEntity.notFound().build();
+	}
+
+	// update video Details
+	@PutMapping("video/update")
+	public ResponseEntity<Video> updateVideo(@Valid @RequestBody Video object) {
+		Video video = videoService.updateVideo(object);
+		if (video.getVideoId() != null) {
+			return ResponseEntity.ok(video);
 		}
-	
+		return ResponseEntity.notFound().build();
+	}
+
 }

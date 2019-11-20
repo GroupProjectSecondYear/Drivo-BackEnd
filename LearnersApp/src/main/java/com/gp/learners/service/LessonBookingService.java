@@ -293,9 +293,16 @@ public class LessonBookingService {
 				numOfLessonForPackage = studentPackage.getPackageId().getAutoLes();
 			}
 			
-			if(payment!=null) {
-				if( (courseFee/2) <= payment ) {//If student pay 50% of course fee then , he can do trail lesson (1/2) of total lessons
-					if( (numOfLessonForPackage/2) > (lessons) ) {
+			
+			Integer basicCourseFeePercentage = studentPackage.getPackageId().getBasicPayment();		
+			Double x = Math.ceil(100.0/basicCourseFeePercentage);
+			Float basicPayment = (courseFee*basicCourseFeePercentage)/100;
+			Double basicNumLessons = Math.ceil(numOfLessonForPackage/x);
+			
+			
+			if(payment!=null && basicPayment!=null) {
+				if( (basicPayment) <= payment ) {//If student pay x% of course fee then , he can do trail lesson (1/2) of total lessons
+					if( basicNumLessons > (lessons) ) {
 						return 1;//can book lesson
 					}else {
 						if( courseFee<=payment ) {

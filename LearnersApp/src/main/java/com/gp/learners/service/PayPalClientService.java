@@ -128,8 +128,8 @@ public class PayPalClientService {
 	}
 	
 	private Boolean validateInformation(Integer userId,Integer packageId,Float amount) {
-		System.out.println("Hello");
-		System.out.println("userId:"+userId+" packageId:"+packageId+" amount"+amount);
+//		System.out.println("Hello");
+//		System.out.println("userId:"+userId+" packageId:"+packageId+" amount"+amount);
 		if(userRepository.existsById(userId) && packageRepository.existsById(packageId) && amount>0) {
 			Integer studentId = studentRepository.findByUserId(userRepository.findByUserId(userId));
 			if(studentId != null) {

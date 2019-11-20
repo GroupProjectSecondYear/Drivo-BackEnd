@@ -38,8 +38,6 @@ public class UserController {
 	
 	@PostMapping("user/register")
 	public ResponseEntity<User> userRegister(@Validated @RequestBody User user) {
-		System.out.println("-----------");
-		System.out.println("user");
 		User reply = userService.userRegister(user);
 		if(reply != null) {
 			return ResponseEntity.ok(reply);

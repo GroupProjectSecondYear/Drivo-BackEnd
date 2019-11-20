@@ -23,29 +23,20 @@ import com.gp.learners.service.AdminStaffService;
 import com.gp.learners.service.StaffService;
 
 @RestController
-@CrossOrigin(origins="*",allowedHeaders="*",maxAge=3600)
+@CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
 public class AdminStaffController {
 
 	@Autowired
-	private StaffService staffService;
-	@Autowired
 	private AdminStaffService adminStaffService;
-	@Autowired
-	private StaffRepository staffRepostitory;
-	@Autowired 
-	private AdministrativeStaffRepository adminiStaffRepository;
-	@Autowired
-	private UserRepository userRepository;
 
 	@GetMapping("adminByUserId/{userId}")
 	public ResponseEntity<AdminStaff> getAdminstaffbyUserId(@PathVariable("userId") Integer userId) {
 		System.out.println("inAdminstaffController");
-		AdminStaff adminStaff=adminStaffService.getAdminStaffByUserId(userId); 
-		if(adminStaff != null) {
+		AdminStaff adminStaff = adminStaffService.getAdminStaffByUserId(userId);
+		if (adminStaff != null) {
 			return ResponseEntity.ok(adminStaff);
 		}
 		return ResponseEntity.noContent().build();
 	}
 
 }
-

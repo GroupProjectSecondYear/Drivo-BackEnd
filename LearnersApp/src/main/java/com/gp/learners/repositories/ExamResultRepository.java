@@ -18,6 +18,12 @@ public interface ExamResultRepository extends JpaRepository<ExamResult,Integer>{
 	@Query(value="select sum(written_exam_fail) from exam_result u WHERE u.date BETWEEN :start AND :end",nativeQuery=true)
 	Double findWrittenExamResultFailSum(@Param("start")Date start,@Param("end")Date end);
 	
+	@Query(value="select sum(trial_exam) from exam_result u WHERE u.date BETWEEN :start AND :end",nativeQuery=true)
+	Double findTrialExamResultSum(@Param("start")Date start,@Param("end")Date end);
+	
+	@Query(value="select sum(trial_exam_fail) from exam_result u WHERE u.date BETWEEN :start AND :end",nativeQuery=true)
+	Double findTrialExamResultFailSum(@Param("start")Date start,@Param("end")Date end);
+	
 	@Query(value="select *  from exam_result u WHERE u.date = :date",nativeQuery=true)
 	ExamResult findByDate(@Param("date")LocalDate date);
 }

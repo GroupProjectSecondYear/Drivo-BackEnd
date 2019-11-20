@@ -346,7 +346,7 @@ public class StudentService {
 		List<StudentTrialMap> studentExamList=new ArrayList<StudentTrialMap>();
 		
 		for(Student student : studentList) {
-			String studentName = student.getUserId().getFirstName()+student.getUserId().getLastName();
+			String studentName = student.getUserId().getFirstName()+" "+student.getUserId().getLastName();
 			studentExamList.add(new StudentTrialMap(studentName,student.getUserId().getNic()));
 		}
 		
@@ -355,9 +355,13 @@ public class StudentService {
 	
 	
 	//get WrittenExam Result
-	public List<Double> getWrittenExamResult(){
+	/*
+	 * type 1-->Written Exam
+	 * 		2-->Trial Exam
+	 */
+	public List<Double> getWrittenExamResult(Integer type){
 		
-		List<Double> writtenExamResult=new ArrayList<Double>();
+		List<Double> examResult=new ArrayList<Double>();
 			
 		Calendar gc = new GregorianCalendar();
      
@@ -369,9 +373,16 @@ public class StudentService {
              gc.add(Calendar.DAY_OF_MONTH, 0);
              Date monthEnd = gc.getTime();//month end date
              
+             Double pass=0d;
+             Double fail=0d;
              
-             Double pass=examResultRepository.findWrittenExamResultSum(monthStart,monthEnd);
-             Double fail=examResultRepository.findWrittenExamResultFailSum(monthStart, monthEnd);
+             if(type==1) {
+            	 pass=examResultRepository.findWrittenExamResultSum(monthStart,monthEnd);
+                 fail=examResultRepository.findWrittenExamResultFailSum(monthStart, monthEnd);
+             }else {
+            	 pass=examResultRepository.findTrialExamResultSum(monthStart,monthEnd);
+                 fail=examResultRepository.findTrialExamResultFailSum(monthStart, monthEnd);
+             }
              
              Double passRate;
              if(pass != null) {
@@ -380,12 +391,12 @@ public class StudentService {
             	 }else {
             		 passRate=100.d;
             	 }
-            	 writtenExamResult.add(truncate(passRate, 2));
+            	 examResult.add(truncate(passRate, 2));
              }else {
-            	 writtenExamResult.add(0.d);
+            	 examResult.add(0.d);
              }        
         }
-		return writtenExamResult;
+		return examResult;
 	}
 	
 	
@@ -531,6 +542,21 @@ public class StudentService {
 					return "success";
 				}
 			}
+		}
+		return null;
+	}
+	
+	public StudentPackage getStudentPackageData(Integer id,Integer role,Integer packageId) {
+		if(role==5) {
+			if(userRepository.existsById(id)) {
+				id = studentRepository.findByUserId(userRepository.findByUserId(id));
+			}
+		}
+		
+		if(studentRepository.existsById(id) && packageRepository.existsById(packageId)) {
+			Student student = studentRepository.findByStudentId(id);
+			Package packageData = packageRepository.findByPackageId(packageId);
+			return studentPackageRepository.findByStudentIdAndPackageId(student, packageData);
 		}
 		return null;
 	}
