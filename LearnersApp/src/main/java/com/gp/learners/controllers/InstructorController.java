@@ -15,12 +15,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gp.learners.entities.Student;
-import com.gp.learners.entities.Video;
 import com.gp.learners.entities.mapObject.LessonAssingStudentMap;
 import com.gp.learners.entities.mapObject.LessonMap;
-import com.gp.learners.entities.Instructor;
-import com.gp.learners.entities.Pdf;
 import com.gp.learners.entities.mapObject.StudentPractricalChartDataMap;
 import com.gp.learners.service.InstructorService;
 
@@ -75,7 +71,7 @@ public class InstructorController {
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	//get Instructor list
 	@GetMapping("/instructors")
 	public List<Instructor> getInstructorList(){

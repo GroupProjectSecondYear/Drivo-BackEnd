@@ -1,5 +1,7 @@
 package com.gp.learners.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,9 +19,9 @@ public class VehicleController {
 	@Autowired
 	private VehicleService vehicleService;
 	
-	@GetMapping("/vehicles")
-	public void getVehicles() {
-		
+	@GetMapping("/vehicles/{status}")
+	public List<Vehicle> getVehicles(@PathVariable("status") Integer status) {
+		return vehicleService.getVehicleList(status);
 	}
 	
 	@GetMapping("/vehicle/{vehicleId}")

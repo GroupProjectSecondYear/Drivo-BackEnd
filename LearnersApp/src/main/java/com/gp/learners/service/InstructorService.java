@@ -12,12 +12,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.gp.learners.entities.Instructor;
-import com.gp.learners.entities.Pdf;
 import com.gp.learners.entities.Staff;
-import com.gp.learners.entities.Student;
 import com.gp.learners.entities.StudentLesson;
 import com.gp.learners.entities.User;
 import com.gp.learners.entities.Video;
+
 import com.gp.learners.entities.mapObject.LessonAssingStudentMap;
 import com.gp.learners.entities.mapObject.LessonMap;
 import com.gp.learners.entities.mapObject.StudentPractricalChartDataMap;
@@ -168,7 +167,7 @@ public class InstructorService {
 		}
 		return null;
 	}
-	
+
 	//get Instructor List
 			public List<Instructor> getInstructorList(){
 				System.out.println("In Instructor Repo");
@@ -230,4 +229,5 @@ public class InstructorService {
 				}
 				return null;
 			}
+
 }

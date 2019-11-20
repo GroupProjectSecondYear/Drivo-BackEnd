@@ -14,6 +14,10 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Integer>{
 	public Vehicle getVehicle(@Param("vehicleId") Integer vehicleId);
 	
 	
-	@Query(value="select transmission from vehicle where vehicle_category_id = :vehicleCategoryId and transmission= :transmission limit 1",nativeQuery=true)
+	@Query(value="select transmission from vehicle where vehicle_category_id = :vehicleCategoryId and transmission= :transmission and status=1 limit 1",nativeQuery=true)
 	public Boolean findVehicleTransmission(@Param("vehicleCategoryId") Integer vehicleCategoryId,@Param("transmission") Integer transmission);
+
+
+	@Query("from Vehicle where status = :status")
+	public List<Vehicle> getVehicleList(@Param("status") Integer status);
 }
