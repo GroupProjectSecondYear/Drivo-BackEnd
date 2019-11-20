@@ -8,6 +8,7 @@ import java.util.List;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.gp.learners.entities.Instructor;
@@ -15,6 +16,7 @@ import com.gp.learners.entities.Pdf;
 import com.gp.learners.entities.Staff;
 import com.gp.learners.entities.Student;
 import com.gp.learners.entities.StudentLesson;
+import com.gp.learners.entities.User;
 import com.gp.learners.entities.Video;
 import com.gp.learners.entities.mapObject.LessonAssingStudentMap;
 import com.gp.learners.entities.mapObject.LessonMap;
@@ -182,5 +184,50 @@ public class InstructorService {
 					}
 				}
 				return new Instructor(); 
+			}
+			//update Instructor Details
+			public Integer instructorUpdate(Student student) {
+				
+				Boolean isPasswordChanged=false;
+				if(userRepository.existsById(student.getUserId().getUserId()) && studentRepository.existsById(student.getStudentId())) {
+					Integer userId = student.getUserId().getUserId();
+					Integer studentId = student.getStudentId();
+					User newUser = student.getUserId();
+					User currentUser = userRepository.findByUserId(userId);
+					
+					//check password change or not.If password change change then encode the password.
+					String newPassword = newUser.getPassword();
+					String currentPassword = currentUser.getPassword();
+					if(!currentPassword.equals(newPassword)) {
+						BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+						newPassword = encoder.encode(newPassword);
+						newUser.setPassword(newPassword);
+						isPasswordChanged=true;
+					}
+					
+					//check update email is unique
+					String email = newUser.getEmail();
+					User user1 = userRepository.findByEmail(email);
+					if(user1 != null && !user1.getUserId().equals(userId)) {
+						return 2;//Same Email has another person.Save unsuccessful
+					}else {
+						
+						//check update nic has another person
+						String nic = student.getUserId().getNic();
+						User user2= userRepository.findByNic(nic);
+						if(user2 != null && !user2.getUserId().equals(userId)) {
+							return 3;//same nic has another person.Save unsuccessful
+						}else {
+							studentRepository.save(student);
+							if(isPasswordChanged) {
+								jwtInMemoryUserDetailsService.setUserInMemory();
+							}
+							return 1;//save successful
+						}
+					}
+					
+					
+				}
+				return null;
 			}
 }
