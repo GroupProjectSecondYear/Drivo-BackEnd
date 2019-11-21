@@ -205,7 +205,7 @@ public class InstructorService {
 			System.out.println("In INs Service before pw");
 
 			// If password is changed then encode the password
-			if(newUser.getPassword()!=null) {
+			
 				String newPassword = newUser.getPassword();
 				System.out.println(newUser.getPassword());
 				String currentPassword = currentUser.getPassword();
@@ -217,7 +217,7 @@ public class InstructorService {
 					isPasswordChanged = true;
 				}
 
-			}
+			
 		
 			// check update email is unique
 			String email = newUser.getEmail();
@@ -233,6 +233,8 @@ public class InstructorService {
 					return 3;	//another user has same NIC  // saving unsucessfull
 				} else {
 					instructorRepository.save(instructor);
+					staffRepository.save(instructor.getStaffId());
+					userRepository.save(newUser);
 					if (isPasswordChanged) {
 						jwtInMemoryUserDetailsService.setUserInMemory();
 					}
