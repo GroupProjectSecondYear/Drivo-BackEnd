@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.gp.learners.entities.Instructor;
+import com.gp.learners.entities.Student;
 import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.entities.mapObject.InstructorMap;
 
@@ -30,9 +31,13 @@ public interface InstructorRepository extends JpaRepository<Instructor,Integer>{
 	
 //	@Query(value="select name from instructor i ,staff s where i.staff_id=s.staff_id and i.instructor_id = :instructorId",nativeQuery=true)
 //	public String nameFindByInstructorId(@Param("instructorId")Integer instructorId);
-	
 	public Instructor findByInstructorId(Integer instructorId);
 	
 	@Query(value="select * from instructor i where i.staff_id = :staffId ",nativeQuery=true)
 	public Instructor findByStaffId(Integer staffId);
+	
+		//get instructor by instructorId
+	@Query("from Instructor where instructorId = :instructorId")
+	public Instructor getInstructorById(@Param("instructorId")Integer instructorId);
 }
+
