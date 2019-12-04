@@ -150,12 +150,23 @@ public class UserService {
 		return false;
 	}
 	
-	private Boolean isExistUserByEmail(String email) {
+	Boolean isExistUserByEmail(String email) {
 		User user=userRepository.findByEmail(email);
 		if(user != null) {
 			return true;
 		}
 		return false;
+	}
+	
+	//delete User
+	public String deleteUser(Integer userId) {
+		if(userId != null) {
+			if(userRepository.existsById(userId)) {
+				userRepository.deleteById(userId);
+				return "success";
+			}
+		}
+		return "error";
 	}
 	
 //	public String getFileKeyName(Integer userId) {

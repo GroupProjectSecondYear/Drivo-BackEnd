@@ -49,9 +49,15 @@ public class InstructorService {
 
 	@Autowired
 	StudentLessonRepository studentLessonRepository;
-	
+
 	@Autowired
 	JwtInMemoryUserDetailsService jwtInMemoryUserDetailsService;
+
+	@Autowired
+	UserService userService;
+
+	@Autowired
+	StaffService staffService;
 
 	// get Instructor's lesson list
 	public List<LessonMap> getInstructorLesson(Integer userId) {
@@ -205,32 +211,30 @@ public class InstructorService {
 			System.out.println("In INs Service before pw");
 
 			// If password is changed then encode the password
-			
-				String newPassword = newUser.getPassword();
-				System.out.println(newUser.getPassword());
-				String currentPassword = currentUser.getPassword();
-				System.out.println(currentUser.getPassword());
-				if (!currentPassword.equals(newPassword)) {
-					BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-					newPassword = encoder.encode(newPassword);
-					newUser.setPassword(newPassword);
-					isPasswordChanged = true;
-				}
 
-			
-		
+			String newPassword = newUser.getPassword();
+			System.out.println(newUser.getPassword());
+			String currentPassword = currentUser.getPassword();
+			System.out.println(currentUser.getPassword());
+			if (!currentPassword.equals(newPassword)) {
+				BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+				newPassword = encoder.encode(newPassword);
+				newUser.setPassword(newPassword);
+				isPasswordChanged = true;
+			}
+
 			// check update email is unique
 			String email = newUser.getEmail();
 			User user1 = userRepository.findByEmail(email);
 			if (user1 != null && !user1.getUserId().equals(userId)) {
-				return 2;	//another user has the same E-mail // saving unsucessfull
+				return 2; // another user has the same E-mail // saving unsucessfull
 			} else {
 
 				// check update nic is unique
 				String nic = newUser.getNic();
 				User user2 = userRepository.findByNic(nic);
 				if (user2 != null && !user2.getUserId().equals(userId)) {
-					return 3;	//another user has same NIC  // saving unsucessfull
+					return 3; // another user has same NIC // saving unsucessfull
 				} else {
 					instructorRepository.save(instructor);
 					staffRepository.save(instructor.getStaffId());
@@ -244,6 +248,70 @@ public class InstructorService {
 
 		}
 		return null;
+	}
+	/*
+	 * // register Instructor public Integer instructorRegister(Instructor
+	 * instructor) { /* if(
+	 * isExistUser(student.getUserId().getNic(),student.getUserId().getEmail())) {
+	 * studentRepository.save(student); return 1; }
+	 * 
+	 * if (instructor != null) { User user =
+	 * userService.userRegister(instructor.getStaffId().getUserId()); // save user
+	 * relavant data of // instructor if
+	 * (userService.isExistUserByEmail(user.getEmail())) {
+	 * instructor.getStaffId().setUserId(user);
+	 * 
+	 * Staff staff = staffRepository.save(instructor.getStaffId()); // save staff
+	 * relavant data of instructor if
+	 * (staffRepository.existsById(staff.getStaffId())) {
+	 * instructor.setStaffId(staff); instructor =
+	 * instructorRepository.save(instructor); // save instructor if
+	 * (!instructorRepository.existsById(instructor.getInstructorId())) {
+	 * staffRepository.delete(staff); // delete staff relavant data
+	 * userRepository.delete(user); // delete user relavant data return 4; // error
+	 * in saving instructor }
+	 * 
+	 * return 1; // instructor sucessfully added } else {
+	 * userRepository.delete(user); // delete user relavant data return 2; // error
+	 * in saving staff relavant data } } else { return 3; // error in saving user
+	 * relavant data } } return 0; }
+	 */
+
+	// register Instructor
+	public Integer instructorRegister(Instructor instructor) {
+			
+			if (instructor != null) {
+				Staff staff=staffService.staffRegister(instructor.getStaffId());
+				
+				if (staffRepository.existsById(staff.getStaffId())) {
+						instructor.setStaffId(staff);
+						instructor = instructorRepository.save(instructor); // save instructor
+						if (!instructorRepository.existsById(instructor.getInstructorId())) {
+							String response=staffService.deleteStaff(instructor.getStaffId().getStaffId());
+							return 3; // error in saving instructor
+						}else {
+							return 1; // instructor sucessfully added
+
+						}
+
+				} else {
+						userService.deleteUser(instructor.getStaffId().getUserId().getUserId()); // delete user relavant data
+						return 2; // error in saving staff relavant data
+				}
+							
+			}return 0;  //instructor data is not correctly passed	//error in saving instructor
+
+	}
+
+	// Get Instructor using nic
+	public Instructor getInstructorbyEmail(String email) {
+		if (email != null) {
+			if (userRepository.findByEmail(email) != null) {
+				User user = userRepository.findByEmail(email);
+				return instructorRepository.getInstructorById(user.getUserId());
+			}
+		}
+		return new Instructor();
 	}
 
 }

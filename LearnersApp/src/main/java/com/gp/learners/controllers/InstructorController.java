@@ -96,7 +96,7 @@ public class InstructorController {
 		return ResponseEntity.noContent().build();
 	}
 
-	// update INstructor Details
+	// update Instructor Details
 	@PutMapping("instructor/update")
 	public ResponseEntity<Integer> updateInstructor(@Valid @RequestBody Instructor object) {
 		Integer reply = instructorService.updateInstructor(object);
@@ -104,6 +104,22 @@ public class InstructorController {
 			return ResponseEntity.ok(reply);
 		}
 		return ResponseEntity.notFound().build();
+	}
+
+	// register Instructor
+	@PostMapping("/instructor/register")
+	public Integer InstructorRegister(@RequestBody Instructor instructor) {
+		return instructorService.instructorRegister(instructor);
+	}
+	
+	//get Instructor by NIC
+	@GetMapping("instructor/getbyNIC/{email}")
+	public ResponseEntity<Instructor> getInstructorbyEmail(@PathVariable("email") String email) {
+		Instructor instructor = instructorService.getInstructorbyEmail(email);
+		if (instructor.getInstructorId() != null) {
+			return ResponseEntity.ok(instructor);
+		}
+		return ResponseEntity.noContent().build();
 	}
 
 }
