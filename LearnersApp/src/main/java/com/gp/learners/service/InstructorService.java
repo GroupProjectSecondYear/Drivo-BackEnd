@@ -178,6 +178,17 @@ public class InstructorService {
 		}
 		return null;
 	}
+	// Helping Functions
+		public Instructor getInstructorbyUserId(Integer userId) {
+			Staff staff = staffRepository.findByUserId(userId);
+			if (staff != null) {
+				Instructor instructor = instructorRepository.findByStaffId(staff.getStaffId());
+				if (instructor != null) {
+					return instructor;
+				}
+			}
+			return null;
+		}
 
 	// get Instructor List
 	public List<Instructor> getInstructorList() {
@@ -309,7 +320,7 @@ public class InstructorService {
 			if (userRepository.findByEmail(email) != null) {
 				User user = userRepository.findByEmail(email);
 				System.out.println(user);
-				return instructorRepository.getInstructorById(user.getUserId());
+				return getInstructorbyUserId(user.getUserId());
 			}
 		}
 		return new Instructor();

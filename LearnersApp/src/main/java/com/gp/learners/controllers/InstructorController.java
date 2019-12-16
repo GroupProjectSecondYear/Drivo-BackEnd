@@ -115,6 +115,7 @@ public class InstructorController {
 	//get Instructor by Email
 	@GetMapping("instructor/getbyEmail/{email}")
 	public ResponseEntity<Instructor> getInstructorbyEmail(@PathVariable("email") String email) {
+		System.out.println("getByEmail"+email);
 		Instructor instructor = instructorService.getInstructorbyEmail(email);
 		System.out.println("getByEmail"+instructor);
 		if (instructor.getInstructorId() != null) {
