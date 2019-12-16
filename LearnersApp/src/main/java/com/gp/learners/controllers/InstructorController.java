@@ -112,10 +112,11 @@ public class InstructorController {
 		return instructorService.instructorRegister(instructor);
 	}
 	
-	//get Instructor by NIC
-	@GetMapping("instructor/getbyNIC/{email}")
+	//get Instructor by Email
+	@GetMapping("instructor/getbyEmail/{email}")
 	public ResponseEntity<Instructor> getInstructorbyEmail(@PathVariable("email") String email) {
 		Instructor instructor = instructorService.getInstructorbyEmail(email);
+		System.out.println("getByEmail"+instructor);
 		if (instructor.getInstructorId() != null) {
 			return ResponseEntity.ok(instructor);
 		}

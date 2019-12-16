@@ -385,9 +385,13 @@ public class StaffService {
 	}
 
 	public Staff staffRegister(Staff staff) {	 // save a staff member//save user relavant data and then save the staff
-			if (!userService.isExistUserByEmail(staff.getUserId().getEmail())) {
+		if (!userService.isExistUserByEmail(staff.getUserId().getEmail())) {
+			System.out.println("-------------------------------User Exists");
+		}
+		if (!userService.isExistUserByEmail(staff.getUserId().getEmail())) {
 			User user=userService.userRegister(staff.getUserId());
 			staff.setUserId(user);
+			System.out.println("USer ID :"+user.getUserId());
 			return staffRepository.save(staff);
 		}
 		return null;

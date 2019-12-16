@@ -308,6 +308,7 @@ public class InstructorService {
 		if (email != null) {
 			if (userRepository.findByEmail(email) != null) {
 				User user = userRepository.findByEmail(email);
+				System.out.println(user);
 				return instructorRepository.getInstructorById(user.getUserId());
 			}
 		}

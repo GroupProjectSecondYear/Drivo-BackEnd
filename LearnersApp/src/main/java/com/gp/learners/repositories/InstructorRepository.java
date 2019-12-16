@@ -33,9 +33,10 @@ public interface InstructorRepository extends JpaRepository<Instructor, Integer>
 
 	@Query(value = "select * from instructor i where i.staff_id = :staffId ", nativeQuery = true)
 	public Instructor findByStaffId(Integer staffId);
-
 	
 	// get instructor by instructorId
 	@Query("from Instructor where instructorId = :instructorId")
 	public Instructor getInstructorById(@Param("instructorId") Integer instructorId);
+	
+	
 }
