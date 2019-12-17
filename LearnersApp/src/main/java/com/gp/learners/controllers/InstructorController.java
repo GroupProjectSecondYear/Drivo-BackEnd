@@ -123,5 +123,16 @@ public class InstructorController {
 		}
 		return ResponseEntity.noContent().build();
 	}
+	
+	// deactivate Instructor Profile
+		@PutMapping("instructor/deactivate/{instructorId}")
+		public ResponseEntity<Integer> deactivateInstructor(@PathVariable("instructorId") Integer instructorId) {
+			System.out.println("Ins Cont deactivation");
+			Integer reply = instructorService.deactivateInstructor(instructorId);
+			if (reply != null) {
+				return ResponseEntity.ok(reply);
+			}
+			return ResponseEntity.notFound().build();
+		}
 
 }

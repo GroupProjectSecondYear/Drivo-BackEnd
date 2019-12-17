@@ -5,6 +5,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -324,6 +326,39 @@ public class InstructorService {
 			}
 		}
 		return new Instructor();
+	}
+	
+	//deactivate 
+	@Transactional
+	public Integer deactivateInstructor(Integer instrcutorId) {
+		try {
+			System.out.println("Ins serv deactivation");
+			//List<Student> studentList = studentRepository.findByDate(timeTableService.getLocalCurrentDate());
+			
+			//for (Student student : studentList) {
+			Instructor instructor=getInstructorByID(instrcutorId);				
+				User user=instructor.getStaffId().getUserId();
+				//instructorRepository.save(instructor);
+				
+				//User object = student.getUserId();
+				user.setStatus(0);
+				userRepository.save(user);
+				
+				//delete studentLesson Details
+				//studentLessonRepository.deleteByStudentId(student);
+				
+				//update JWT UserList
+				jwtInMemoryUserDetailsService.setUserInMemory();
+			//}
+			
+		} catch (Exception e) {
+			System.out.println("------------------------");
+			System.out.println("There is a problem with instructor Serivce's Instructor Deactivation");
+			System.out.println(e.getMessage());
+			System.out.println("------------------------");
+			return 0;
+		}
+		return 1;
 	}
 
 }
