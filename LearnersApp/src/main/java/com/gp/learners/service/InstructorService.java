@@ -193,9 +193,9 @@ public class InstructorService {
 		}
 
 	// get Instructor List
-	public List<Instructor> getInstructorList() {
+	public List<Instructor> getInstructorList(Integer status) {
 		System.out.println("In Instructor Repo");
-		return instructorRepository.findAll();
+		return instructorRepository.getActiveInstructors(status);
 
 	}
 

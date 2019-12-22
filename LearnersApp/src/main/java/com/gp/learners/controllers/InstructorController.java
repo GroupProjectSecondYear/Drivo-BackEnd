@@ -79,13 +79,14 @@ public class InstructorController {
 	}
 
 	// get Instructor list
-	@GetMapping("/instructors")
-	public List<Instructor> getInstructorList() {
+	@GetMapping("/instructors/{status}")
+	public List<Instructor> getInstructorList(@PathVariable("status") Integer status) {
 		System.out.println("In Instructor Controller");
-		List<Instructor> InsList = instructorService.getInstructorList();
+		List<Instructor> InsList = instructorService.getInstructorList(status);
 		System.out.println(InsList.get(0).getLicence());
 		return InsList;
 	}
+
 
 	@GetMapping("instructor/{instructorId}")
 	public ResponseEntity<Instructor> getInstructor(@PathVariable("instructorId") Integer instructorId) {
