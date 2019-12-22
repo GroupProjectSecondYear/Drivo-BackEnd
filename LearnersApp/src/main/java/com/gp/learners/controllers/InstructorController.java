@@ -111,28 +111,27 @@ public class InstructorController {
 	public Integer InstructorRegister(@RequestBody Instructor instructor) {
 		return instructorService.instructorRegister(instructor);
 	}
-	
-	//get Instructor by Email
+
+	// get Instructor by Email
 	@GetMapping("instructor/getbyEmail/{email}")
 	public ResponseEntity<Instructor> getInstructorbyEmail(@PathVariable("email") String email) {
-		System.out.println("getByEmail"+email);
+		System.out.println("getByEmail" + email);
 		Instructor instructor = instructorService.getInstructorbyEmail(email);
-		System.out.println("getByEmail"+instructor);
+		System.out.println("getByEmail" + instructor);
 		if (instructor.getInstructorId() != null) {
 			return ResponseEntity.ok(instructor);
 		}
 		return ResponseEntity.noContent().build();
 	}
-	
+
 	// deactivate Instructor Profile
-		@PutMapping("instructor/deactivate/{instructorId}")
-		public ResponseEntity<Integer> deactivateInstructor(@PathVariable("instructorId") Integer instructorId) {
-			System.out.println("Ins Cont deactivation");
-			Integer reply = instructorService.deactivateInstructor(instructorId);
-			if (reply != null) {
-				return ResponseEntity.ok(reply);
-			}
-			return ResponseEntity.notFound().build();
+	@PutMapping("instructor/deactivate/{instructorId}")
+	public ResponseEntity<Integer> deactivateInstructor(@PathVariable("instructorId") Integer instructorId) {
+		Integer reply = instructorService.deactivateInstructor(instructorId);
+		if (reply != null) {
+			return ResponseEntity.ok(reply);
 		}
+		return ResponseEntity.notFound().build();
+	}
 
 }

@@ -338,17 +338,17 @@ public class InstructorService {
 			//for (Student student : studentList) {
 			Instructor instructor=getInstructorByID(instrcutorId);				
 				User user=instructor.getStaffId().getUserId();
-				//instructorRepository.save(instructor);
+			instructorRepository.save(instructor);
 				
 				//User object = student.getUserId();
-				user.setStatus(0);
+				user.setStatus(0); 
 				userRepository.save(user);
 				
 				//delete studentLesson Details
 				//studentLessonRepository.deleteByStudentId(student);
 				
 				//update JWT UserList
-				jwtInMemoryUserDetailsService.setUserInMemory();
+				jwtInMemoryUserDetailsService.setUserInMemory(); 
 			//}
 			
 		} catch (Exception e) {
