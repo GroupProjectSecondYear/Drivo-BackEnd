@@ -180,17 +180,18 @@ public class InstructorService {
 		}
 		return null;
 	}
+
 	// Helping Functions
-		public Instructor getInstructorbyUserId(Integer userId) {
-			Staff staff = staffRepository.findByUserId(userId);
-			if (staff != null) {
-				Instructor instructor = instructorRepository.findByStaffId(staff.getStaffId());
-				if (instructor != null) {
-					return instructor;
-				}
+	public Instructor getInstructorbyUserId(Integer userId) {
+		Staff staff = staffRepository.findByUserId(userId);
+		if (staff != null) {
+			Instructor instructor = instructorRepository.findByStaffId(staff.getStaffId());
+			if (instructor != null) {
+				return instructor;
 			}
-			return null;
 		}
+		return null;
+	}
 
 	// get Instructor List
 	public List<Instructor> getInstructorList(Integer status) {
@@ -292,27 +293,28 @@ public class InstructorService {
 
 	// register Instructor
 	public Integer instructorRegister(Instructor instructor) {
-			
-			if (instructor != null) {
-				Staff staff=staffService.staffRegister(instructor.getStaffId());
-				
-				if (staffRepository.existsById(staff.getStaffId())) {
-						instructor.setStaffId(staff);
-						instructor = instructorRepository.save(instructor); // save instructor
-						if (!instructorRepository.existsById(instructor.getInstructorId())) {
-							String response=staffService.deleteStaff(instructor.getStaffId().getStaffId());
-							return 3; // error in saving instructor
-						}else {
-							return 1; // instructor sucessfully added
 
-						}
+		if (instructor != null) {
+			Staff staff = staffService.staffRegister(instructor.getStaffId());
 
+			if (staffRepository.existsById(staff.getStaffId())) {
+				instructor.setStaffId(staff);
+				instructor = instructorRepository.save(instructor); // save instructor
+				if (!instructorRepository.existsById(instructor.getInstructorId())) {
+					String response = staffService.deleteStaff(instructor.getStaffId().getStaffId());
+					return 3; // error in saving instructor
 				} else {
-						userService.deleteUser(instructor.getStaffId().getUserId().getUserId()); // delete user relavant data
-						return 2; // error in saving staff relavant data
+					return 1; // instructor sucessfully added
+
 				}
-							
-			}return 0;  //instructor data is not correctly passed	//error in saving instructor
+
+			} else {
+				userService.deleteUser(instructor.getStaffId().getUserId().getUserId()); // delete user relavant data
+				return 2; // error in saving staff relavant data
+			}
+
+		}
+		return 0; // instructor data is not correctly passed //error in saving instructor
 
 	}
 
@@ -327,30 +329,31 @@ public class InstructorService {
 		}
 		return new Instructor();
 	}
-	
-	//deactivate 
+
+	// deactivate
 	@Transactional
 	public Integer deactivateInstructor(Integer instrcutorId) {
 		try {
 			System.out.println("Ins serv deactivation");
-			//List<Student> studentList = studentRepository.findByDate(timeTableService.getLocalCurrentDate());
-			
-			//for (Student student : studentList) {
-			Instructor instructor=getInstructorByID(instrcutorId);				
-				User user=instructor.getStaffId().getUserId();
+			// List<Student> studentList =
+			// studentRepository.findByDate(timeTableService.getLocalCurrentDate());
+
+			// for (Student student : studentList) {
+			Instructor instructor = getInstructorByID(instrcutorId);
+			User user = instructor.getStaffId().getUserId();
 			instructorRepository.save(instructor);
-				
-				//User object = student.getUserId();
-				user.setStatus(0); 
-				userRepository.save(user);
-				
-				//delete studentLesson Details
-				//studentLessonRepository.deleteByStudentId(student);
-				
-				//update JWT UserList
-				jwtInMemoryUserDetailsService.setUserInMemory(); 
-			//}
-			
+
+			// User object = student.getUserId();
+			user.setStatus(0);
+			userRepository.save(user);
+
+			// delete studentLesson Details
+			// studentLessonRepository.deleteByStudentId(student);
+
+			// update JWT UserList
+			jwtInMemoryUserDetailsService.setUserInMemory();
+			// }
+
 		} catch (Exception e) {
 			System.out.println("------------------------");
 			System.out.println("There is a problem with instructor Serivce's Instructor Deactivation");
@@ -359,6 +362,27 @@ public class InstructorService {
 			return 0;
 		}
 		return 1;
+	}
+
+	public Integer activateInstructorAccount(Integer instructorId) {
+
+		if (instructorRepository.existsById(instructorId)) {
+			Instructor instructor = instructorRepository.findByInstructorId(instructorId);
+			System.out.println("Ser1");
+			// checkCourse Fees Complete or not
+			// if(isAllCourseFeesComplete(student)) {
+			User user = instructor.getStaffId().getUserId();
+			user.setStatus(1);
+			user = userRepository.save(user);
+
+			jwtInMemoryUserDetailsService.addNewUserInMemory(user);
+
+			return 1;
+			// }else {
+			// return 0;
+			// }
+		}
+		return null;
 	}
 
 }

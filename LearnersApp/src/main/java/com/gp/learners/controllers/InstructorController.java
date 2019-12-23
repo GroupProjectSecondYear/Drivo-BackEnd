@@ -134,5 +134,15 @@ public class InstructorController {
 		}
 		return ResponseEntity.notFound().build();
 	}
+	@PutMapping("instructor/activate/account/{instructorId}")
+	public ResponseEntity<Integer> activateInstructorAccount(@PathVariable("instructorId") Integer instructorId){
+		Integer reply = instructorService.activateInstructorAccount(instructorId);
+		System.out.println("Ins Activation");
+		
+		if(reply!=null) {
+			return ResponseEntity.ok(reply);
+		}
+		return ResponseEntity.notFound().build();
+	}
 
 }
