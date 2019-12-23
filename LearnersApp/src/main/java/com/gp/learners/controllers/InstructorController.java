@@ -79,13 +79,14 @@ public class InstructorController {
 	}
 
 	// get Instructor list
-	@GetMapping("/instructors")
-	public List<Instructor> getInstructorList() {
+	@GetMapping("/instructors/{status}")
+	public List<Instructor> getInstructorList(@PathVariable("status") Integer status) {
 		System.out.println("In Instructor Controller");
-		List<Instructor> InsList = instructorService.getInstructorList();
+		List<Instructor> InsList = instructorService.getInstructorList(status);
 		System.out.println(InsList.get(0).getLicence());
 		return InsList;
 	}
+
 
 	@GetMapping("instructor/{instructorId}")
 	public ResponseEntity<Instructor> getInstructor(@PathVariable("instructorId") Integer instructorId) {
@@ -111,16 +112,37 @@ public class InstructorController {
 	public Integer InstructorRegister(@RequestBody Instructor instructor) {
 		return instructorService.instructorRegister(instructor);
 	}
-	
-	//get Instructor by Email
+
+	// get Instructor by Email
 	@GetMapping("instructor/getbyEmail/{email}")
 	public ResponseEntity<Instructor> getInstructorbyEmail(@PathVariable("email") String email) {
+		System.out.println("getByEmail" + email);
 		Instructor instructor = instructorService.getInstructorbyEmail(email);
-		System.out.println("getByEmail"+instructor);
+		System.out.println("getByEmail" + instructor);
 		if (instructor.getInstructorId() != null) {
 			return ResponseEntity.ok(instructor);
 		}
 		return ResponseEntity.noContent().build();
+	}
+
+	// deactivate Instructor Profile
+	@PutMapping("instructor/deactivate/{instructorId}")
+	public ResponseEntity<Integer> deactivateInstructor(@PathVariable("instructorId") Integer instructorId) {
+		Integer reply = instructorService.deactivateInstructor(instructorId);
+		if (reply != null) {
+			return ResponseEntity.ok(reply);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	@PutMapping("instructor/activate/account/{instructorId}")
+	public ResponseEntity<Integer> activateInstructorAccount(@PathVariable("instructorId") Integer instructorId){
+		Integer reply = instructorService.activateInstructorAccount(instructorId);
+		System.out.println("Ins Activation");
+		
+		if(reply!=null) {
+			return ResponseEntity.ok(reply);
+		}
+		return ResponseEntity.notFound().build();
 	}
 
 }

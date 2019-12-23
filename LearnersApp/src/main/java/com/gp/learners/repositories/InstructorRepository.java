@@ -38,5 +38,8 @@ public interface InstructorRepository extends JpaRepository<Instructor, Integer>
 	@Query("from Instructor where instructorId = :instructorId")
 	public Instructor getInstructorById(@Param("instructorId") Integer instructorId);
 	
+	//get All Active Instructors
+	@Query(value="select * from instructor i,staff s, user u where i.staff_id=s.staff_id and s.user_id=u.user_id and role=4 and u.status = :status order by u.first_name ASC",nativeQuery=true)
+	public List<Instructor> getActiveInstructors(@Param("status") Integer status);
 	
 }
