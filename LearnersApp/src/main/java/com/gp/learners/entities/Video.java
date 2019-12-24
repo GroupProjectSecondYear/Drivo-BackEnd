@@ -23,12 +23,12 @@ public class Video {
 
 	@NotBlank(message = "Title is mandatory")
 	String title;
-	
+
 	String description;
-	
+
 	@NotBlank(message = "URL is mandatory")
 	String url;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "admin_staff_id", referencedColumnName = "admin_staff_id")
 	private AdminStaff adminStaffId;
@@ -107,8 +107,5 @@ public class Video {
 		return "Video [videoId=" + videoId + ", title=" + title + ", description=" + description + ", url=" + url
 				+ ", adminStaffId=" + adminStaffId + ", addedDate=" + addedDate + "]";
 	}
-
-	
-	
 
 }

@@ -96,22 +96,18 @@ public class LessonBookingController {
 	}
 	
 	@PostMapping("lessonbooking/lessonday/feedback/{userId}/{packageId}/{day1}/{time1}/{day2}/{time2}")
-	public ResponseEntity<Void> lessonDayFeedback(@PathVariable("userId") Integer userId,@PathVariable("packageId") Integer packageId,
+	public ResponseEntity<List<Integer>> lessonDayFeedback(@PathVariable("userId") Integer userId,@PathVariable("packageId") Integer packageId,
 												  @PathVariable("day1") Integer day1,@PathVariable("time1") Integer time1,
 												  @PathVariable("day2") Integer day2,@PathVariable("time2") Integer time2){
 		
-		String reply = lessonBookingService.lessonDayFeedback(userId,packageId,day1,time1,day2,time2);
-		if(reply.equals("success")) {
-			return ResponseEntity.ok().build();
-		}
-		return ResponseEntity.notFound().build();
-		
+		List<Integer> reply = lessonBookingService.lessonDayFeedback(userId,packageId,day1,time1,day2,time2);
+		return ResponseEntity.ok(reply);
 	}
 	
-	@GetMapping("lessonbooking/lessonday/feedback/chart/{packageId}/{transmission}/{time}")
-	public ResponseEntity<List<LessonDayFeedbackChartDataMap>> lessonDayFeedbackChartData(@PathVariable("packageId") Integer packageId,@PathVariable("transmission") Integer transmission,@PathVariable("time") Integer time) {
+	@GetMapping("lessonbooking/lessonday/feedback/chart/{packageId}/{transmission}")
+	public ResponseEntity<List<LessonDayFeedbackChartDataMap>> lessonDayFeedbackChartData(@PathVariable("packageId") Integer packageId,@PathVariable("transmission") Integer transmission) {
 
-		List<LessonDayFeedbackChartDataMap> list = lessonBookingService.lessonDayFeedbackChartData(packageId,transmission,time);
+		List<LessonDayFeedbackChartDataMap> list = lessonBookingService.lessonDayFeedbackChartData(packageId,transmission);
 		if(list!=null) {
 			return ResponseEntity.ok(list);
 		}

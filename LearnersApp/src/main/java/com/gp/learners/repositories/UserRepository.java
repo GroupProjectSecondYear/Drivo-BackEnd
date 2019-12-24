@@ -11,7 +11,7 @@ import com.gp.learners.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Integer>{
 	
-	@Query(value="select * from user u where u.email = :email",nativeQuery=true)
+	@Query(value="select * from user u where u.email = :email limit 1",nativeQuery=true)
 	User findByEmail(@Param("email") String email);
 	
 	@Query("from User where Nic = :nic")

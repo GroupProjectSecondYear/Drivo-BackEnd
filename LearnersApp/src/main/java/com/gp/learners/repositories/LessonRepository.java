@@ -66,4 +66,6 @@ public interface LessonRepository extends JpaRepository<Lesson,Integer>{
 	@Query(value="select * from lesson l where l.package_id = :packageId and l.transmission = :transmission order by day ",nativeQuery=true)
 	public List<Lesson> getLessonsfindByPackageIdAndTransmission(@PathVariable("packageId") Package packageId,@PathVariable("transmission") Integer transmission);
 	
+	@Query(value="select * from lesson l where l.day = :day and l.package_id = :packageId  and l.transmission = :transmission and status=1",nativeQuery=true)
+	public List<Lesson> getTimeSlotListAccordingToDateAndPackage(@Param("day") Integer day, @Param("packageId") Package packageId,@Param("transmission") Integer transmission);
 }

@@ -340,8 +340,7 @@ public class StudentService {
 	
 	//get Exam Students Information
 	public List<StudentTrialMap> getStudentExamList(LocalDate localDate){
-		
-		
+				
 		List<Student> studentList=studentRepository.findByExamDate(localDate);
 		List<StudentTrialMap> studentExamList=new ArrayList<StudentTrialMap>();
 		

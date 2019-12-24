@@ -228,4 +228,22 @@ public class StaffController {
 		return ResponseEntity.notFound().build();
 	}
 	
+	@GetMapping("staff/leave")
+	public ResponseEntity<Integer> getStaffLeave(){
+		Integer reply = staffService.getStaffLeave();
+		if(reply!=null) {
+			return ResponseEntity.ok(reply);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@PutMapping("staff/leave/{adminId}/{leaves}")
+	public ResponseEntity<Void> updateStaffLeave(@PathVariable("adminId") Integer adminId,@PathVariable("leaves") Integer leaves){
+		Integer reply = staffService.updateStaffLeave(adminId, leaves);
+		if(reply!=null) {
+			return ResponseEntity.ok().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
 }

@@ -228,16 +228,21 @@ public class LessonBookingService {
 		return "notsuccess";
 	}
 	
-	public String lessonDayFeedback(Integer userId,Integer packageId,Integer day1,Integer time1,Integer day2,Integer time2) {
-		if(userRepository.existsById(userId) && packageRepository.existsById(packageId)) {
-			if(day1>-1 && day1<7 && day2>-1 && day2<7 && time1>0 && time1<3 && time2>0 && time2<3) {
+	public List<Integer> lessonDayFeedback(Integer userId,Integer packageId,Integer day1,Integer time1,Integer day2,Integer time2) {
+		
+		if(day1>-1 && day1<7 && day2>-1 && day2<7 && userRepository.existsById(userId) && packageRepository.existsById(packageId) && timeSlotRepository.existsById(time1) && timeSlotRepository.existsById(time2)) {
+			
 				Integer studentId = studentRepository.findByUserId(userRepository.findByUserId(userId));
 				StudentPackage studentPackage = studentPackageRepository.findByStudentIdAndPackageId(studentRepository.findByStudentId(studentId), packageRepository.findByPackageId(packageId));
+				
 				
 				LessonDayFeedback object = lessonDayFeedbackRepository.findByStudentPackageId(studentPackage);
 				if(object==null) {
 					object = new LessonDayFeedback();
 				}
+				
+				Integer reply1 = isAvailableLesson(studentPackage.getPackageId(),studentPackage.getTransmission(),day1,time1,1);
+				Integer reply2 = isAvailableLesson(studentPackage.getPackageId(),studentPackage.getTransmission(),day2,time2,2);
 				
 				object.setDay1(day1);
 				object.setTime1(time1);
@@ -247,29 +252,56 @@ public class LessonBookingService {
 				
 				lessonDayFeedbackRepository.save(object);
 				
-				return "success";
-			}
+				List<Integer> reply = new ArrayList<Integer>();
+				reply.add(reply1);
+				reply.add(reply2);
+				return reply;		
 		}
 		return null;
 	}
 	
-	public List<LessonDayFeedbackChartDataMap> lessonDayFeedbackChartData(Integer packageId,Integer transmission,Integer time) {
+	public List<LessonDayFeedbackChartDataMap> lessonDayFeedbackChartData(Integer packageId,Integer transmission) {
 		
-		if(packageRepository.existsById(packageId) && transmission>0 && transmission<3 && time>0 && time<3) {
+		if(packageRepository.existsById(packageId) && transmission>0 && transmission<3) {
+			
 			List<LessonDayFeedbackChartDataMap> chartData = new ArrayList<LessonDayFeedbackChartDataMap>();
-			for(int i=0 ; i<7 ; i++) {
+			List<TimeSlot> timeSlotList = timeSlotRepository.findAll();
+			Package packageData = packageRepository.findByPackageId(packageId);
+			
+			for (TimeSlot timeSlot : timeSlotList) {
 				LessonDayFeedbackChartDataMap object = new LessonDayFeedbackChartDataMap();
-				object.setDay(i);
-				object.setCount(0L);
+				ArrayList<Integer> totalRequestList = new ArrayList<Integer>(7);
+				ArrayList<Integer> handleRequestList = new ArrayList<Integer>(7);
+				ArrayList<Integer> extraRequestList = new ArrayList<Integer>(7);
 				
+				for(int i=0 ; i<7 ; i++) {
+					
+					Integer countList1 = lessonDayFeedbackRepository.countDay1(packageRepository.findByPackageId(packageId), transmission, timeSlot.getTimeSlotId(), i);
+					Integer countList2 = lessonDayFeedbackRepository.countDay2(packageRepository.findByPackageId(packageId), transmission, timeSlot.getTimeSlotId(), i);
+					
+					List<Lesson> lessonList = lessonRepository.findLesson(i,packageData,transmission,timeSlot);
+					Integer totalStudentForLesson = 0;
+					for (Lesson lesson : lessonList) {
+						totalStudentForLesson = lesson.getNumStu();
+					}
+					
+					Integer totalRequest =  countList1+countList2;
+					Integer handleRequest = totalStudentForLesson;
+					Integer extraRequest = 0;
+					if(totalRequest>handleRequest) {
+						extraRequest=totalRequest-handleRequest;
+					}
+					
+					totalRequestList.add(totalRequest);
+					handleRequestList.add(handleRequest);
+					extraRequestList.add(extraRequest);
+				}
+				object.setTimeSlot(timeSlot);
+				object.setTotalRequest(totalRequestList);
+				object.setHandleRequest(handleRequestList);
+				object.setExtraRequest(extraRequestList);
 				chartData.add(object);
 			}
-			
-			List<LessonDayFeedbackChartDataMap> countList1 = lessonDayFeedbackRepository.CountDay1(packageRepository.findByPackageId(packageId), transmission, time);
-			chartData = lessonDayFeedbackChartDataCalculation(countList1,chartData);
-			
-			List<LessonDayFeedbackChartDataMap> countList2 = lessonDayFeedbackRepository.CountDay2(packageRepository.findByPackageId(packageId), transmission, time);
-			chartData = lessonDayFeedbackChartDataCalculation(countList2,chartData);
 			
 			return chartData;
 		}
@@ -342,15 +374,37 @@ public class LessonBookingService {
 		return true;
 	}
 	
-	private List<LessonDayFeedbackChartDataMap> lessonDayFeedbackChartDataCalculation(List<LessonDayFeedbackChartDataMap> dbList,List<LessonDayFeedbackChartDataMap> list){
-		for (LessonDayFeedbackChartDataMap object1 : dbList) {
-			Integer dayId = object1.getDay();
-					
-			LessonDayFeedbackChartDataMap object2 = list.get(dayId);
-			Long count = object2.getCount();
-			object2.setCount(count + object1.getCount());
+	
+	//This function use lessonDayFeedback()
+	public Integer isAvailableLesson(Package packageData,Integer transmission,Integer day,Integer timeSlotId,Integer dayType){
 			
+		TimeSlot timeSlot = timeSlotRepository.findByTimeSlotId(timeSlotId);
+		List<Lesson> lessonList = lessonRepository.findLesson(day,packageData,transmission,timeSlot);
+		
+		if(lessonList!=null && lessonList.size()>0) {
+			Integer feedBackCount=0;
+			if(dayType==1) {
+				feedBackCount = lessonDayFeedbackRepository.countDay1(packageData,transmission,timeSlotId,day);
+			}else {
+				feedBackCount = lessonDayFeedbackRepository.countDay2(packageData,transmission,timeSlotId,day);
+			}
+			
+			
+			Integer totalStudentForLesson = 0;
+			for (Lesson lesson : lessonList) {
+				totalStudentForLesson = lesson.getNumStu();
+			}
+			
+//			System.out.println("--------------");
+//			System.out.println(feedBackCount);
+//			System.out.println(totalStudentForLesson);
+			
+			if(totalStudentForLesson>feedBackCount) {
+				return 1;//there is a available space for the lesson 
+			}else {
+				return 2;//There is a lesson for that day/time but no available space 
+			}
 		}
-		return list;
+		return 0;//No any lesson in that day/timeSlot
 	}
 }

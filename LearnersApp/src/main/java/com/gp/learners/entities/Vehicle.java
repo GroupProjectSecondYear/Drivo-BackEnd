@@ -7,6 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -16,6 +18,11 @@ public class Vehicle {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer vehicleId;
+
+	@NotNull
+	@Min(0)
+	@Max(1)
+	private Integer status;
 
 	@NotNull
 	private String number;
@@ -50,30 +57,20 @@ public class Vehicle {
 
 	}
 
-	public Vehicle(Integer vehicleId, @NotNull String number, @NotNull String brand, @NotNull String model,
-			@NotNull @Size(min = 1, max = 2, message = "Transmission value should be between 1 and 2") Integer transmission,
-			@NotNull @Size(min = 1, max = 2, message = "Fuel Type value should be between 1 and 2") Integer fuelType,
-			String document_lic, Integer insurancePeriod, Instructor instructorId,
-			@NotNull VehicleCategory vehicleCategoryId) {
-		super();
-		this.vehicleId = vehicleId;
-		this.number = number;
-		this.brand = brand;
-		this.model = model;
-		this.transmission = transmission;
-		this.fuelType = fuelType;
-		this.document_lic = document_lic;
-		this.insurancePeriod = insurancePeriod;
-		this.instructorId = instructorId;
-		this.vehicleCategoryId = vehicleCategoryId;
-	}
-
 	public Integer getVehicleId() {
 		return vehicleId;
 	}
 
 	public void setVehicleId(Integer vehicleId) {
 		this.vehicleId = vehicleId;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 	public String getNumber() {
@@ -150,10 +147,10 @@ public class Vehicle {
 
 	@Override
 	public String toString() {
-		return "Vehicle [vehicleId=" + vehicleId + ", number=" + number + ", brand=" + brand + ", model=" + model
-				+ ", transmission=" + transmission + ", fuelType=" + fuelType + ", document_lic=" + document_lic
-				+ ", insurancePeriod=" + insurancePeriod + ", instructorId=" + instructorId + ", vehicleCategoryId="
-				+ vehicleCategoryId + "]";
+		return "Vehicle [vehicleId=" + vehicleId + ", status=" + status + ", number=" + number + ", brand=" + brand
+				+ ", model=" + model + ", transmission=" + transmission + ", fuelType=" + fuelType + ", document_lic="
+				+ document_lic + ", insurancePeriod=" + insurancePeriod + ", instructorId=" + instructorId
+				+ ", vehicleCategoryId=" + vehicleCategoryId + "]";
 	}
 
 }

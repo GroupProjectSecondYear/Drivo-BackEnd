@@ -14,6 +14,7 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -71,10 +72,10 @@ public class TimeTableController {
 	}
 	
 	@DeleteMapping("/timetable/timeslot/{id}")
-	public ResponseEntity<Void> deleteTimeSlot(@PathVariable("id") Integer timeSlotId){
-		String reply=timeTableService.deleteTimeSlot(timeSlotId);
-		if(reply.equals("success")) {
-			return ResponseEntity.noContent().build();
+	public ResponseEntity<Integer> deleteTimeSlot(@PathVariable("id") Integer timeSlotId){
+		Integer reply=timeTableService.deleteTimeSlot(timeSlotId);
+		if(reply != null) {
+			return ResponseEntity.ok(reply);
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -288,4 +289,15 @@ public class TimeTableController {
 		}
 		return ResponseEntity.notFound().build();
 	}
+	
+	@GetMapping("timetable/timeslot/date/{packageId}/{transmission}/{date}")
+	public ResponseEntity<List<TimeSlot>> getTimeSlotListAccordingToDateAndPackage(@PathVariable("packageId") Integer packageId,@PathVariable("transmission") Integer transmission, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)@PathVariable("date") LocalDate date){
+		List<TimeSlot> timeSlot = timeTableService.getTimeSlotListAccordingToDateAndPackage(packageId, transmission, date);
+		if(timeSlot!=null) {
+			return ResponseEntity.ok(timeSlot);
+		}
+		return ResponseEntity.notFound().build();
+	}
+		
+	
 }
