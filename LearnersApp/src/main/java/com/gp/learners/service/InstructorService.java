@@ -28,6 +28,7 @@ import com.gp.learners.repositories.StaffRepository;
 import com.gp.learners.repositories.StudentLessonRepository;
 import com.gp.learners.repositories.StudentRepository;
 import com.gp.learners.repositories.UserRepository;
+import com.gp.learners.repositories.SalaryRepository;
 
 import ch.qos.logback.core.util.Duration;
 
@@ -51,6 +52,9 @@ public class InstructorService {
 
 	@Autowired
 	StudentLessonRepository studentLessonRepository;
+
+	@Autowired
+	SalaryRepository salaryRepository;
 
 	@Autowired
 	JwtInMemoryUserDetailsService jwtInMemoryUserDetailsService;
@@ -335,31 +339,35 @@ public class InstructorService {
 	public Integer deactivateInstructor(Integer instrcutorId) {
 		try {
 			System.out.println("Ins serv deactivation");
-			// List<Student> studentList =
-			// studentRepository.findByDate(timeTableService.getLocalCurrentDate());
 
-			// for (Student student : studentList) {
 			Instructor instructor = getInstructorByID(instrcutorId);
+			if (instructor == null)
+				return null;
+			Staff staff = instructor.getStaffId();
+			if (staff == null)
+				return null;
 			User user = instructor.getStaffId().getUserId();
+			if (user == null)
+				return null;
+
+			String status = salaryRepository.checkInstructorSalaryPayments(staff.getStaffId());
+            if(status==null) {
+            	return 2;
+            }
 			instructorRepository.save(instructor);
 
-			// User object = student.getUserId();
 			user.setStatus(0);
 			userRepository.save(user);
 
-			// delete studentLesson Details
-			// studentLessonRepository.deleteByStudentId(student);
-
 			// update JWT UserList
 			jwtInMemoryUserDetailsService.setUserInMemory();
-			// }
 
 		} catch (Exception e) {
 			System.out.println("------------------------");
 			System.out.println("There is a problem with instructor Serivce's Instructor Deactivation");
 			System.out.println(e.getMessage());
 			System.out.println("------------------------");
-			return 0;
+			return null;
 		}
 		return 1;
 	}
@@ -368,19 +376,21 @@ public class InstructorService {
 
 		if (instructorRepository.existsById(instructorId)) {
 			Instructor instructor = instructorRepository.findByInstructorId(instructorId);
-			System.out.println("Ser1");
-			// checkCourse Fees Complete or not
-			// if(isAllCourseFeesComplete(student)) {
-			User user = instructor.getStaffId().getUserId();
-			user.setStatus(1);
-			user = userRepository.save(user);
+			if (instructor != null) {
+				System.out.println("Ser1");
+				// checkCourse Fees Complete or not
+				// if(isAllCourseFeesComplete(student)) {
+				User user = instructor.getStaffId().getUserId();
+				if (user != null) {
+					user.setStatus(1);
+					user = userRepository.save(user);
 
-			jwtInMemoryUserDetailsService.addNewUserInMemory(user);
-
-			return 1;
-			// }else {
-			// return 0;
-			// }
+					jwtInMemoryUserDetailsService.addNewUserInMemory(user);
+					return 1;
+				}
+				return null;
+			}
+			return null;
 		}
 		return null;
 	}
