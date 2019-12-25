@@ -23,7 +23,7 @@ public interface SalaryRepository extends JpaRepository<Salary, Integer>{
 	public Salary findByStaffIdAndMonth(@Param("staffId") Staff staffId,@Param("month") Integer month);
 
 	@Query(value="select month FROM salary where staff_id=:staffId and complete=0;",nativeQuery=true)
-	public String checkInstructorSalaryPayments(@Param("staffId") Integer staffId);
+	public List<String> checkInstructorSalaryPayments(@Param("staffId") Integer staffId);
 
 	
 }

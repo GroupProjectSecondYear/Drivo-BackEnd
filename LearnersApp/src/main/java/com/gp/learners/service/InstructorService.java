@@ -350,10 +350,6 @@ public class InstructorService {
 			if (user == null)
 				return null;
 
-			String status = salaryRepository.checkInstructorSalaryPayments(staff.getStaffId());
-            if(status==null) {
-            	return 2;
-            }
 			instructorRepository.save(instructor);
 
 			user.setStatus(0);
@@ -391,6 +387,22 @@ public class InstructorService {
 				return null;
 			}
 			return null;
+		}
+		return null;
+	}
+
+	// check instructor salary payments are complete
+	public Integer checkInstructorSalaryPayments(Integer instructorId) {
+		if (instructorRepository.existsById(instructorId)) {
+			Instructor instructor = instructorRepository.findByInstructorId(instructorId);
+			if (instructor == null)
+				return null;
+			List<String> status = salaryRepository.checkInstructorSalaryPayments(instructor.getStaffId().getStaffId());
+			System.out.println("Status"+status.isEmpty());
+			
+			if (!status.isEmpty())
+				return 0; // still have to pay salary
+			return 1; // salary payments are complete
 		}
 		return null;
 	}

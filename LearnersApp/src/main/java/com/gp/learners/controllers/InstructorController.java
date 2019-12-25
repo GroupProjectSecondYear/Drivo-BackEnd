@@ -144,5 +144,17 @@ public class InstructorController {
 		}
 		return ResponseEntity.notFound().build();
 	}
+	
+	// check instructor salary payments
+		@GetMapping("instructor/checkSalaryPayments/{instructorId}")
+		public ResponseEntity<Integer> checkInstructorSalaryPayments(@PathVariable("instructorId") Integer instructorId) {
+			System.out.println("chk slry payments");
+			
+			Integer reply=instructorService.checkInstructorSalaryPayments(instructorId);
+			if(reply!=null) {
+				return ResponseEntity.ok(reply);
+			}
+			return ResponseEntity.notFound().build();
+		}
 
 }
