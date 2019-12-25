@@ -156,5 +156,15 @@ public class InstructorController {
 			}
 			return ResponseEntity.notFound().build();
 		}
+		
+		// delete Instructor Profile
+		@PutMapping("instructor/delete/{instructorId}")
+		public ResponseEntity<Integer> deleteInstructor(@PathVariable("instructorId") Integer instructorId) {
+			Integer reply = instructorService.deleteInstructor(instructorId);
+			if (reply != null) {
+				return ResponseEntity.ok(reply);
+			}
+			return ResponseEntity.notFound().build();
+		}
 
 }

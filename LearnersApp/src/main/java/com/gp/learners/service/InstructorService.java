@@ -343,9 +343,6 @@ public class InstructorService {
 			Instructor instructor = getInstructorByID(instrcutorId);
 			if (instructor == null)
 				return null;
-			Staff staff = instructor.getStaffId();
-			if (staff == null)
-				return null;
 			User user = instructor.getStaffId().getUserId();
 			if (user == null)
 				return null;
@@ -398,13 +395,24 @@ public class InstructorService {
 			if (instructor == null)
 				return null;
 			List<String> status = salaryRepository.checkInstructorSalaryPayments(instructor.getStaffId().getStaffId());
-			System.out.println("Status"+status.isEmpty());
-			
+			System.out.println("Status" + status.isEmpty());
+
 			if (!status.isEmpty())
 				return 0; // still have to pay salary
 			return 1; // salary payments are complete
 		}
 		return null;
 	}
+
+	//delete Instructor
+		public Integer deleteInstructor(Integer instructorId) {
+			if(instructorId != null) {
+				if(instructorRepository.existsById(instructorId)) {
+					instructorRepository.deleteById(instructorId);
+					return 1;
+				}
+			}
+			return 0;
+		}
 
 }
