@@ -41,18 +41,72 @@ public class VehicleService {
 	@Autowired
 	AdministrativeStaffRepository administrativeStaffRepository;
 	
-	public Vehicle getVehicle(Integer vehicleId){
-		if(vehicleRepository.existsById(vehicleId)) {
-			return vehicleRepository.getVehicle(vehicleId);
+	public Integer vehicleRegister(Vehicle vehicle) {
+		if(isNotExistVehicle(vehicle.getVehicleId())) {
+			vehicleRepository.save(vehicle);
+			return 1;
 		}
-		return null;
+		return 0;
 	}
 	
-	public List<Vehicle> getVehicleList(Integer status) {
-		if(status>=0 && status<=1) {
-			return vehicleRepository.getVehicleList(status);
+	
+	private boolean isNotExistVehicle(Integer vehicleId) {
+		
+		Vehicle vehicle = vehicleRepository.findByVehicleId(vehicleId);
+		if(vehicle != null ) {
+			return false;
 		}
-		return null;
+		return true;
+	}
+
+
+	// getVehicleList
+		public List<Vehicle> getVehicleList() {
+			System.out.println("In Vehicle service");
+			List<Vehicle> vehicleList = vehicleRepository.findAll();
+//			Video video = videoList.get(0);
+//			System.out.println(video.getDescription());
+			return vehicleList;
+		}
+
+		// get Vehicle Details
+		public Vehicle getVehicleList(Integer vehicleId) {
+			if (vehicleId != null) {
+				if (vehicleRepository.existsById(vehicleId)) {
+					return vehicleRepository.findByVehicleId(vehicleId);
+				}
+			}
+			return new Vehicle();
+		}
+
+	// Add Vehicle
+	public String addVehicle(Vehicle vehicle) {
+
+		Vehicle result = vehicleRepository.save(vehicle);
+		if (result != null)
+			return "success";
+		else
+			return "notsuccess";
+	}
+
+	// delete vehicle
+	public String deleteVehicle(Integer vehicleId) {
+		if (vehicleId != null) {
+			if (vehicleRepository.existsById(vehicleId)) {
+				vehicleRepository.deleteById(vehicleId);
+				return "success";
+			}
+		}
+		return "error";
+	}
+
+	// update Vehicle Details
+	public Vehicle updateVehicle(Vehicle vehicle) {
+		if (vehicleRepository.existsById(vehicle.getVehicleId())) {
+			return vehicleRepository.save(vehicle);
+		}
+
+		return new Vehicle();
 	}
 	
 	public List<InsurancePayment> getVehicleInsurancePaymentDetails(Integer vehicleId){
