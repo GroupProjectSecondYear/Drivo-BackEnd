@@ -23,4 +23,7 @@ public interface CourseFeeRepository extends JpaRepository<CourseFee, Integer>{
 	//public List<CourseFee> getCourseFeeListByStudentPackageId(@Param("studentPackageId") Integer studentPackageId);
 	
 	public void deleteByStudentPackageId(StudentPackage studentPackageId);
+	
+	@Query(value="select sum(u.amount) from course_fee u where year(u.date) = :year and month(u.date) = :month ",nativeQuery=true)
+	public Double findPaymentByMonthAndYear(@Param("year") Integer year,@Param("month") Integer month);
 }

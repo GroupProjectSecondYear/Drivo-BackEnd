@@ -21,4 +21,7 @@ public interface SalaryRepository extends JpaRepository<Salary, Integer>{
 	
 	@Query(value="select * from salary where staff_id = :staffId and month = :month",nativeQuery=true)
 	public Salary findByStaffIdAndMonth(@Param("staffId") Staff staffId,@Param("month") Integer month);
+	
+	@Query(value="select sum(payed) from salary where month = :month ",nativeQuery=true)
+	public Double findPaymentByMonth(@Param("month") Integer month);
 }
