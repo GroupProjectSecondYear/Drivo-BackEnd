@@ -33,12 +33,23 @@ public class Vehicle {
 	@NotNull
 	private String model;
 
+//	@NotNull
+//	@Size(min = 1, max = 2, message = "Transmission value should be between 1 and 2")
+//	private Integer transmission;// 1-->Manual,2-->Auto
+//
+//	@NotNull
+//	@Size(min = 1, max = 2, message = "Fuel Type value should be between 1 and 2")
+//	private Integer fuelType;// 1-->Diesel,2-->Petrol
+	
 	@NotNull
-	@Size(min = 1, max = 2, message = "Transmission value should be between 1 and 2")
+	@Min(1)
+	@Max(2)
 	private Integer transmission;// 1-->Manual,2-->Auto
-
-	@NotNull
-	@Size(min = 1, max = 2, message = "Fuel Type value should be between 1 and 2")
+	
+//	@NotNull
+//	@Min(1)
+//	@Max(2)
+//	private Integer fuelType;// 1-->Diesel,2-->Petrol
 	private Integer fuelType;// 1-->Diesel,2-->Petrol
 
 	private String document_lic;// pdf url
@@ -52,6 +63,8 @@ public class Vehicle {
 	@ManyToOne
 	@JoinColumn(name = "vehicle_category_id", referencedColumnName = "vehicle_category_id")
 	private VehicleCategory vehicleCategoryId;
+	
+	
 
 	public Vehicle() {
 

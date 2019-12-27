@@ -18,7 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gp.learners.entities.FuelPayment;
 import com.gp.learners.entities.InsurancePayment;
+import com.gp.learners.entities.Student;
+import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.entities.Vehicle;
+import com.gp.learners.entities.VehicleCategory;
 import com.gp.learners.repositories.VehicleRepository;
 import com.gp.learners.service.VehicleService;
 
@@ -33,7 +36,7 @@ public class VehicleController {
 	VehicleRepository vehicleRepository;
 
 	
-
+	
 
 	@GetMapping("/vehicles")
 	public List<Vehicle> getVehicleList() {
@@ -55,11 +58,16 @@ public class VehicleController {
 	
 	
 	// save vehicle
+//	@PostMapping("/vehicle/add")
+//
+//	public Vehicle saveVehicle(@RequestBody Vehicle vehicle) {
+//		System.out.println("In Vehicle controller Add");
+//		return vehicleRepository.save(vehicle);
+//	}
+	
 	@PostMapping("/vehicle/add")
-
-	public Vehicle saveVehicle(@RequestBody Vehicle vehicle) {
-		System.out.println("In Vehicle controller Adding method");
-		return vehicleRepository.save(vehicle);
+	public Integer VehicleRegister(@RequestBody Vehicle vehicle) {//0:vehicle already registered ,1:Register success
+		return vehicleService.vehicleRegister(vehicle);
 	}
 
 	// delete Video
@@ -115,4 +123,43 @@ public class VehicleController {
 		}
 		return ResponseEntity.notFound().build();
 	}
+	
+
+	
+	//1)vehicleCategory Functions
+	
+	@GetMapping("/vehicle/vehicleCategory")
+	public List<VehicleCategory> getVehicleCategoryList(){
+		System.out.println("In vehicle Controller vehicleCategory");
+		return vehicleService.getVehicleCategoryList();
+	}
+	
+//	@PutMapping("/vehicle/vehicleCategory")
+//	public ResponseEntity<Void> updateTimeSlot(@RequestBody TimeSlot object){
+//		System.out.println(object);
+//		String reply=timeTableService.updateTimeSlot(object);
+//		if(reply.equals("success")) {
+//			return ResponseEntity.noContent().build();
+//		}
+//		return ResponseEntity.notFound().build();
+//	}
+//	
+//	@PostMapping("/vehicle/vehicleCategory")
+//	public ResponseEntity<Void> addTimeSlot(@RequestBody TimeSlot object){
+//		String reply=timeTableService.addTimeSlot(object);
+//		if(reply.equals("success")) {
+//			return ResponseEntity.noContent().build();
+//		}
+//		return ResponseEntity.badRequest().build();
+//	}
+//	
+//	@DeleteMapping("/vehicle/vehicleCategory/{id}")
+//	public ResponseEntity<Integer> deleteTimeSlot(@PathVariable("id") Integer timeSlotId){
+//		Integer reply=timeTableService.deleteTimeSlot(timeSlotId);
+//		if(reply != null) {
+//			return ResponseEntity.ok(reply);
+//		}
+//		return ResponseEntity.notFound().build();
+//	}
+	
 }
