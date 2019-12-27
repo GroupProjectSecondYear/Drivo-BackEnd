@@ -11,6 +11,7 @@ import com.gp.learners.entities.AdminStaff;
 import com.gp.learners.entities.FuelPayment;
 import com.gp.learners.entities.InsurancePayment;
 import com.gp.learners.entities.Staff;
+import com.gp.learners.entities.Student;
 import com.gp.learners.entities.User;
 import com.gp.learners.entities.Vehicle;
 import com.gp.learners.repositories.AdministrativeStaffRepository;
@@ -73,6 +74,7 @@ public class VehicleService {
 		public Vehicle getVehicleList(Integer vehicleId) {
 			if (vehicleId != null) {
 				if (vehicleRepository.existsById(vehicleId)) {
+					System.out.println("In Vehicle service Add");
 					return vehicleRepository.findByVehicleId(vehicleId);
 				}
 			}
@@ -80,15 +82,16 @@ public class VehicleService {
 		}
 
 	// Add Vehicle
-	public String addVehicle(Vehicle vehicle) {
-
-		Vehicle result = vehicleRepository.save(vehicle);
-		if (result != null)
-			return "success";
-		else
-			return "notsuccess";
-	}
-
+//		public Integer vehicleRegister(Vehicle vehicle) {
+//
+//		Vehicle result = vehicleRepository.save(vehicle);
+//		if (result != null)
+//			return "success";
+//		else
+//			return "notsuccess";
+//	}
+	
+	
 	// delete vehicle
 	public String deleteVehicle(Integer vehicleId) {
 		if (vehicleId != null) {

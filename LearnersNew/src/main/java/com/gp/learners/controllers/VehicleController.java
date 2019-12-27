@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gp.learners.entities.FuelPayment;
 import com.gp.learners.entities.InsurancePayment;
+import com.gp.learners.entities.Student;
 import com.gp.learners.entities.Vehicle;
 import com.gp.learners.repositories.VehicleRepository;
 import com.gp.learners.service.VehicleService;
@@ -33,7 +34,7 @@ public class VehicleController {
 	VehicleRepository vehicleRepository;
 
 	
-
+	
 
 	@GetMapping("/vehicles")
 	public List<Vehicle> getVehicleList() {
@@ -55,11 +56,16 @@ public class VehicleController {
 	
 	
 	// save vehicle
+//	@PostMapping("/vehicle/add")
+//
+//	public Vehicle saveVehicle(@RequestBody Vehicle vehicle) {
+//		System.out.println("In Vehicle controller Add");
+//		return vehicleRepository.save(vehicle);
+//	}
+	
 	@PostMapping("/vehicle/add")
-
-	public Vehicle saveVehicle(@RequestBody Vehicle vehicle) {
-		System.out.println("In Vehicle controller Adding method");
-		return vehicleRepository.save(vehicle);
+	public Integer VehicleRegister(@RequestBody Vehicle vehicle) {//0:vehicle already registered ,1:Register success
+		return vehicleService.vehicleRegister(vehicle);
 	}
 
 	// delete Video
