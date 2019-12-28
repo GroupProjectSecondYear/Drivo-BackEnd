@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 //Pdf Entity
@@ -26,16 +28,17 @@ public class Pdf {
 	
 	private String description;
 
-		@NotBlank(message = "resourse is mandatory")
-	private String resource;             //Is this a URL???If its a url should validate
-
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "admin_staff_id", referencedColumnName = "admin_staff_id")
 	private AdminStaff adminStaffId;
 
+	@NotNull
+	@DateTimeFormat(pattern = "MM-dd-YYYY" )
 	private LocalDate addedDate;
 
-	@DateTimeFormat(pattern = "MM-dd-YYYY" )
+	
+	
 	public LocalDate getAddedDate() {
 		return addedDate;
 	}
@@ -50,16 +53,12 @@ public class Pdf {
 
 	}
 
-
-
 	public Pdf(Integer pdfId, @NotBlank(message = "Title is mandatory") String title, String description,
-			@NotBlank(message = "resourse is mandatory") String resource, AdminStaff adminStaffId,
-			LocalDate addedDate) {
+			AdminStaff adminStaffId, LocalDate addedDate) {
 		super();
 		this.pdfId = pdfId;
 		this.title = title;
 		this.description = description;
-		this.resource = resource;
 		this.adminStaffId = adminStaffId;
 		this.addedDate = addedDate;
 	}
@@ -72,15 +71,7 @@ public class Pdf {
 		this.pdfId = pdfId;
 	}
 
-	public String getResource() {
-		return resource;
-	}
-
-	void setResource(String resource) {
-		this.resource = resource;
-	}
-
-	public String getDescription() {
+		public String getDescription() {
 		return description;
 	}
 	public void setDescription(String description) {
@@ -105,8 +96,10 @@ public class Pdf {
 
 	@Override
 	public String toString() {
-		return "Pdf [pdfId=" + pdfId + ", title=" + title + ", description=" + description + ", resource=" + resource
-				+ ", adminStaffId=" + adminStaffId + ", addedDate=" + addedDate + "]";
+		return "Pdf [pdfId=" + pdfId + ", title=" + title + ", description=" + description + ", adminStaffId="
+				+ adminStaffId + ", addedDate=" + addedDate + "]";
 	}
+
+
 	
 }

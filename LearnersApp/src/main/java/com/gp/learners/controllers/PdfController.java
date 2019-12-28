@@ -48,16 +48,15 @@ public class PdfController {
 
 	//add pdf
 		@PostMapping("pdf/add")
-		public ResponseEntity<Void> addPdf(@RequestBody Pdf pdf) {
+		public ResponseEntity<Pdf> addPdf(@RequestBody Pdf pdf) {
 			//System.out.println("stuId:"+stuId+" object:"+object);
 
-			String reply=pdfService.addPdf(pdf);
-			if(reply.equals("success")) {
-				System.out.println(reply);
-				return ResponseEntity.noContent().build();
+			Pdf pdf1=pdfService.addPdf(pdf);
+			System.out.println(pdf1.getPdfId());
+			if(pdf1.getPdfId() != null) {
+				return ResponseEntity.ok(pdf1);
 			}
-			System.out.println(reply);
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.noContent().build();
 		}
 
 		//delete Pdf

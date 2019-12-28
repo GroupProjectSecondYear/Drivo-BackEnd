@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.simpleworkflow.flow.core.TryCatch;
 import com.gp.learners.service.PackageService;
+import com.gp.learners.service.PdfService;
 import com.gp.learners.service.S3Service;
 import com.gp.learners.service.UserService;
 
@@ -34,6 +35,9 @@ public class FileController {
 	
 	@Autowired
 	PackageService packageService;
+	
+	@Autowired
+	PdfService pdfService;
     
 	/*
      * Download Files
@@ -94,6 +98,7 @@ public class FileController {
 	 */
 	@PostMapping("file/upload/{id}/{type}")
     public ResponseEntity<Integer> uploadMultipartFile(@RequestParam("file") MultipartFile file ,@PathVariable("id") Integer id,@PathVariable("type") Integer type) {
+		System.out.println("File upload Controller");
 		try {
 			Long fileSize = file.getSize();
 			Long maxFileSize = 1L;
@@ -111,7 +116,7 @@ public class FileController {
 				if(type==1) {
 					reply = userService.uploadUserProfileImage(file, id);
 				}else if(type==2){
-					//pdf Service
+					reply = pdfService.uploadPdf(file, id);
 				}else {//type==3
 					reply = packageService.uploadPackageImage(file, id);
 				}
@@ -127,4 +132,6 @@ public class FileController {
 		}	
 		return ResponseEntity.notFound().build();
     } 
+	
+	
 }

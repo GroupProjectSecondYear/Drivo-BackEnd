@@ -18,10 +18,13 @@ public class AdminStaffService {
 
 	//Get Staff Details
 	public AdminStaff getAdminStaffByUserId(Integer userId) {
+		System.out.println("USer"+userId);
 		System.out.println("inAdminstaffService 1");
 		Integer staffId=staffRepository.findByUserId(userId).getStaffId();
+		System.out.println("stf id"+staffId);
 		System.out.println("inAdminstaffService 2");
 		AdminStaff adminStaff=adminStaffRepository.getAdminStaffByStaffId(staffId);
+		System.out.println(adminStaff.getAdminStaffId());
 		System.out.println("inAdminstaffService 3");
 		return adminStaff;
 	}
