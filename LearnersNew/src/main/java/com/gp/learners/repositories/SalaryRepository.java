@@ -15,13 +15,13 @@ public interface SalaryRepository extends JpaRepository<Salary, Integer>{
 				+"s.staff_id=e.staff_id and "
 				+ "e.user_id=u.user_id and "
 				+ "u.status = 1 and "
-				+ "s.month = :month order by s.complete asc,u.role asc,s.total_payment desc"
+				+ "s.month = :month and s.year = :year order by s.complete asc,u.role asc,s.total_payment desc"
 				,nativeQuery=true)
-	public List<Salary> findSalaryListByMonth(@Param("month")Integer month);
+	public List<Salary> findSalaryListByMonth(@Param("month")Integer month,@Param("year") Integer year);
 	
-	@Query(value="select * from salary where staff_id = :staffId and month = :month",nativeQuery=true)
-	public Salary findByStaffIdAndMonth(@Param("staffId") Staff staffId,@Param("month") Integer month);
+	@Query(value="select * from salary where staff_id = :staffId and month = :month and year = :year",nativeQuery=true)
+	public Salary findByStaffIdAndMonth(@Param("staffId") Staff staffId,@Param("month") Integer month,@Param("year") Integer year);
 	
-	@Query(value="select sum(payed) from salary where month = :month ",nativeQuery=true)
-	public Double findPaymentByMonth(@Param("month") Integer month);
+	@Query(value="select sum(payed) from salary where month = :month and year = :year",nativeQuery=true)
+	public Double findPaymentByMonth(@Param("month") Integer month,@Param("year") Integer year);
 }

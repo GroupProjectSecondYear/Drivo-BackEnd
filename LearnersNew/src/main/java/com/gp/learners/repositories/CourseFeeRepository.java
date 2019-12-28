@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.gp.learners.entities.CourseFee;
+import com.gp.learners.entities.Package;
 import com.gp.learners.entities.StudentPackage;
 
 
@@ -26,4 +27,8 @@ public interface CourseFeeRepository extends JpaRepository<CourseFee, Integer>{
 	
 	@Query(value="select sum(u.amount) from course_fee u where year(u.date) = :year and month(u.date) = :month ",nativeQuery=true)
 	public Double findPaymentByMonthAndYear(@Param("year") Integer year,@Param("month") Integer month);
+	
+	@Query("select sum(c.amount) from CourseFee c where year(c.date) = :year and month(c.date) = :month and "
+			+ "c.studentPackageId.packageId = :packageData")
+	public Double findPaymentByPackageIdAndYearAndMonth(@Param("packageData") Package packageData,@Param("year") Integer year,@Param("month") Integer month);
 }

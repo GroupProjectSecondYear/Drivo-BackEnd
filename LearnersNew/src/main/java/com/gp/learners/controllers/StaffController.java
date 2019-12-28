@@ -168,15 +168,15 @@ public class StaffController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("staff/salary/{month}")
-	public ResponseEntity<List<Salary>> getStaffSalaryDetails(@PathVariable("month") Integer month){
-		List<Salary> salaryList = staffService.getStaffSalaryList(month);
+	@GetMapping("staff/salary/{month}/{year}")
+	public ResponseEntity<List<Salary>> getStaffSalaryDetails(@PathVariable("month") Integer month,@PathVariable("year") Integer year){
+		List<Salary> salaryList = staffService.getStaffSalaryList(month,year);
 		return ResponseEntity.ok(salaryList);
 	}
 	
-	@GetMapping("staff/salary/data/{staffId}/{month}")
-	public ResponseEntity<Salary> getStaffSalaryDetails(@PathVariable("staffId") Integer staffId,@PathVariable("month") Integer month) {
-		Salary salary = staffService.getStaffSalaryData(staffId,month);
+	@GetMapping("staff/salary/data/{staffId}/{month}/{year}")
+	public ResponseEntity<Salary> getStaffSalaryDetails(@PathVariable("staffId") Integer staffId,@PathVariable("month") Integer month,@PathVariable("year") Integer year) {
+		Salary salary = staffService.getStaffSalaryData(staffId,month,year);
 		if(salary!=null) {
 			return ResponseEntity.ok(salary);
 		}
@@ -192,9 +192,9 @@ public class StaffController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("staff/work/days/{staffId}/{month}")
-	public ResponseEntity<StaffWorkDaysDataMap> getStaffWorkDays(@PathVariable("staffId") Integer staffId,@PathVariable("month") Integer month){
-		StaffWorkDaysDataMap object = staffService.getStaffWorkDays(staffId, month);
+	@GetMapping("staff/work/days/{staffId}/{month}/{year}")
+	public ResponseEntity<StaffWorkDaysDataMap> getStaffWorkDays(@PathVariable("staffId") Integer staffId,@PathVariable("month") Integer month, @PathVariable("year") Integer year){
+		StaffWorkDaysDataMap object = staffService.getStaffWorkDays(staffId, month, year);
 		if(object!=null) {
 			return ResponseEntity.ok(object);
 		}
@@ -219,9 +219,9 @@ public class StaffController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("staff/attendance/{staffId}/{month}")
-	public ResponseEntity<List<Attendance>> getStaffAttendance(@PathVariable("staffId")Integer staffId,@PathVariable("month") Integer month){
-		List<Attendance> object = staffService.getStaffAttendance(staffId, month);
+	@GetMapping("staff/attendance/{staffId}/{month}/{year}")
+	public ResponseEntity<List<Attendance>> getStaffAttendance(@PathVariable("staffId")Integer staffId,@PathVariable("month") Integer month,@PathVariable("year") Integer year){
+		List<Attendance> object = staffService.getStaffAttendance(staffId, month, year);
 		if(object!=null) {
 			return ResponseEntity.ok(object);
 		}

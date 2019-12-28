@@ -1,5 +1,7 @@
 package com.gp.learners.entities;
 
+import java.time.LocalDate;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,6 +25,9 @@ public class FuelPayment {
 	@Min(0)
 	@Max(11)
 	private Integer month;
+
+	@NotNull
+	private LocalDate date;
 
 	@NotNull
 	@Min(0)
@@ -49,6 +54,14 @@ public class FuelPayment {
 		this.month = month;
 	}
 
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
+
 	public Integer getAmount() {
 		return amount;
 	}
@@ -67,8 +80,8 @@ public class FuelPayment {
 
 	@Override
 	public String toString() {
-		return "FuelPayemnt [fuelPaymentId=" + fuelPaymentId + ", month=" + month + ", amount=" + amount
-				+ ", adminStaffId=" + adminStaffId + "]";
+		return "FuelPayment [fuelPaymentId=" + fuelPaymentId + ", month=" + month + ", date=" + date + ", amount="
+				+ amount + ", adminStaffId=" + adminStaffId + "]";
 	}
 
 }

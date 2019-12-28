@@ -47,6 +47,9 @@ public class UserService {
 	AdminRepository adminRepository;
 	
 	@Autowired
+	SystemUpdateService systemUpdateService;
+	
+	@Autowired
 	JwtInMemoryUserDetailsService jwtInMemoryUserDetailsService;
 	
 	@Value("${aws.s3.bucket.profile_image}")
@@ -54,10 +57,11 @@ public class UserService {
 	
 	public User getUser(String email) {
 		
-		//deactivate student account which student's trial_date over
+		//deactivate student account which student's trial_date over and check system update
 		new Thread(new Runnable() {
 		    public void run() {
-		    	studentService.deactivateStudentAccount();
+		    	studentService.deactivateStudentAccount();//student deactivation
+		    	systemUpdateService.checkUpdate();//system update
 		    }
 		}).start();
 

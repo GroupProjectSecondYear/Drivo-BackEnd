@@ -27,6 +27,7 @@ import com.gp.learners.entities.StudentLesson;
 import com.gp.learners.entities.SubPath;
 import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.entities.mapObject.InstructorMap;
+import com.gp.learners.entities.mapObject.LessonAssingStudentMap;
 import com.gp.learners.entities.mapObject.LessonDistributionMap;
 import com.gp.learners.entities.mapObject.LessonMap;
 import com.gp.learners.entities.mapObject.PackageAnalysisDataMap;
@@ -72,6 +73,9 @@ public class TimeTableService {
 
 	@Autowired
 	LessonDayFeedbackRepository lessonDayFeedbackRepository;
+	
+	@Autowired 
+	InstructorService instructorService;
 
 	// Time Slot functions
 	public List<TimeSlot> getTimeSlotList() {
@@ -303,7 +307,11 @@ public class TimeTableService {
 						packageDataRow.add(lesson.getPackageId().getTitle() + "("+ getTransmission(lesson.getTransmission()) + ")");
 						instructorDataRow.add(lesson.getInstructorId().getStaffId().getUserId().getFirstName() + " "+ lesson.getInstructorId().getStaffId().getUserId().getLastName());
 						pathDataRow.add(lesson.getPathId().getOrigin() + " : " + lesson.getPathId().getDestination());
-						numStuDataRow.add(lesson.getNumStu());
+						if(instructorId!=-1) {//get total student which booked the lesson
+							numStuDataRow.add(getLessonBookedStudent(instructorId,lesson.getLessonId()));
+						}else {//get total student which assign for the lesson
+							numStuDataRow.add(lesson.getNumStu());
+						}
 						idDataRow.add(lesson.getLessonId());
 
 					} else {
@@ -327,7 +335,12 @@ public class TimeTableService {
 						instructorDataRow.add(lesson.getInstructorId().getStaffId().getUserId().getFirstName() + " "
 								+ lesson.getInstructorId().getStaffId().getUserId().getLastName());
 						pathDataRow.add(lesson.getPathId().getOrigin() + " : " + lesson.getPathId().getDestination());
-						numStuDataRow.add(lesson.getNumStu());
+						
+						if(instructorId!=-1) {//get total student which booked the lesson
+							numStuDataRow.add(getLessonBookedStudent(instructorId,lesson.getLessonId()));
+						}else {//get total student which assign for the lesson
+							numStuDataRow.add(lesson.getNumStu());
+						}
 						idDataRow.add(lesson.getLessonId());
 
 						timeSlot = lesson.getTimeSlotId();
@@ -763,6 +776,17 @@ public class TimeTableService {
 		ZoneId zoneId = ZoneId.of("Asia/Colombo");
 		LocalTime time = LocalTime.now(zoneId);
 		return time;
+	}
+	
+	private Integer getLessonBookedStudent(Integer instructorId,Integer lessonId) {
+		Instructor instructor = instructorRepository.findByInstructorId(instructorId);
+		List<LessonAssingStudentMap> studentList = instructorService.getAssignStudent(instructor.getStaffId().getUserId().getUserId(), lessonId);
+		Integer numStudent = 0;
+		if(studentList.size()>0) {
+			numStudent=studentList.size();
+		}
+		System.out.println(numStudent);
+		return numStudent;
 	}
 
 }

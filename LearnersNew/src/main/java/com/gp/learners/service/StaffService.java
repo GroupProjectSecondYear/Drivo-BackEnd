@@ -180,20 +180,20 @@ public class StaffService {
 	/*
 	 * month index [1-12]-->[Jan,Dec]
 	 */
-	public List<Salary> getStaffSalaryList(Integer month){
+	public List<Salary> getStaffSalaryList(Integer month,Integer year){
 		List<Salary> salaryList = new ArrayList<Salary>();
-		salaryList = salaryRepository.findSalaryListByMonth(month);
+		salaryList = salaryRepository.findSalaryListByMonth(month,year);
 		
 		if(month>0 && month<13) {
 			if(salaryList==null || salaryList.size()==0) {//calculate staff salary(Insert)
-				Boolean complete = setStaffSalary(month,1);
+				Boolean complete = setStaffSalary(month,year,1);
 				if(complete) {
-					salaryList = salaryRepository.findSalaryListByMonth(month);
+					salaryList = salaryRepository.findSalaryListByMonth(month,year);
 				}
 			}else {//update staff salary
-				Boolean complete = setStaffSalary(month,2);
+				Boolean complete = setStaffSalary(month,year,2);
 				if(complete) {
-					salaryList = salaryRepository.findSalaryListByMonth(month);
+					salaryList = salaryRepository.findSalaryListByMonth(month,year);
 				}
 			}
 		}
@@ -203,7 +203,7 @@ public class StaffService {
 	/*
 	 * type 1-->Add ,2-->Update
 	 */
-	public Boolean setStaffSalary(Integer month,Integer type){
+	public Boolean setStaffSalary(Integer month,Integer year,Integer type){
 		List<WorkTime> workTimeList = workTimeRepository.findAll();
 		if(workTimeList!=null) {
 			WorkTime workTime = workTimeList.get(0);
@@ -211,7 +211,7 @@ public class StaffService {
 				List<Staff> staffList = staffRepository.findStaffListByRole(i);
 				if(staffList!=null) {
 					SalaryInformation salaryInformation = salaryInformationRepository.findByStaffType(i);
-					calaculateSalary(staffList, salaryInformation, month, workTime,type);
+					calaculateSalary(staffList, salaryInformation, month, year, workTime,type);
 				}
 			}
 			return true;
@@ -219,7 +219,7 @@ public class StaffService {
 		return false;
 	}
 	
-	public void calaculateSalary(List<Staff> staffList,SalaryInformation salaryInformation,Integer month,WorkTime workTime,Integer type){
+	public void calaculateSalary(List<Staff> staffList,SalaryInformation salaryInformation,Integer month, Integer year, WorkTime workTime,Integer type){
 		for (Staff staff : staffList) {
 			
 			List<LeaveSetting> recommendedLeaveList = leaveSettingRepository.findAll();
@@ -229,10 +229,10 @@ public class StaffService {
 			}
 			
 			
-			Integer totalNumLeaves = staffLeaveRepository.findByStaffId(staff);//total leave calculate including this month leaves
-			Integer numLeaves = staffLeaveRepository.findByStaffIdAndMonth(staff,month);//get number of leave in this month
-			Integer numFullDays = attendanceRepository.findFullDaysByStaffId(workTime.getFullDay(), staff, month);
-			Integer numHalfDays = attendanceRepository.findHalfDaysByStaffId(workTime.getHalfDay(),workTime.getFullDay(),staff, month);
+			Integer totalNumLeaves = staffLeaveRepository.findByStaffId(staff,year);//total leave calculate including this month leaves
+			Integer numLeaves = staffLeaveRepository.findByStaffIdAndMonth(staff,month,year);//get number of leave in this month
+			Integer numFullDays = attendanceRepository.findFullDaysByStaffId(workTime.getFullDay(), staff, month,year);
+			Integer numHalfDays = attendanceRepository.findHalfDaysByStaffId(workTime.getHalfDay(),workTime.getFullDay(),staff, month, year);
 			
 			Double totalPayment = numFullDays*salaryInformation.getFullDaySalary() + numHalfDays*salaryInformation.getHalfDaySalary();
 			Integer noPayDays = 0;
@@ -255,6 +255,7 @@ public class StaffService {
 			
 			Salary object = new Salary();
 			object.setMonth(month);
+			object.setYear(year);
 			object.setTotalPayment(totalPayment);
 			object.setNopay(nopay);
 			object.setPayed(0d);
@@ -264,7 +265,7 @@ public class StaffService {
 			if(type==1) {//insert
 				salaryRepository.save(object);
 			}else {//update
-				Salary salaryExistObject = salaryRepository.findByStaffIdAndMonth(staff,month);
+				Salary salaryExistObject = salaryRepository.findByStaffIdAndMonth(staff,month,year);
 				salaryExistObject.setTotalPayment(totalPayment);
 				salaryExistObject.setNopay(nopay);
 				salaryRepository.save(salaryExistObject);
@@ -273,10 +274,10 @@ public class StaffService {
 		}
 	}
 	
-	public Salary getStaffSalaryData(Integer staffId,Integer month) {
+	public Salary getStaffSalaryData(Integer staffId,Integer month, Integer year) {
 		if(staffRepository.existsById(staffId) && month>0 && month<13) {
 			Staff staff = staffRepository.findByStaffId(staffId);
-			return salaryRepository.findByStaffIdAndMonth(staff, month);
+			return salaryRepository.findByStaffIdAndMonth(staff, month, year);
 		}
 		return null;
 	}
@@ -286,9 +287,11 @@ public class StaffService {
 			Double netSalary = staffSalary.getTotalPayment()-staffSalary.getNopay()-staffSalary.getPayed();
 			if(netSalary==0) {
 				staffSalary.setComplete(1);
+				staffSalary.setDate(timeTableService.getLocalCurrentDate());
 				salaryRepository.save(staffSalary);
 				return "success";
 			}else if(netSalary>0) {
+				staffSalary.setDate(timeTableService.getLocalCurrentDate());
 				salaryRepository.save(staffSalary);
 				return "success";
 			}else {
@@ -299,7 +302,7 @@ public class StaffService {
 	}
 	////////////////////Staff Salary Finish//////////////////////////////////
 	
-	public StaffWorkDaysDataMap getStaffWorkDays(Integer staffId,Integer month) {
+	public StaffWorkDaysDataMap getStaffWorkDays(Integer staffId,Integer month,Integer year) {
 		if(staffRepository.existsById(staffId)) {
 			Staff staff = staffRepository.findByStaffId(staffId);	
 			List<WorkTime> workTimeList = workTimeRepository.findAll();
@@ -312,8 +315,8 @@ public class StaffService {
 				if(recommendedLeave!=null && recommendedLeaveList.size()>0) {
 					recommendedLeave = recommendedLeaveList.get(0).getNumLeave();
 				}
-				Integer totalNumLeaves = staffLeaveRepository.findByStaffId(staff);//total leave calculate including this month leaves
-				Integer numLeaves = staffLeaveRepository.findByStaffIdAndMonth(staff,month);//get number of leave in this month
+				Integer totalNumLeaves = staffLeaveRepository.findByStaffId(staff,year);//total leave calculate including this month leaves
+				Integer numLeaves = staffLeaveRepository.findByStaffIdAndMonth(staff,month,year);//get number of leave in this month
 				Integer noPayDays=0;
 				if(totalNumLeaves>recommendedLeave) {//calculate nopayDays
 					Integer diffLeave = totalNumLeaves-recommendedLeave;
@@ -326,9 +329,9 @@ public class StaffService {
 					}
 				}
 				
-				Integer numFullDays = attendanceRepository.findFullDaysByStaffId(workTime.getFullDay(), staff, month);
-				Integer numHalfDays = attendanceRepository.findHalfDaysByStaffId(workTime.getHalfDay(),workTime.getFullDay(),staff, month);
-				Integer notCompleteDays = attendanceRepository.findNotCompleteDaysByStaffId(workTime.getHalfDay(),staff,month);
+				Integer numFullDays = attendanceRepository.findFullDaysByStaffId(workTime.getFullDay(), staff, month, year);
+				Integer numHalfDays = attendanceRepository.findHalfDaysByStaffId(workTime.getHalfDay(),workTime.getFullDay(),staff, month, year);
+				Integer notCompleteDays = attendanceRepository.findNotCompleteDaysByStaffId(workTime.getHalfDay(),staff,month,year);
 				
 				StaffWorkDaysDataMap object = new StaffWorkDaysDataMap();
 				object.setFullDays(numFullDays);
@@ -361,10 +364,10 @@ public class StaffService {
 		return null;
 	}
 	
-	public List<Attendance> getStaffAttendance(Integer staffId,Integer month){
-		if(staffId!=null && staffRepository.existsById(staffId) && month!=null) {
+	public List<Attendance> getStaffAttendance(Integer staffId,Integer month,Integer year){
+		if(staffId!=null && staffRepository.existsById(staffId) && month!=null && year!=null) {
 			Staff staff = staffRepository.findByStaffId(staffId);
-			List<Attendance> attendanceList = attendanceRepository.findByStaffIdAndMonth(staff, month);
+			List<Attendance> attendanceList = attendanceRepository.findByStaffIdAndMonth(staff, month,year);
 			return attendanceList;
 		}
 		return null;

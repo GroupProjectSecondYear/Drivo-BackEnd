@@ -57,9 +57,9 @@ public class VehicleController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("vehicle/fuel")
-	public ResponseEntity<List<FuelPayment>> getVehicleFuelData(){
-		return ResponseEntity.ok(vehicleService.getVehicleFuelData());
+	@GetMapping("vehicle/fuel/{year}")
+	public ResponseEntity<List<FuelPayment>> getVehicleFuelData(@PathVariable("year") Integer year){
+		return ResponseEntity.ok(vehicleService.getVehicleFuelData(year));
 	}
 	
 	@PostMapping("vehicle/fuel/{userId}")

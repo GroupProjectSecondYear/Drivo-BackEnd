@@ -8,6 +8,7 @@ import java.util.List;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.spel.ast.Assign;
 import org.springframework.stereotype.Service;
 
 import com.gp.learners.entities.Instructor;
@@ -58,7 +59,7 @@ public class InstructorService {
 				
 	
 				for (LessonMap lessonMap : list) {
-					if(!lessonMap.getTimeSlotData().get(0).equals("-")) {
+					if(!lessonMap.getTimeSlotData().get(0).equals("-")) {				
 						lessonMapList.add(lessonMap);
 					}
 				}
