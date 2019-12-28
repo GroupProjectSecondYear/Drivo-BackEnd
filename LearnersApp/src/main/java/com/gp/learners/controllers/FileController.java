@@ -48,11 +48,17 @@ public class FileController {
 	@GetMapping("/api/file/{userId}/{type}")
 	public ResponseEntity<byte[]> downloadFile(@PathVariable("userId") Integer userId ,@PathVariable("type") Integer type) {
 		
+		System.out.println("File controller Viewing meth- TYpe"+type);
 		ByteArrayOutputStream downloadInputStream = new ByteArrayOutputStream(); 
+		System.out.println("type"+type);
+		System.out.println("ID"+userId);
 		if(type==1) {
 			downloadInputStream = userService.downLoadProfileImage(userId);
-		}else {
-			//pdf service
+		}else if(type==2) {
+			System.out.println("File controller Viewing meth- PDF type 2");
+			downloadInputStream = pdfService.downloadPdf(userId);
+		}else{
+			//other service
 		}
 		
 		if(downloadInputStream!=null) {
@@ -60,8 +66,11 @@ public class FileController {
 			if(type==1) {
 				 keyname=userId+".jpg";
 				//keyname = userService.getFileKeyName(userId);
-			}else {
+			}else if(type==2){
 				//pdf service
+				 keyname=userId+".pdf";
+			}else {
+				
 			}
 			  
 			return ResponseEntity.ok()
@@ -132,6 +141,8 @@ public class FileController {
 		}	
 		return ResponseEntity.notFound().build();
     } 
+	
+	
 	
 	
 }

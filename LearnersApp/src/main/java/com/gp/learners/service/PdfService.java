@@ -1,5 +1,6 @@
 package com.gp.learners.service;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +20,7 @@ public class PdfService {
 	@Autowired
 	S3Service s3Service;
 	
-	@Value("${aws.s3.bucket.profile_image}")
+	@Value("${aws.s3.bucket.learning_material_pdf}")
 	private String bucketName; // bucket name should be changed
 
 	// getPdfList
@@ -72,6 +73,7 @@ public class PdfService {
 		return new Pdf();
 	}
 	public String uploadPdf(MultipartFile file, Integer pdfId) {
+		System.out.println("PDF UPLOADING");
 		if (pdfRepository.existsById(pdfId)) {
 			String keyName = pdfId + ".pdf";
 			if (keyName != null) {
@@ -79,7 +81,30 @@ public class PdfService {
 				Pdf pdf = pdfRepository.getPdfById(pdfId);
 				//user.setProfileImage(1);
 				//userRepository.save(user);
+				System.out.println("PDF UPLOADING success");
 				return "success";
+			}
+		}
+		return null;
+	}
+	public ByteArrayOutputStream downloadPdf(Integer pdfId) {
+		if (pdfRepository.existsById(pdfId)) {
+			System.out.println("PDF dwnlding Byte Array Method");
+			String keyName = pdfId + ".pdf";
+			
+			if (pdfId != null) {
+				Pdf pdf = pdfRepository.getPdfById(pdfId);
+				try {
+					System.out.println("PDF dwnLOADING Byte Array Method try chtch");
+					/*if (pdf.getProfileImage() == 1) {
+						return s3Service.downloadFile(keyName, bucketName);
+					} else {*/
+					return s3Service.downloadFile(keyName, bucketName);
+					/*}*/
+				} catch (Exception e) {
+					System.out.println("There is a problem in s3 bucket");
+				}
+
 			}
 		}
 		return null;
