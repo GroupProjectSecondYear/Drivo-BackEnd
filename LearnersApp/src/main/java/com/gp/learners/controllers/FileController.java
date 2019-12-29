@@ -78,6 +78,7 @@ public class FileController {
 					.header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + keyname + "\"")
 					.body(downloadInputStream.toByteArray());	
 		}
+		System.out.println("Null Stream");
 		return ResponseEntity.notFound().build();
 	}
 	
