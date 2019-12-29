@@ -61,7 +61,6 @@ public class UserService {
 		new Thread(new Runnable() {
 		    public void run() {
 		    	studentService.deactivateStudentAccount();//student deactivation
-		    	systemUpdateService.checkUpdate();//system update
 		    }
 		}).start();
 
