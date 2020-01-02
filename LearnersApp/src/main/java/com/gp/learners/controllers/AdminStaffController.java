@@ -33,12 +33,10 @@ public class AdminStaffController {
 	public ResponseEntity<AdminStaff> getAdminstaffbyUserId(@PathVariable("userId") Integer userId) {
 		System.out.println("inAdminstaffController");
 		AdminStaff adminStaff = adminStaffService.getAdminStaffByUserId(userId);
-		
-		//System.out.println(adminStaff.getAdminStaffId());
 		if (adminStaff != null) {
 			return ResponseEntity.ok(adminStaff);
 		}
-		System.out.println("Admin Null");
+		
 		return ResponseEntity.noContent().build();
 	}
 
