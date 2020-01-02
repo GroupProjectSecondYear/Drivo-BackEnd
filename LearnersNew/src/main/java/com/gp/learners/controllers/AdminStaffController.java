@@ -36,6 +36,7 @@ public class AdminStaffController {
 		if (adminStaff != null) {
 			return ResponseEntity.ok(adminStaff);
 		}
+		
 		return ResponseEntity.noContent().build();
 	}
 
