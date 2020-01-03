@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.simpleworkflow.flow.core.TryCatch;
 import com.gp.learners.service.PackageService;
+import com.gp.learners.service.PdfService;
 import com.gp.learners.service.S3Service;
 import com.gp.learners.service.UserService;
 
@@ -34,7 +35,10 @@ public class FileController {
 	
 	@Autowired
 	PackageService packageService;
-    
+    	
+	@Autowired
+	PdfService pdfService;
+	
 	/*
      * Download Files
      * type --> 1 = UserProfileImage
@@ -44,11 +48,17 @@ public class FileController {
 	@GetMapping("/api/file/{userId}/{type}")
 	public ResponseEntity<byte[]> downloadFile(@PathVariable("userId") Integer userId ,@PathVariable("type") Integer type) {
 		
+		System.out.println("File controller Viewing meth- TYpe"+type);
 		ByteArrayOutputStream downloadInputStream = new ByteArrayOutputStream(); 
+		System.out.println("type"+type);
+		System.out.println("ID"+userId);
 		if(type==1) {
 			downloadInputStream = userService.downLoadProfileImage(userId);
-		}else {
-			//pdf service
+		}else if(type==2) {
+		System.out.println("File controller Viewing meth- PDF type 2");
+			downloadInputStream = pdfService.downloadPdf(userId);
+		}else{
+			//other service	//pdf service
 		}
 		
 		if(downloadInputStream!=null) {
@@ -56,14 +66,18 @@ public class FileController {
 			if(type==1) {
 				 keyname=userId+".jpg";
 				//keyname = userService.getFileKeyName(userId);
-			}else {
+			}else if(type==2){{
 				//pdf service
+			keyname=userId+".pdf";
+			}else {
+				
 			}
 			  
 			return ResponseEntity.ok()
 					.contentType(contentType(keyname))
 					.header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + keyname + "\"")
 					.body(downloadInputStream.toByteArray());	
+					  System.out.println("Null Stream");
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -94,7 +108,8 @@ public class FileController {
 	 */
 	@PostMapping("file/upload/{id}/{type}")
     public ResponseEntity<Integer> uploadMultipartFile(@RequestParam("file") MultipartFile file ,@PathVariable("id") Integer id,@PathVariable("type") Integer type) {
-		try {
+	    System.out.println("File upload Controller");	
+	    try {
 			Long fileSize = file.getSize();
 			Long maxFileSize = 1L;
 			
@@ -111,7 +126,7 @@ public class FileController {
 				if(type==1) {
 					reply = userService.uploadUserProfileImage(file, id);
 				}else if(type==2){
-					//pdf Service
+					reply = pdfService.uploadPdf(file, id);
 				}else {//type==3
 					reply = packageService.uploadPackageImage(file, id);
 				}
@@ -127,4 +142,8 @@ public class FileController {
 		}	
 		return ResponseEntity.notFound().build();
     } 
+		
+		
+		
+		
 }
