@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.amazonaws.services.simpleworkflow.flow.core.TryCatch;
 import com.gp.learners.service.PackageService;
 import com.gp.learners.service.PdfService;
+import com.gp.learners.service.PaperService;
 import com.gp.learners.service.S3Service;
 import com.gp.learners.service.UserService;
 
@@ -38,6 +39,9 @@ public class FileController {
 	
 	@Autowired
 	PdfService pdfService;
+	
+	@Autowired
+	PaperService paperService;
     
 	/*
      * Download Files
@@ -57,8 +61,9 @@ public class FileController {
 		}else if(type==2) {
 			System.out.println("File controller Viewing meth- PDF type 2");
 			downloadInputStream = pdfService.downloadPdf(userId);
-		}else{
-			//other service
+		}else if(type==3){
+			System.out.println("File controller Viewing meth- Paper type 2");
+			downloadInputStream = paperService.downloadPaper(userId);
 		}
 		
 		if(downloadInputStream!=null) {
@@ -66,7 +71,7 @@ public class FileController {
 			if(type==1) {
 				 keyname=userId+".jpg";
 				//keyname = userService.getFileKeyName(userId);
-			}else if(type==2){
+			}else if(type==2 ||type==3){
 				//pdf service
 				 keyname=userId+".pdf";
 			}else {
@@ -127,6 +132,8 @@ public class FileController {
 					reply = userService.uploadUserProfileImage(file, id);
 				}else if(type==2){
 					reply = pdfService.uploadPdf(file, id);
+				}else if(type==3){
+					reply = paperService.uploadPaper(file, id);
 				}else {//type==3
 					reply = packageService.uploadPackageImage(file, id);
 				}

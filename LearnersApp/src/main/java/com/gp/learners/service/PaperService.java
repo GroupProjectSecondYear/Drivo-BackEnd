@@ -20,8 +20,8 @@ public class PaperService {
 	@Autowired
 	S3Service s3Service;
 	
-	@Value("${aws.s3.bucket.learning_material_pdf}")
-	private String bucketName; // bucket name should be changed
+	@Value("${aws.s3.bucket.learning_material_paper}")
+	private String bucketName;
 
 	// getPaperList
 	public List<Paper> getPaperList() {
@@ -42,7 +42,7 @@ public class PaperService {
 
 	// Add PDF
 	public Paper addPaper(Paper paper) {
-
+        System.out.println("Papaer Servide add Method");
 		Paper result = paperRepository.save(paper);
 		if (result != null)
 			return result;
@@ -73,7 +73,7 @@ public class PaperService {
 		return new Paper();
 	}
 	public String uploadPaper(MultipartFile file, Integer paperId) {
-		System.out.println("PDF UPLOADING");
+		System.out.println("Paper UPLOADING");
 		if (paperRepository.existsById(paperId)) {
 			String keyName = paperId + ".paper";
 			if (keyName != null) {
@@ -81,7 +81,7 @@ public class PaperService {
 				Paper paper = paperRepository.getPaperById(paperId);
 				//user.setProfileImage(1);
 				//userRepository.save(user);
-				System.out.println("PDF UPLOADING success");
+				System.out.println("Paper UPLOADING success");
 				return "success";
 			}
 		}
