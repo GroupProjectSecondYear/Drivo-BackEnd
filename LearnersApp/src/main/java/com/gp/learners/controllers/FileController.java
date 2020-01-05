@@ -62,7 +62,7 @@ public class FileController {
 			System.out.println("File controller Viewing meth- PDF type 2");
 			downloadInputStream = pdfService.downloadPdf(userId);
 		}else if(type==3){
-			System.out.println("File controller Viewing meth- Paper type 2");
+			System.out.println("File controller Viewing meth- Paper type 3");
 			downloadInputStream = paperService.downloadPaper(userId);
 		}
 		
