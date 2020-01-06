@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.gp.learners.config.security.JwtInMemoryUserDetailsService;
 import com.gp.learners.entities.Instructor;
+import com.gp.learners.entities.Lesson;
 import com.gp.learners.entities.Pdf;
 import com.gp.learners.entities.Staff;
 import com.gp.learners.entities.Student;
@@ -413,6 +414,19 @@ public class InstructorService {
 				}
 			}
 			return 0;
+		}
+		
+		// check instructor is assigned to lessons
+		public  List<Lesson>checkassignedUpComingLessions(Integer instructorId) {
+			if (instructorRepository.existsById(instructorId)) {
+				//Instructor instructor = instructorRepository.findByInstructorId(instructorId);
+				//if (instructor == null)
+				//	return null;
+				List<Lesson> lessons = lessonRepository.getUpComingLessonsOfInstructor(instructorId);
+				System.out.println("Status" + lessons.isEmpty());
+				return lessons; // return assigned lessons
+			}
+			return null;  
 		}
 
 }

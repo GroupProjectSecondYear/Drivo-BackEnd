@@ -20,7 +20,9 @@ import com.gp.learners.entities.Student;
 import com.gp.learners.entities.mapObject.LessonAssingStudentMap;
 import com.gp.learners.entities.mapObject.LessonMap;
 import com.gp.learners.entities.mapObject.StudentPractricalChartDataMap;
+import com.gp.learners.entities.Lesson;
 import com.gp.learners.service.InstructorService;
+//import com.gp.learners.service.LessonService;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
@@ -163,6 +165,15 @@ public class InstructorController {
 			Integer reply = instructorService.deleteInstructor(instructorId);
 			if (reply != null) {
 				return ResponseEntity.ok(reply);
+			}
+			return ResponseEntity.notFound().build();
+		}
+		
+		@GetMapping("/instructor/assignedUpComingLessons/{instructorId}")
+		public ResponseEntity<List<Lesson>> checkassignedUpComingLessions(@PathVariable("instructorId") Integer instructorId) {
+			List<Lesson> list = instructorService.checkassignedUpComingLessions(instructorId);
+			if (list != null) {
+				return ResponseEntity.ok(list);
 			}
 			return ResponseEntity.notFound().build();
 		}
