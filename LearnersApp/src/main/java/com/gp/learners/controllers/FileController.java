@@ -21,6 +21,8 @@ import com.gp.learners.service.PdfService;
 import com.gp.learners.service.PaperService;
 import com.gp.learners.service.S3Service;
 import com.gp.learners.service.UserService;
+import com.gp.learners.service.VideoService;
+
 
 
 
@@ -42,12 +44,16 @@ public class FileController {
 	
 	@Autowired
 	PaperService paperService;
+	
+	@Autowired
+	VideoService videoService;
     
 	/*
      * Download Files
      * type --> 1 = UserProfileImage
      * type --> 2 = PDF
-     * type --> 3 = Package's Image
+     * type --> 3 = Paper
+     * type --> 4 = Video
      */
 	@GetMapping("/api/file/{userId}/{type}")
 	public ResponseEntity<byte[]> downloadFile(@PathVariable("userId") Integer userId ,@PathVariable("type") Integer type) {
@@ -64,6 +70,9 @@ public class FileController {
 		}else if(type==3){
 			System.out.println("File controller Viewing meth- Paper type 3");
 			downloadInputStream = paperService.downloadPaper(userId);
+		}else if(type==4){
+			System.out.println("File controller Viewing meth- Video type 4");
+			downloadInputStream = videoService.downloadVideo(userId);
 		}
 		
 		if(downloadInputStream!=null) {
@@ -74,6 +83,9 @@ public class FileController {
 			}else if(type==2 ||type==3){
 				//pdf service
 				 keyname=userId+".pdf";
+			}else if(type==4){
+				//pdf service
+				 keyname=userId+".mp4";
 			}else {
 				
 			}
@@ -120,8 +132,10 @@ public class FileController {
 			
 			if(type==1) {
 				maxFileSize=9000000L;//9MB
-			}else if(type==2){
+			}else if(type==2||type==3){
 				maxFileSize=9437184L;//9MB
+			}else if(type==4){
+				maxFileSize=20000000L;//20MB
 			}else {//type=3
 				maxFileSize=20000000L;//20MB
 			}
@@ -134,6 +148,8 @@ public class FileController {
 					reply = pdfService.uploadPdf(file, id);
 				}else if(type==3){
 					reply = paperService.uploadPaper(file, id);
+				}else if(type==4){
+					reply = videoService.uploadVideo(file, id);
 				}else {//type==3
 					reply = packageService.uploadPackageImage(file, id);
 				}

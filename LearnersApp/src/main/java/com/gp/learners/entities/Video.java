@@ -25,10 +25,7 @@ public class Video {
 	String title;
 	
 	String description;
-	
-	@NotBlank(message = "URL is mandatory")
-	String url;
-	
+		
 	@ManyToOne
 	@JoinColumn(name = "admin_staff_id", referencedColumnName = "admin_staff_id")
 	private AdminStaff adminStaffId;
@@ -41,18 +38,18 @@ public class Video {
 	public Video() {
 
 	}
-
-	public Video(Integer videoId, @NotBlank(message = "Title is mandatory") String title,
-			@NotBlank(message = "Description is mandatory") String description,
-			@NotBlank(message = "URL is mandatory") String url, AdminStaff adminStaffId, LocalDate addedDate) {
+	
+	public Video(Integer videoId, @NotBlank(message = "Title is mandatory") String title, String description,
+			AdminStaff adminStaffId, LocalDate addedDate) {
 		super();
 		this.videoId = videoId;
 		this.title = title;
 		this.description = description;
-		this.url = url;
 		this.adminStaffId = adminStaffId;
 		this.addedDate = addedDate;
 	}
+
+
 
 	public Integer getVideoId() {
 		return videoId;
@@ -78,14 +75,6 @@ public class Video {
 		this.description = description;
 	}
 
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
 	public AdminStaff getAdminStaffId() {
 		return adminStaffId;
 	}
@@ -104,11 +93,9 @@ public class Video {
 
 	@Override
 	public String toString() {
-		return "Video [videoId=" + videoId + ", title=" + title + ", description=" + description + ", url=" + url
-				+ ", adminStaffId=" + adminStaffId + ", addedDate=" + addedDate + "]";
+		return "Video [videoId=" + videoId + ", title=" + title + ", description=" + description + ", adminStaffId="
+				+ adminStaffId + ", addedDate=" + addedDate + "]";
 	}
-
+    
 	
-	
-
 }
