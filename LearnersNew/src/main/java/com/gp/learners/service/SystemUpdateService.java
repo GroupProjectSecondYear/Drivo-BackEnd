@@ -1,12 +1,16 @@
 package com.gp.learners.service;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -27,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.util.IOUtils;
 import com.gp.learners.entities.Attendance;
+import com.gp.learners.entities.User;
 import com.gp.learners.entities.YearUpdate;
 import com.gp.learners.repositories.AdminRepository;
 import com.gp.learners.repositories.AttendanceRepository;
@@ -95,7 +100,7 @@ public class SystemUpdateService {
 	
 	
 	//check Updates yearly January 5
-	@Scheduled(cron="0 0 12 5 1  *")
+	//@Scheduled(cron="0 0 23 5 1  *")
 	@Transactional
 	public void checkAnnualUpdate() {
 		
@@ -148,9 +153,11 @@ public class SystemUpdateService {
 	}
 	
 	//Run every month first date
-	@Scheduled(cron="0 0 12 1 1/1  *")
+	//@Scheduled(cron="0 0 0 1 1/1  *")
+	//@Scheduled(cron="0 0/1 * 1/1 *  *")
     public Boolean monthlyDatabseBackup() {
 		
+		Boolean flag =false;
 
 		Properties properties = new Properties();
 		properties.setProperty(MysqlExportService.DB_NAME, "leanersnew");
@@ -158,23 +165,62 @@ public class SystemUpdateService {
 		properties.setProperty(MysqlExportService.DB_PASSWORD, dataBasePassword);
 		properties.setProperty(MysqlExportService.TEMP_DIR, new File("external").getPath());
 		
-		properties.setProperty(MysqlExportService.EMAIL_HOST, emailHost);
-		properties.setProperty(MysqlExportService.EMAIL_PORT, emailPort);
-		properties.setProperty(MysqlExportService.EMAIL_USERNAME, emailUserName);
-		properties.setProperty(MysqlExportService.EMAIL_PASSWORD, emailPassword);
-		properties.setProperty(MysqlExportService.EMAIL_FROM, "drivolearners@gmail.com");
-		properties.setProperty(MysqlExportService.EMAIL_TO, "drivolearners@gmail.com");
 
 		properties.setProperty(MysqlExportService.TEMP_DIR, new File("external").getPath());
+		
+		properties.setProperty(MysqlExportService.PRESERVE_GENERATED_ZIP, "true");
 		MysqlExportService mysqlExportService = new MysqlExportService(properties);
+		
+		
 
 		try {
 			mysqlExportService.export();
+			File file = mysqlExportService.getGeneratedZipFile();
+			String fileName = file.getName();
+			
+			MultipartFile multiPartFile = getMultipartFile(file);
+			if(multiPartFile!=null) {
+				String reply = uploadBackupDBFile(multiPartFile, fileName);
+				if(reply.equals("success")) {
+					flag=true;
+					System.out.println("Database Backup successful on "+file.getName());
+				}
+				
+			}
 			return true;
 		} catch (Exception e) {
-			System.out.println("There is a problem of monthly backup");
+			System.out.println("There is a problem of monthly backup database service");
 		}
+		
+		if(flag) {
+			//send message for admin backup success
+		}else {
+			//send email backup not success
+		}
+		
 		return false;
     }
+	
+	public MultipartFile getMultipartFile(File file) {
+	    try {
+	    	FileInputStream input = new FileInputStream(file);
+		    MultipartFile multipartFile = new MockMultipartFile("file",
+		            file.getName(), "text/plain", IOUtils.toByteArray(input));
+		    return multipartFile;
+		} catch (Exception e) {
+			System.out.println("Problem in MultipartFile conversion");
+		}
+	    return null;
+	}
+	
+	
+	public String uploadBackupDBFile(MultipartFile file,String fileName) {	
+			String keyName = fileName;
+			if(keyName!=null) {
+				s3Service.uploadFile(keyName, file,bucketName);
+				return "success";
+			}		
+		return null;
+	}
 	
 }

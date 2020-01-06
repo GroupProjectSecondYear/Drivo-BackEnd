@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.gp.learners.entities.Package;
 import com.gp.learners.entities.YearUpdate;
+import com.gp.learners.entities.mapObject.OutcomeDataMap;
 import com.gp.learners.entities.mapObject.PackagePaymentDataMap;
+import com.gp.learners.entities.mapObject.ProfitDataMap;
 import com.gp.learners.repositories.CourseFeeRepository;
 import com.gp.learners.repositories.FuelPaymentRepository;
 import com.gp.learners.repositories.InsurancePaymentRepository;
@@ -127,11 +129,14 @@ public class ReportService {
 	}
 	
 	public List<List<PackagePaymentDataMap>> getPackagePaymentMonthly(Integer year){
+		
 		List<List<PackagePaymentDataMap>> packagePaymentMonthlyList = new ArrayList<List<PackagePaymentDataMap>>(12);
 		List<Package> packageList = packageRepository.findPackages(1);//get Active packages
 		
+		Integer numIteration = getNumberOfIteration(year);
+		
 		if(packageList!=null && packageList.size()>0) {
-			for(int i=1 ; i<=getCurrentMonth() ; i++) {
+			for(int i=1 ; i<=numIteration ; i++) {
 				List<PackagePaymentDataMap> packagePaymentList = new ArrayList<PackagePaymentDataMap>(packageList.size());
 				for (Package packageData : packageList) {
 					Double result = courseFeeRepository.findPaymentByPackageIdAndYearAndMonth(packageData,year,i);
@@ -150,15 +155,74 @@ public class ReportService {
 		return packagePaymentMonthlyList;
 	}
 	
-	public Integer getYear() {
-		YearUpdate object =yearUpdateRepository.getLastRecord();
-		return object.getUpdateYear();
+	public List<OutcomeDataMap> getMonthlyExpenses(Integer year){
+		List<OutcomeDataMap> outcomeList = new ArrayList<OutcomeDataMap>(12);
+		
+		List<Double> fuelPaymentMonthlyList = fuelMonthlyExpenses(year);
+		List<Double> insurancePaymentMonthlyList = insuranceMonthlyExpenses(year);
+		List<Double> maintainancePaymentMonthlyList = vehicleMaintainanceMonthlyExpenses(year);
+		List<Double> salaryMonthlyList = salaryMonthlyExpenses(year);
+		
+		Integer numIteration = getNumberOfIteration(year);
+		
+		for(int i=1 ; i<=numIteration ;i++) {
+			OutcomeDataMap object = new OutcomeDataMap();
+			object.setStaffSalary(salaryMonthlyList.get(i-1));
+			object.setVehicleFuel(fuelPaymentMonthlyList.get(i-1));
+			object.setVehicleInsurance(insurancePaymentMonthlyList.get(i-1));
+			object.setVehicleMaintainance(maintainancePaymentMonthlyList.get(i-1));
+			
+			outcomeList.add(object);
+		}
+ 		
+		return outcomeList;
 	}
 	
-	public Integer getCurrentMonth() {
-		LocalDate date = timeTableService.getLocalCurrentDate();
-		return date.getMonthValue();
+	public List<ProfitDataMap> getMonthlyProfit(Integer year){
+		List<ProfitDataMap> profitList = new ArrayList<ProfitDataMap>(12);
+		
+		List<Double> fuelPaymentMonthlyList = fuelMonthlyExpenses(year);
+		List<Double> insurancePaymentMonthlyList = insuranceMonthlyExpenses(year);
+		List<Double> maintainancePaymentMonthlyList = vehicleMaintainanceMonthlyExpenses(year);
+		List<Double> salaryMonthlyList = salaryMonthlyExpenses(year);
+		List<Double> studentPaymentMonthlyList = studentMonthlyPayment(year);
+		
+		Integer numIteration = getNumberOfIteration(year);
+		
+		for(int i=1 ; i<=numIteration ;i++) {
+			ProfitDataMap object = new ProfitDataMap();
+			
+			Double outcome = fuelPaymentMonthlyList.get(i-1)+insurancePaymentMonthlyList.get(i-1)+maintainancePaymentMonthlyList.get(i-1)+salaryMonthlyList.get(i-1);
+			Double income = studentPaymentMonthlyList.get(i-1);
+			Double profit = income-outcome;
+			
+			object.setIncome(income);
+			object.setOutcome(outcome);
+			object.setProfit(profit);
+			
+			profitList.add(object);
+			
+		}
+		
+		return profitList;
 	}
+	
+//	public Integer getYear() {
+//		YearUpdate object =yearUpdateRepository.getLastRecord();
+//		return object.getUpdateYear();
+//	}
+	
+	public Integer  getNumberOfIteration(Integer year) {
+		
+		LocalDate date = timeTableService.getLocalCurrentDate();
+		Integer month = date.getMonthValue();//number of iteration
+		
+		if(year < timeTableService.getLocalCurrentDate().getYear()) {
+			month=12;
+		}	
+		return month;
+	}
+	
 	
 //	public List<Integer> getYears(){
 //		

@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gp.learners.entities.YearUpdate;
+import com.gp.learners.entities.mapObject.OutcomeDataMap;
 import com.gp.learners.entities.mapObject.PackagePaymentDataMap;
+import com.gp.learners.entities.mapObject.ProfitDataMap;
 import com.gp.learners.service.ReportService;
 import com.gp.learners.service.SystemUpdateService;
 
@@ -58,6 +60,16 @@ public class ReportController {
 	@GetMapping("report/package/month/payment/{year}")
 	public ResponseEntity<List<List<PackagePaymentDataMap>>> getPackagePaymentMonthly(@PathVariable("year") Integer year){
 		return ResponseEntity.ok(reportService.getPackagePaymentMonthly(year));
+	}
+	
+	@GetMapping("report/outcome/{year}")
+	public ResponseEntity<List<OutcomeDataMap>> getOutComeMonthly(@PathVariable("year") Integer year){
+		return ResponseEntity.ok(reportService.getMonthlyExpenses(year));
+	}
+	
+	@GetMapping("report/profit/{year}")
+	public ResponseEntity<List<ProfitDataMap>> getProfitMonthly(@PathVariable("year") Integer year){
+		return ResponseEntity.ok(reportService.getMonthlyProfit(year));
 	}
 	
 //	public ResponseEntity<List<Integer>> getYears(){
