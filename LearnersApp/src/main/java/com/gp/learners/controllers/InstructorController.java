@@ -182,6 +182,16 @@ public class InstructorController {
 		}
 		return ResponseEntity.notFound().build();
 	}
+	
+	// check instrutor has any payment details
+		@GetMapping("/instructor/checkInstructorSalaryDetails/{instructorId}")
+		public ResponseEntity<Integer> checkInstructorSalaryDetails(@PathVariable("instructorId") Integer instructorId) {
+			Integer reply = instructorService.checkInstructorSalaryDetails(instructorId);
+			if (reply != null) {
+				return ResponseEntity.ok(reply);
+			}
+			return ResponseEntity.notFound().build();
+		}
 
 	
 	/*

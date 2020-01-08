@@ -25,6 +25,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
 
 	// change instructor assigned to vehicle
 	@Modifying
+	@Transactional
 	@Query(value = "update vehicle set instructor_id=:new_instructor_id where instructor_id=:instructor_id", nativeQuery = true)
 	public int updateInstructorofVehicle(@Param("instructor_id") Integer instructor_id,
 			@Param("new_instructor_id") Integer new_instructor_id);

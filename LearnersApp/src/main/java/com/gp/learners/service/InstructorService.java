@@ -21,6 +21,7 @@ import com.gp.learners.entities.Student;
 import com.gp.learners.entities.StudentLesson;
 import com.gp.learners.entities.User;
 import com.gp.learners.entities.Video;
+import com.gp.learners.entities.Salary;
 import com.gp.learners.entities.mapObject.LessonAssingStudentMap;
 import com.gp.learners.entities.mapObject.LessonMap;
 import com.gp.learners.entities.mapObject.StudentPractricalChartDataMap;
@@ -473,6 +474,23 @@ public class InstructorService {
 				return 1; // instructor removed from vehicle
 			}
 			return 0; // instructor not removed from vehicle
+		}
+		return null;
+	}
+	
+	// check instructor salary payments are complete
+	public Integer checkInstructorSalaryDetails(Integer instructorId) {
+		if (instructorRepository.existsById(instructorId)) {
+			Instructor instructor = instructorRepository.findByInstructorId(instructorId);
+			if (instructor == null)
+				return null;
+			System.out.println("Before SlaryReo");
+			List<String> status = salaryRepository.checkInstructorSalaryDetails(instructor.getStaffId().getStaffId());
+			System.out.println("Status In Salara check of Ins for Delete" + status.isEmpty());
+
+			if (!status.isEmpty())
+				return 0; // have payments regading the instructor
+			return 1; // no payments regading the instructor
 		}
 		return null;
 	}
