@@ -99,6 +99,7 @@ public class PdfService {
 					/*if (pdf.getProfileImage() == 1) {
 						return s3Service.downloadFile(keyName, bucketName);
 					} else {*/
+					//System.out.println(s3Service.downloadFile(keyName, bucketName).toString());
 					return s3Service.downloadFile(keyName, bucketName);
 					/*}*/
 				} catch (Exception e) {

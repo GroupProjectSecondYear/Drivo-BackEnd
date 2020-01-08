@@ -234,7 +234,7 @@ public class TimeTableService {
 	
 	//type 0:Deactivated Lesson  / 1:Activated Lesson
 	public List<LessonMap> getLessonList(Integer type,Integer instructorId) {
-		
+		System.out.println("getLessonList"+instructorId);
 		List<LessonMap> lessonList=new ArrayList<LessonMap>();
 		
 		for (int i=1 ; i<=7 ; i++) {

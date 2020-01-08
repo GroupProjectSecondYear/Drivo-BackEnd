@@ -89,7 +89,6 @@ public class InstructorController {
 		return InsList;
 	}
 
-
 	@GetMapping("instructor/{instructorId}")
 	public ResponseEntity<Instructor> getInstructor(@PathVariable("instructorId") Integer instructorId) {
 		Instructor instructor = instructorService.getInstructorByID(instructorId);
@@ -130,52 +129,71 @@ public class InstructorController {
 	// deactivate Instructor Profile
 	@PutMapping("instructor/deactivate/{instructorId}")
 	public ResponseEntity<Integer> deactivateInstructor(@PathVariable("instructorId") Integer instructorId) {
-		Integer reply = instructorService.deactivateInstructor(instructorId);
+		//Integer reply = instructorService.removeAssignedVehicle(instructorId);
+		//if (reply == 1) {  //instructor is removed from assigned vehicle
+			Integer reply = instructorService.deactivateInstructor(instructorId);
+			if (reply != null) {  // instructor deactivated
+				return ResponseEntity.ok(reply);
+			}
+			return ResponseEntity.notFound().build(); // error in deactivation
+		//}
+		//return ResponseEntity.notFound().build(); // error removing instructor assignment of vehicle
+	}
+
+	@PutMapping("instructor/activate/account/{instructorId}")
+	public ResponseEntity<Integer> activateInstructorAccount(@PathVariable("instructorId") Integer instructorId) {
+		Integer reply = instructorService.activateInstructorAccount(instructorId);
+		System.out.println("Ins Activation");
+
 		if (reply != null) {
 			return ResponseEntity.ok(reply);
 		}
 		return ResponseEntity.notFound().build();
 	}
-	@PutMapping("instructor/activate/account/{instructorId}")
-	public ResponseEntity<Integer> activateInstructorAccount(@PathVariable("instructorId") Integer instructorId){
-		Integer reply = instructorService.activateInstructorAccount(instructorId);
-		System.out.println("Ins Activation");
-		
-		if(reply!=null) {
+
+	// check instructor salary payments
+	@GetMapping("instructor/checkSalaryPayments/{instructorId}")
+	public ResponseEntity<Integer> checkInstructorSalaryPayments(@PathVariable("instructorId") Integer instructorId) {
+		System.out.println("chk slry payments");
+
+		Integer reply = instructorService.checkInstructorSalaryPayments(instructorId);
+		if (reply != null) {
 			return ResponseEntity.ok(reply);
 		}
 		return ResponseEntity.notFound().build();
 	}
+
+	// delete Instructor Profile
+	@PutMapping("instructor/delete/{instructorId}")
+	public ResponseEntity<Integer> deleteInstructor(@PathVariable("instructorId") Integer instructorId) {
+		Integer reply = instructorService.deleteInstructor(instructorId);
+		if (reply != null) {
+			return ResponseEntity.ok(reply);
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+	// check instructor has assigned to upcoming lessons
+	@GetMapping("/instructor/assignedUpComingLessons/{instructorId}")
+	public ResponseEntity<Integer> checkassignedUpComingLessions(@PathVariable("instructorId") Integer instructorId) {
+		Integer reply = instructorService.checkassignedUpComingLessions(instructorId);
+		if (reply != null) {
+			return ResponseEntity.ok(reply);
+		}
+		return ResponseEntity.notFound().build();
+	}
+
 	
-	// check instructor salary payments
-		@GetMapping("instructor/checkSalaryPayments/{instructorId}")
-		public ResponseEntity<Integer> checkInstructorSalaryPayments(@PathVariable("instructorId") Integer instructorId) {
-			System.out.println("chk slry payments");
-			
-			Integer reply=instructorService.checkInstructorSalaryPayments(instructorId);
-			if(reply!=null) {
-				return ResponseEntity.ok(reply);
-			}
-			return ResponseEntity.notFound().build();
+	/*
+	// update instructor's assigned vehicle
+	@GetMapping("/instructor/removeAssignedVehicle/{instructorId}")
+	public ResponseEntity<Integer> removeAssignedVehicle(@PathVariable("instructorId") Integer instructorId) {
+		Integer reply = instructorService.removeAssignedVehicle(instructorId);
+		if (reply != null) {
+			System.out.println("Ins con remove from vehicle" + reply);
+			return ResponseEntity.ok(reply);
 		}
-		
-		// delete Instructor Profile
-		@PutMapping("instructor/delete/{instructorId}")
-		public ResponseEntity<Integer> deleteInstructor(@PathVariable("instructorId") Integer instructorId) {
-			Integer reply = instructorService.deleteInstructor(instructorId);
-			if (reply != null) {
-				return ResponseEntity.ok(reply);
-			}
-			return ResponseEntity.notFound().build();
-		}
-		
-		@GetMapping("/instructor/assignedUpComingLessons/{instructorId}")
-		public ResponseEntity<List<Lesson>> checkassignedUpComingLessions(@PathVariable("instructorId") Integer instructorId) {
-			List<Lesson> list = instructorService.checkassignedUpComingLessions(instructorId);
-			if (list != null) {
-				return ResponseEntity.ok(list);
-			}
-			return ResponseEntity.notFound().build();
-		}
+		return ResponseEntity.notFound().build();
+	}*/
 
 }

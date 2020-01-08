@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import com.gp.learners.repositories.StaffRepository;
 import com.gp.learners.repositories.StudentLessonRepository;
 import com.gp.learners.repositories.StudentRepository;
 import com.gp.learners.repositories.UserRepository;
+import com.gp.learners.repositories.VehicleRepository;
 import com.gp.learners.repositories.SalaryRepository;
 
 import ch.qos.logback.core.util.Duration;
@@ -56,6 +58,9 @@ public class InstructorService {
 
 	@Autowired
 	SalaryRepository salaryRepository;
+
+	@Autowired
+	VehicleRepository vehicleRepository;
 
 	@Autowired
 	JwtInMemoryUserDetailsService jwtInMemoryUserDetailsService;
@@ -337,25 +342,45 @@ public class InstructorService {
 
 	// deactivate
 	@Transactional
-	public Integer deactivateInstructor(Integer instrcutorId) {
+	public Integer deactivateInstructor(Integer instructorId) {
+		System.out.println("Ins serv deactivation (-1)");
 		try {
 			System.out.println("Ins serv deactivation");
-
-			Instructor instructor = getInstructorByID(instrcutorId);
+			Instructor instructor = getInstructorByID(instructorId);
+			Integer insRemoved = null;
 			if (instructor == null)
 				return null;
-			User user = instructor.getStaffId().getUserId();
-			if (user == null)
-				return null;
+			System.out.println("line 353"+instructorId);
+			Integer vehicleId = vehicleRepository.getVehicleofInstructor(instructorId);
+			System.out.println("Veh Id"+vehicleId);
+			if (vehicleId != null) { // instructor has a assigned vehicle
+				insRemoved = removeAssignedVehicle(instructorId); // remove instructor from vehicle
+			}
 
-			instructorRepository.save(instructor);
+			if ( vehicleId == null || insRemoved == 1 ) { // instructor is removed from vehicle or instructor is not
+														// assigned to vehicle
 
-			user.setStatus(0);
-			userRepository.save(user);
+				User user = instructor.getStaffId().getUserId();
+				if (user == null)
+					return null;
 
-			// update JWT UserList
-			jwtInMemoryUserDetailsService.setUserInMemory();
+				// instructorRepository.save(instructor); ??
 
+				user.setStatus(0);
+				userRepository.save(user); // deactivation
+
+				// update JWT UserList
+				Integer userDeactivated = jwtInMemoryUserDetailsService.setUserInMemory();
+				if (userDeactivated != 1) { // not deactivated
+					user.setStatus(1);
+					userRepository.save(user); // change userStatus
+					if (insRemoved == 1) {
+						vehicleRepository.assignInstructorforVehicle(vehicleId); // set instructor for the vehicle, if removed 
+					}
+					return null;
+				}
+				return 1;
+			}
 		} catch (Exception e) {
 			System.out.println("------------------------");
 			System.out.println("There is a problem with instructor Serivce's Instructor Deactivation");
@@ -363,7 +388,7 @@ public class InstructorService {
 			System.out.println("------------------------");
 			return null;
 		}
-		return 1;
+		return 0;// not deactivated
 	}
 
 	public Integer activateInstructorAccount(Integer instructorId) {
@@ -405,28 +430,51 @@ public class InstructorService {
 		return null;
 	}
 
-	//delete Instructor
-		public Integer deleteInstructor(Integer instructorId) {
-			if(instructorId != null) {
-				if(instructorRepository.existsById(instructorId)) {
-					instructorRepository.deleteById(instructorId);
-					return 1;
-				}
-			}
-			return 0;
-		}
-		
-		// check instructor is assigned to lessons
-		public  List<Lesson>checkassignedUpComingLessions(Integer instructorId) {
+	// delete Instructor
+	public Integer deleteInstructor(Integer instructorId) {
+		if (instructorId != null) {
 			if (instructorRepository.existsById(instructorId)) {
-				//Instructor instructor = instructorRepository.findByInstructorId(instructorId);
-				//if (instructor == null)
-				//	return null;
-				List<Lesson> lessons = lessonRepository.getUpComingLessonsOfInstructor(instructorId);
-				System.out.println("Status" + lessons.isEmpty());
-				return lessons; // return assigned lessons
+				instructorRepository.deleteById(instructorId);
+				return 1;
 			}
-			return null;  
 		}
+		return 0;
+	}
+
+	// check instructor is assigned to lessons
+	public Integer checkassignedUpComingLessions(Integer instructorId) {
+		if (instructorRepository.existsById(instructorId)) {
+			// Instructor instructor =
+			// instructorRepository.findByInstructorId(instructorId);
+			// if (instructor == null)
+			// return null;
+			System.out.println("Ins Chek lsn Service " + instructorId);
+			List<Lesson> lessons = lessonRepository.getUpComingLessonsOfInstructor(instructorId);
+			System.out.println("Status" + lessons.isEmpty());
+			if (lessons.isEmpty() == true) {
+				return 1; // no assigned lessons
+			}
+			return 0; // has assigned lessons
+		}
+		return null;
+	}
+
+	// remove Instructor's assigned vehicle
+	@Transactional
+	public Integer removeAssignedVehicle(Integer instructorId) {
+		if (instructorRepository.existsById(instructorId)) {
+
+			System.out.println("Ins Chek remove vehicles ins Service " + instructorId);
+			//Transaction txn = session.beginTransaction();
+			Integer status = vehicleRepository.updateInstructorofVehicle(instructorId, null);
+			System.out.println(status + "in remove Ins from Vehicle in Ins Serv");
+
+			if (status == 1) {
+				return 1; // instructor removed from vehicle
+			}
+			return 0; // instructor not removed from vehicle
+		}
+		return null;
+	}
 
 }

@@ -90,6 +90,10 @@ public class FileController {
 				
 			}
 			  
+			System.out.println( ResponseEntity.ok()
+					.contentType(contentType(keyname))
+					.header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + keyname + "\"")
+					.body(downloadInputStream.toByteArray()));
 			return ResponseEntity.ok()
 					.contentType(contentType(keyname))
 					.header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + keyname + "\"")
@@ -114,6 +118,7 @@ public class FileController {
 			case "txt": return MediaType.TEXT_PLAIN;
 			case "png": return MediaType.IMAGE_PNG;
 			case "jpg": return MediaType.IMAGE_JPEG;
+			case "pdf": return MediaType.APPLICATION_PDF;
 			default: return MediaType.APPLICATION_OCTET_STREAM;
 		}
 	}

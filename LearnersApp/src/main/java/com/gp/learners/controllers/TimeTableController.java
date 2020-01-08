@@ -170,7 +170,7 @@ public class TimeTableController {
 	
 	//type 0:Deactivated Lesson  / 1:Activated Lesson
 	@GetMapping("/timetable/lessons/{type}")
-	public List<LessonMap> getLessons(@PathVariable("type") Integer type) {
+	public List<LessonMap> getLessonsofInstructor(@PathVariable("type") Integer type) {
 		return timeTableService.getLessonList(type,-1);
 	}
 	
@@ -288,4 +288,11 @@ public class TimeTableController {
 		}
 		return ResponseEntity.notFound().build();
 	}
+	
+	//get timetable of an instructor
+		@GetMapping("/timetable/lessonsOfInstructor/{type}/{instructorId}")
+		public List<LessonMap> getLessons(@PathVariable("type") Integer type,@PathVariable("instructorId") Integer instructorId) {
+			System.out.println(timeTableService.getLessonList(type,instructorId));
+			return timeTableService.getLessonList(type,instructorId);
+		}
 }
