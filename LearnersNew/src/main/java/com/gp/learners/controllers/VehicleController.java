@@ -22,6 +22,7 @@ import com.gp.learners.entities.Student;
 import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.entities.Vehicle;
 import com.gp.learners.entities.VehicleCategory;
+import com.gp.learners.entities.Video;
 import com.gp.learners.repositories.VehicleRepository;
 import com.gp.learners.service.VehicleService;
 
@@ -59,18 +60,19 @@ public class VehicleController {
 	
 	// save vehicle
 //	@PostMapping("/vehicle/add")
-//
-//	public Vehicle saveVehicle(@RequestBody Vehicle vehicle) {
+//	public Vehicle VehicleAdd(@RequestBody Vehicle vehicle) {
 //		System.out.println("In Vehicle controller Add");
 //		return vehicleRepository.save(vehicle);
 //	}
 	
+	
+	
 	@PostMapping("/vehicle/add")
-	public Integer VehicleRegister(@RequestBody Vehicle vehicle) {//0:vehicle already registered ,1:Register success
-		return vehicleService.vehicleRegister(vehicle);
+	public Integer VehicleAdd(@RequestBody Vehicle vehicle) {//0:vehicle already registered ,1:Register success
+		return vehicleService.vehicleAdd(vehicle);
 	}
 
-	// delete Video
+	// delete Vehicle
 	@DeleteMapping("vehicle/{vehicleId}")
 	public ResponseEntity<Void> deleteVehicle(@PathVariable("vehicleId") Integer vehicleId) {
 		System.out.println("In vehicleId controller delete method");
@@ -128,7 +130,7 @@ public class VehicleController {
 	
 	//1)vehicleCategory Functions
 	
-	@GetMapping("/vehicle/vehicleCategory")
+	@GetMapping("/vehicles/vehiclecategory")
 	public List<VehicleCategory> getVehicleCategoryList(){
 		System.out.println("In vehicle Controller vehicleCategory");
 		return vehicleService.getVehicleCategoryList();

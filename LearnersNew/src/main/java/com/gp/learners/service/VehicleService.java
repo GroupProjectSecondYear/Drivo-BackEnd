@@ -50,14 +50,26 @@ public class VehicleService {
 	
 	@Autowired
 	VehicleCategoryRepository vehicleCategoryRepository;
+
 	
-	public Integer vehicleRegister(Vehicle vehicle) {
+//	public Integer addVehicle(Vehicle vehicle) {
+//		if(isNotExistVehicle(vehicle.getVehicleId())) {
+//			vehicleRepository.save(vehicle);
+//			System.out.println("In Vehicle service Add");
+//			return 1;
+//		}
+//		return 0;
+//	}
+	
+	public Integer vehicleAdd(Vehicle vehicle) {
 		if(isNotExistVehicle(vehicle.getVehicleId())) {
 			vehicleRepository.save(vehicle);
+			System.out.println("In Vehicle service Add");
 			return 1;
 		}
 		return 0;
 	}
+
 	
 	
 	private boolean isNotExistVehicle(Integer vehicleId) {
@@ -91,7 +103,7 @@ public class VehicleService {
 		}
 
 	// Add Vehicle
-//		public Integer vehicleRegister(Vehicle vehicle) {
+//		public String addVehicle(Vehicle vehicle) {
 //
 //		Vehicle result = vehicleRepository.save(vehicle);
 //		if (result != null)
@@ -193,6 +205,8 @@ public class VehicleService {
 			return new ArrayList<VehicleCategory>();
 		}
 
+
+		
 //		public String updateVehicleCategory(VehicleCategory vehicleCategory) {
 //			if (vehicleCategory.getVehicleCategoryId() != null && vehicleCategory.getVehicleCategoryId() > 0) {
 //				if (vehicleCategoryRepository.existsById(vehicleCategory.getVehicleCategoryId())) {
