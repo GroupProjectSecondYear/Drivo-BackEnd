@@ -50,7 +50,7 @@ public class PaperController {
 		@PostMapping("paper/add")
 		public ResponseEntity<Paper> addPaper(@RequestBody Paper paper) {
 			//System.out.println("stuId:"+stuId+" object:"+object);
-
+			System.out.println("In papaer add controller"+paper);
 			Paper paper1=paperService.addPaper(paper);
 			System.out.println(paper1.getPaperId());
 			if(paper1.getPaperId() != null) {

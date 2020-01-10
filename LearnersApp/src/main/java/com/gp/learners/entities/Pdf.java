@@ -37,19 +37,8 @@ public class Pdf {
 	@DateTimeFormat(pattern = "MM-dd-YYYY" )
 	private LocalDate addedDate;
 
-	
-	
-	public LocalDate getAddedDate() {
-		return addedDate;
-	}
-
-	public void setAddedDate(LocalDate addedDate) {
-		this.addedDate = addedDate;
-	}
-
 	// constructor
 	public Pdf() {
-		System.out.print("in Pdf entity adding"+this.pdfId);
 
 	}
 
@@ -60,6 +49,14 @@ public class Pdf {
 		this.title = title;
 		this.description = description;
 		this.adminStaffId = adminStaffId;
+		this.addedDate = addedDate;
+	}
+
+	public LocalDate getAddedDate() {
+		return addedDate;
+	}
+
+	public void setAddedDate(LocalDate addedDate) {
 		this.addedDate = addedDate;
 	}
 
