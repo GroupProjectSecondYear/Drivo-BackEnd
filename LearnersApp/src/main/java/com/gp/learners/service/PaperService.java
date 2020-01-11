@@ -16,10 +16,10 @@ public class PaperService {
 
 	@Autowired
 	PaperRepository paperRepository;
-	
+
 	@Autowired
 	S3Service s3Service;
-	
+
 	@Value("${aws.s3.bucket.learning_material_paper}")
 	private String bucketName;
 
@@ -41,14 +41,23 @@ public class PaperService {
 	}
 
 	// Add PDF
-	public Paper addPaper(Paper paper) {
-        System.out.println("Papaer Servide add Method");
-		Paper result = paperRepository.save(paper);
-		if (result != null)
-			return result;
-		
-		else
-			return null;
+	public Paper addPaper(Paper paper, Integer[] answers) {
+		// System.out.println(answers.length+"qestions"+paper.getNo_of_questions());
+		// System.out.println(answers.length+"answers"+paper.getNo_of_answers());
+		// System.out.println(answers[18]+"19th");
+		System.out.println("Papaer Servide add Method");
+		// Paper result = paperRepository.save(paper);
+		// if (result != null) {
+		// save answers of paper
+		String ans = answers[0].toString();
+		for (int n = 1; n < answers.length; n++) {  //split array of answers
+			ans += answers[n].toString();
+			if (ans.length() == 4) {
+				System.out.println(ans);
+				ans = answers[++n].toString();
+			}
+		}
+		return null;
 	}
 
 	// delete Paper
@@ -72,6 +81,7 @@ public class PaperService {
 
 		return new Paper();
 	}
+
 	public String uploadPaper(MultipartFile file, Integer paperId) {
 		System.out.println("Paper UPLOADING");
 		if (paperRepository.existsById(paperId)) {
@@ -79,28 +89,30 @@ public class PaperService {
 			if (keyName != null) {
 				s3Service.uploadFile(keyName, file, bucketName);
 				Paper paper = paperRepository.getPaperById(paperId);
-				//user.setProfileImage(1);
-				//userRepository.save(user);
+				// user.setProfileImage(1);
+				// userRepository.save(user);
 				System.out.println("Paper UPLOADING success");
 				return "success";
 			}
 		}
 		return null;
 	}
+
 	public ByteArrayOutputStream downloadPaper(Integer paperId) {
 		if (paperRepository.existsById(paperId)) {
 			System.out.println("PDF dwnlding Byte Array Method");
 			String keyName = paperId + ".paper";
-			
+
 			if (paperId != null) {
 				Paper paper = paperRepository.getPaperById(paperId);
 				try {
 					System.out.println("PDF dwnLOADING Byte Array Method try chtch");
-					/*if (paper.getProfileImage() == 1) {
-						return s3Service.downloadFile(keyName, bucketName);
-					} else {*/
+					/*
+					 * if (paper.getProfileImage() == 1) { return s3Service.downloadFile(keyName,
+					 * bucketName); } else {
+					 */
 					return s3Service.downloadFile(keyName, bucketName);
-					/*}*/
+					/* } */
 				} catch (Exception e) {
 					System.out.println("There is a problem in s3 bucket");
 				}

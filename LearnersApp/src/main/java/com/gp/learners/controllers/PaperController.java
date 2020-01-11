@@ -47,13 +47,15 @@ public class PaperController {
 	}
 
 	//add paper
-		@PostMapping("paper/add")
-		public ResponseEntity<Paper> addPaper(@RequestBody Paper paper) {
+		@PostMapping("paper/add/{answers}")  // save paper and answers
+		public ResponseEntity<Paper> addPaper(@RequestBody Paper paper,@PathVariable("answers") Integer[]answers) {
 			//System.out.println("stuId:"+stuId+" object:"+object);
-			System.out.println("In papaer add controller"+paper);
-			Paper paper1=paperService.addPaper(paper);
-			System.out.println(paper1.getPaperId());
-			if(paper1.getPaperId() != null) {
+			System.out.println("In papaer add controller"+paper+answers[0]);
+			Paper paper1=paperService.addPaper(paper,answers);
+			System.out.println(paper1.getPaperId()+"paperId9f");
+			//System.out.println(answers[0][0]);
+			if(paper1.getPaperId() != null) {  //paper is saved
+				
 				return ResponseEntity.ok(paper1);
 			}
 			return ResponseEntity.noContent().build();
