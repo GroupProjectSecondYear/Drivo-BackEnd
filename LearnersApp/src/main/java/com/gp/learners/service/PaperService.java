@@ -8,14 +8,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.gp.learners.entities.Paper;
-import com.gp.learners.entities.User;
+import com.gp.learners.entities.Question;
 import com.gp.learners.repositories.PaperRepository;
+import com.gp.learners.repositories.QuestionRepository;
 
 @Service
 public class PaperService {
 
 	@Autowired
 	PaperRepository paperRepository;
+
+	@Autowired
+	QuestionRepository questionRepository;
 
 	@Autowired
 	S3Service s3Service;
@@ -46,16 +50,22 @@ public class PaperService {
 		// System.out.println(answers.length+"answers"+paper.getNo_of_answers());
 		// System.out.println(answers[18]+"19th");
 		System.out.println("Papaer Servide add Method");
-		// Paper result = paperRepository.save(paper);
-		// if (result != null) {
-		// save answers of paper
-		String ans = answers[0].toString();
-		for (int n = 1; n < answers.length; n++) {  //split array of answers
-			ans += answers[n].toString();
-			if (ans.length() == 4) {
-				System.out.println(ans);
-				ans = answers[++n].toString();
+		Paper result = paperRepository.save(paper);
+		if (result != null) {
+			// save answers of paper
+			String ans = answers[0].toString();
+			for (int n = 1; n < answers.length; n++) { // split array of answers
+				ans += answers[n].toString();
+				if (ans.length() == paper.getNo_of_answers()) {
+					System.out.println(ans);
+					Question quest = new Question(0, result, (n / paper.getNo_of_answers()) + 1, ans);
+					System.out.println("Saved ans :" + questionRepository.save(quest));
+					if (n != answers.length-1)
+						ans = answers[++n].toString();
+				}
 			}
+			System.out.println("End Saving papaer");
+			return result;
 		}
 		return null;
 	}
