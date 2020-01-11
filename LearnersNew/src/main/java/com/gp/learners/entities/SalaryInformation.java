@@ -1,5 +1,7 @@
 package com.gp.learners.entities;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -17,8 +20,16 @@ public class SalaryInformation {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="salary_information_id")
+	@Column(name = "salary_information_id")
 	private Integer salaryInformationId;
+
+	@NotNull
+	private LocalDate updateDate;
+	
+	@NotNull
+	@Min(1)
+	@Max(12)
+	private Integer applyMonth;
 
 	@NotNull(message = "Staff Type mandatory")
 	private Integer staffType;
@@ -46,6 +57,22 @@ public class SalaryInformation {
 
 	public void setSalaryInformationId(Integer salaryInformationId) {
 		this.salaryInformationId = salaryInformationId;
+	}
+
+	public LocalDate getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(LocalDate updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public Integer getApplyMonth() {
+		return applyMonth;
+	}
+
+	public void setApplyMonth(Integer applyMonth) {
+		this.applyMonth = applyMonth;
 	}
 
 	public Integer getStaffType() {
@@ -90,9 +117,9 @@ public class SalaryInformation {
 
 	@Override
 	public String toString() {
-		return "SalaryInformation [salaryInformationId=" + salaryInformationId + ", staffType=" + staffType
-				+ ", fullDaySalary=" + fullDaySalary + ", halfDaySalary=" + halfDaySalary + ", nopay=" + nopay
-				+ ", adminId=" + adminId + "]";
+		return "SalaryInformation [salaryInformationId=" + salaryInformationId + ", updateDate=" + updateDate
+				+ ", applyMonth=" + applyMonth + ", staffType=" + staffType + ", fullDaySalary=" + fullDaySalary
+				+ ", halfDaySalary=" + halfDaySalary + ", nopay=" + nopay + ", adminId=" + adminId + "]";
 	}
 
 }

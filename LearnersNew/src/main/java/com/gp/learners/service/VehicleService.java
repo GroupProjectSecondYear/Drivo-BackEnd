@@ -83,12 +83,12 @@ public class VehicleService {
 		return null;
 	}
 	
-	public List<FuelPayment> getVehicleFuelData(){
-		return fuelPaymentRepository.findAll(new Sort(Sort.Direction.ASC, "month"));
+	public List<FuelPayment> getVehicleFuelData(Integer year){
+		return fuelPaymentRepository.findByYear(year);
 	}
 	
 	public Integer addVehicleFuelData(FuelPayment fuelPayment,Integer userId) {
-		FuelPayment object = fuelPaymentRepository.findByMonth(fuelPayment.getMonth());
+		FuelPayment object = fuelPaymentRepository.findByMonth(fuelPayment.getMonth(),fuelPayment.getYear());
 		if(object==null && userId!=null) {
 			if(userRepository.existsById(userId)) {
 				User user = userRepository.findByUserId(userId);
@@ -100,6 +100,8 @@ public class VehicleService {
 					newObject.setAmount(fuelPayment.getAmount());
 					newObject.setMonth(fuelPayment.getMonth());
 					newObject.setAdminStaffId(adminStaff);
+					newObject.setDate(fuelPayment.getDate());
+					newObject.setYear(fuelPayment.getYear());
 					fuelPaymentRepository.save(newObject);
 					return 1;
 				}

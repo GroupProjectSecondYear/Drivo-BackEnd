@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gp.learners.entities.AdminStaff;
 import com.gp.learners.entities.Attendance;
+import com.gp.learners.entities.LeaveSetting;
 import com.gp.learners.entities.Salary;
 import com.gp.learners.entities.SalaryInformation;
 import com.gp.learners.entities.Staff;
@@ -123,14 +124,14 @@ public class StaffController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@PostMapping("staff/salary/information")
-	public ResponseEntity<Void> addStaffSalaryInformation(@RequestBody SalaryInformation object) {
-		String reply = staffService.addStaffSalaryInformation(object);
-		if(reply!=null) {
-			return ResponseEntity.noContent().build();
-		}
-		return ResponseEntity.badRequest().build();
-	}
+//	@PostMapping("staff/salary/information")
+//	public ResponseEntity<Void> addStaffSalaryInformation(@RequestBody SalaryInformation object) {
+//		String reply = staffService.addStaffSalaryInformation(object);
+//		if(reply!=null) {
+//			return ResponseEntity.noContent().build();
+//		}
+//		return ResponseEntity.badRequest().build();
+//	}
 	
 	@PutMapping("staff/salary/information")
 	public ResponseEntity<Void> updateStaffSalaryInformation(@Valid @RequestBody SalaryInformation object){
@@ -159,24 +160,24 @@ public class StaffController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@PutMapping("staff/work/time/{fullDay}/{halfDay}")
-	public ResponseEntity<Void> updateStaffWorkTime(@PathVariable("fullDay")Integer fullDay,@PathVariable("halfDay") Integer halfDay){
-		String reply = staffService.updateStaffWorkTime(fullDay,halfDay);
+	@PutMapping("staff/work/time")
+	public ResponseEntity<Void> updateStaffWorkTime(@RequestBody WorkTime workTime){
+		String reply = staffService.updateStaffWorkTime(workTime);
 		if(reply!=null) {
 			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("staff/salary/{month}")
-	public ResponseEntity<List<Salary>> getStaffSalaryDetails(@PathVariable("month") Integer month){
-		List<Salary> salaryList = staffService.getStaffSalaryList(month);
+	@GetMapping("staff/salary/{month}/{year}")
+	public ResponseEntity<List<Salary>> getStaffSalaryDetails(@PathVariable("month") Integer month,@PathVariable("year") Integer year){
+		List<Salary> salaryList = staffService.getStaffSalaryList(month,year);
 		return ResponseEntity.ok(salaryList);
 	}
 	
-	@GetMapping("staff/salary/data/{staffId}/{month}")
-	public ResponseEntity<Salary> getStaffSalaryDetails(@PathVariable("staffId") Integer staffId,@PathVariable("month") Integer month) {
-		Salary salary = staffService.getStaffSalaryData(staffId,month);
+	@GetMapping("staff/salary/data/{staffId}/{month}/{year}")
+	public ResponseEntity<Salary> getStaffSalaryDetails(@PathVariable("staffId") Integer staffId,@PathVariable("month") Integer month,@PathVariable("year") Integer year) {
+		Salary salary = staffService.getStaffSalaryData(staffId,month,year);
 		if(salary!=null) {
 			return ResponseEntity.ok(salary);
 		}
@@ -192,18 +193,18 @@ public class StaffController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("staff/work/days/{staffId}/{month}")
-	public ResponseEntity<StaffWorkDaysDataMap> getStaffWorkDays(@PathVariable("staffId") Integer staffId,@PathVariable("month") Integer month){
-		StaffWorkDaysDataMap object = staffService.getStaffWorkDays(staffId, month);
+	@GetMapping("staff/work/days/{staffId}/{month}/{year}")
+	public ResponseEntity<StaffWorkDaysDataMap> getStaffWorkDays(@PathVariable("staffId") Integer staffId,@PathVariable("month") Integer month, @PathVariable("year") Integer year){
+		StaffWorkDaysDataMap object = staffService.getStaffWorkDays(staffId, month, year);
 		if(object!=null) {
 			return ResponseEntity.ok(object);
 		}
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("staff/role/salary/information/{staffId}")
-	public ResponseEntity<SalaryInformation> getStaffRoleSalaryInformation(@PathVariable("staffId") Integer staffId){
-		SalaryInformation object = staffService.getStaffRoleSalaryInformation(staffId);
+	@GetMapping("staff/role/salary/information/{staffId}/{year}/{month}")
+	public ResponseEntity<SalaryInformation> getStaffRoleSalaryInformation(@PathVariable("staffId") Integer staffId,@PathVariable("year") Integer year,@PathVariable("month")Integer month){
+		SalaryInformation object = staffService.getStaffRoleSalaryInformation(staffId,year,month);
 		if(object!=null) {
 			return ResponseEntity.ok(object);
 		}
@@ -219,9 +220,9 @@ public class StaffController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("staff/attendance/{staffId}/{month}")
-	public ResponseEntity<List<Attendance>> getStaffAttendance(@PathVariable("staffId")Integer staffId,@PathVariable("month") Integer month){
-		List<Attendance> object = staffService.getStaffAttendance(staffId, month);
+	@GetMapping("staff/attendance/{staffId}/{month}/{year}")
+	public ResponseEntity<List<Attendance>> getStaffAttendance(@PathVariable("staffId")Integer staffId,@PathVariable("month") Integer month,@PathVariable("year") Integer year){
+		List<Attendance> object = staffService.getStaffAttendance(staffId, month, year);
 		if(object!=null) {
 			return ResponseEntity.ok(object);
 		}
@@ -229,17 +230,17 @@ public class StaffController {
 	}
 	
 	@GetMapping("staff/leave")
-	public ResponseEntity<Integer> getStaffLeave(){
-		Integer reply = staffService.getStaffLeave();
-		if(reply!=null) {
-			return ResponseEntity.ok(reply);
+	public ResponseEntity<LeaveSetting> getStaffLeave(){
+		LeaveSetting object = staffService.getStaffLeave();
+		if(object!=null) {
+			return ResponseEntity.ok(object);
 		}
 		return ResponseEntity.notFound().build();
 	}
 	
-	@PutMapping("staff/leave/{adminId}/{leaves}")
-	public ResponseEntity<Void> updateStaffLeave(@PathVariable("adminId") Integer adminId,@PathVariable("leaves") Integer leaves){
-		Integer reply = staffService.updateStaffLeave(adminId, leaves);
+	@PutMapping("staff/leave")
+	public ResponseEntity<Void> updateStaffLeave(@RequestBody LeaveSetting leaveSettingData){
+		Integer reply = staffService.updateStaffLeave(leaveSettingData);
 		if(reply!=null) {
 			return ResponseEntity.ok().build();
 		}

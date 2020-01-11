@@ -16,4 +16,7 @@ public interface InsurancePaymentRepository extends JpaRepository<InsurancePayme
 	
 	@Query(value="select * from insurance_payment where vehicle_id = :vehicleId and year = :year",nativeQuery=true)
 	public InsurancePayment findByVehicleIdAndYear(@Param("vehicleId") Integer vehicleId,@Param("year") Integer year);
+	
+	@Query(value="select sum(amount) from insurance_payment where month(date) = :month and year(date) = :year ",nativeQuery=true)
+	public Double findPaymentByMonthAndYear(@Param("year") Integer year,@Param("month") Integer month);
 }

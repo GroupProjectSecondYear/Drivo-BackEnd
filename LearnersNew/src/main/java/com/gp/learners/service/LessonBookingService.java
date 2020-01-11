@@ -280,6 +280,7 @@ public class LessonBookingService {
 					Integer countList2 = lessonDayFeedbackRepository.countDay2(packageRepository.findByPackageId(packageId), transmission, timeSlot.getTimeSlotId(), i);
 					
 					List<Lesson> lessonList = lessonRepository.findLesson(i,packageData,transmission,timeSlot);
+					
 					Integer totalStudentForLesson = 0;
 					for (Lesson lesson : lessonList) {
 						totalStudentForLesson = lesson.getNumStu();

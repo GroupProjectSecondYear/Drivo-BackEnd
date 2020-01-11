@@ -1,5 +1,7 @@
 package com.gp.learners.entities;
 
+import java.time.LocalDate;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,28 +20,33 @@ public class Salary {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer salaryId;
-	
+
 	@NotNull
 	@Min(1)
 	@Max(12)
 	private Integer month;
-	
+
+	@NotNull
+	private Integer year;
+
 	@NotNull
 	@Min(0)
 	private Double totalPayment;
-	
+
 	@NotNull
 	@Min(0)
 	private Double payed;
-	
+
 	@NotNull
 	@Min(0)
 	private Double nopay;
-	
+
 	@NotNull
-	@Min(0)//not pay total payment
-	@Max(1)//pay total payment
+	@Min(0) // not pay total payment
+	@Max(1) // pay total payment
 	private Integer complete;
+
+	private LocalDate date;
 
 	@NotNull
 	@JoinColumn(name = "staff_id", referencedColumnName = "staff_id")
@@ -60,6 +67,14 @@ public class Salary {
 
 	public void setMonth(Integer month) {
 		this.month = month;
+	}
+
+	public Integer getYear() {
+		return year;
+	}
+
+	public void setYear(Integer year) {
+		this.year = year;
 	}
 
 	public Double getTotalPayment() {
@@ -94,6 +109,14 @@ public class Salary {
 		this.complete = complete;
 	}
 
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
+
 	public Staff getStaffId() {
 		return staffId;
 	}
@@ -104,8 +127,9 @@ public class Salary {
 
 	@Override
 	public String toString() {
-		return "Salary [salaryId=" + salaryId + ", month=" + month + ", totalPayment=" + totalPayment + ", payed="
-				+ payed + ", nopay=" + nopay + ", complete=" + complete + ", staffId=" + staffId + "]";
+		return "Salary [salaryId=" + salaryId + ", month=" + month + ", year=" + year + ", totalPayment=" + totalPayment
+				+ ", payed=" + payed + ", nopay=" + nopay + ", complete=" + complete + ", date=" + date + ", staffId="
+				+ staffId + "]";
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.gp.learners.entities;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,14 +20,22 @@ public class WorkTime {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="work_time_id")
+	@Column(name = "work_time_id")
 	private Integer workTimeId;
-	
+
+	@NotNull
+	private LocalDate updateDate;
+
+	@NotNull
+	@Min(1)
+	@Max(12)
+	private Integer applyMonth;
+
 	@NotNull
 	@Min(0)
 	@Max(24)
 	private Integer fullDay;
-	
+
 	@NotNull
 	@Min(0)
 	@Max(24)
@@ -41,6 +51,22 @@ public class WorkTime {
 
 	public void setWorkTimeId(Integer workTimeId) {
 		this.workTimeId = workTimeId;
+	}
+
+	public LocalDate getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(LocalDate updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public Integer getApplyMonth() {
+		return applyMonth;
+	}
+
+	public void setApplyMonth(Integer applyMonth) {
+		this.applyMonth = applyMonth;
 	}
 
 	public Integer getFullDay() {
