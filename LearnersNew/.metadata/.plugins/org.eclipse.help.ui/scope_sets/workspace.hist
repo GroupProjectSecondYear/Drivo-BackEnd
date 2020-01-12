@@ -1,0 +1,8 @@
+<<<<<<< HEAD
+#Sat Dec 28 22:17:07 IST 2019
+=======
+#Fri Dec 27 09:32:35 IST 2019
+>>>>>>> 6110038fae6ef6a31fb97fb85224a5d8262ba478
+__DEFAULT__=false
+org.eclipse.help.ui.localSearch.master=true
+expression=workspace
