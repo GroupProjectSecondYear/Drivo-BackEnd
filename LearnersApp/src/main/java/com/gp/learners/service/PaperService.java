@@ -79,9 +79,9 @@ public class PaperService {
 		System.out.println("Delete Paper Serv");
 		if (paperId != null) {
 			if (paperRepository.existsById(paperId)) {
-				
+				String keyName = paperId + ".pdf";
 				//delete paper from s3 bucket
-				/////////////////////////////////////////////////
+				s3Service.deleteFile(bucketName,keyName);
 				
 				System.out.println(paperId);
 				questionRepository.deleteQuestionsOfaPaper(paperId);  //delete all questions of the paper
