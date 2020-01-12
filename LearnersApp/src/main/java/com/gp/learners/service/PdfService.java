@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.gp.learners.entities.Pdf;
 import com.gp.learners.entities.User;
 import com.gp.learners.repositories.PdfRepository;
@@ -56,6 +57,11 @@ public class PdfService {
 		System.out.println("Delete Pdf Serv");
 		if (pdfId != null) {
 			if (pdfRepository.existsById(pdfId)) {
+				
+				//delete pdf from s3 bucket
+				String keyName = pdfId + ".pdf";
+				s3Service.deleteFile(bucketName,keyName);
+				
 				pdfRepository.deleteById(pdfId);
 				return "success";
 			}
@@ -66,7 +72,9 @@ public class PdfService {
 	// update Student Details
 	public Pdf updatePdf(Pdf pdf) {
 		if (pdfRepository.existsById(pdf.getPdfId())) {
+			String keyName = pdf.getPdfId() + ".pdf";
 			// Pdf pdf1=pdfRepository.getPdfById(pdf.getPdfId());
+						
 			return pdfRepository.save(pdf);
 		}
 

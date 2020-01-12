@@ -16,7 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 //Question Entity
 @Entity
-public class Question {
+public class PaperQuestion {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,11 +34,11 @@ public class Question {
 	@NotNull
 	private String answer;
 
-	public Question() {
+	public PaperQuestion() {
 
 	}
 	
-	public Question(Integer questionId, @NotNull Paper paperId, @NotNull Integer question_no, @NotNull String answer) {
+	public PaperQuestion(Integer questionId, @NotNull Paper paperId, @NotNull Integer question_no, @NotNull String answer) {
 		super();
 		this.questionId = questionId;
 		this.paperId = paperId;

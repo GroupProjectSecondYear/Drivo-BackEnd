@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.gp.learners.entities.Paper;
-import com.gp.learners.entities.Question;
+import com.gp.learners.entities.PaperQuestion;
 import com.gp.learners.repositories.PaperRepository;
-import com.gp.learners.repositories.QuestionRepository;
+import com.gp.learners.repositories.PaperQuestionRepository;
 
 @Service
 public class PaperService {
@@ -19,7 +19,7 @@ public class PaperService {
 	PaperRepository paperRepository;
 
 	@Autowired
-	QuestionRepository questionRepository;
+	PaperQuestionRepository questionRepository;
 
 	@Autowired
 	S3Service s3Service;
@@ -58,8 +58,12 @@ public class PaperService {
 				ans += answers[n].toString();
 				if (ans.length() == paper.getNo_of_answers()) {
 					System.out.println(ans);
-					Question quest = new Question(0, result, (n / paper.getNo_of_answers()) + 1, ans);
-					System.out.println("Saved ans :" + questionRepository.save(quest));
+					PaperQuestion quest = new PaperQuestion(0, result, (n / paper.getNo_of_answers()) + 1, ans);
+					PaperQuestion replyQ=questionRepository.save(quest);
+					if(replyQ==null) {   
+						questionRepository.deleteQuestionsOfaPaper(result.getPaperId());  //delete all questions if error occured in saving questions
+				        // sjould delete paper details and upluaded paper
+					}
 					if (n != answers.length-1)
 						ans = answers[++n].toString();
 				}
@@ -75,6 +79,12 @@ public class PaperService {
 		System.out.println("Delete Paper Serv");
 		if (paperId != null) {
 			if (paperRepository.existsById(paperId)) {
+				
+				//delete paper from s3 bucket
+				/////////////////////////////////////////////////
+				
+				System.out.println(paperId);
+				questionRepository.deleteQuestionsOfaPaper(paperId);  //delete all questions of the paper
 				paperRepository.deleteById(paperId);
 				return "success";
 			}
