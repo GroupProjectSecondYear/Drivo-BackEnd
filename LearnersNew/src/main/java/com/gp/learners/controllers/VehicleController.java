@@ -136,15 +136,15 @@ public class VehicleController {
 		return vehicleService.getVehicleCategoryList();
 	}
 	
-//	@PutMapping("/vehicle/vehicleCategory")
-//	public ResponseEntity<Void> updateTimeSlot(@RequestBody TimeSlot object){
-//		System.out.println(object);
-//		String reply=timeTableService.updateTimeSlot(object);
-//		if(reply.equals("success")) {
-//			return ResponseEntity.noContent().build();
-//		}
-//		return ResponseEntity.notFound().build();
-//	}
+	@PutMapping("/vehicle/vehicleCategory")
+	public ResponseEntity<Void> updateVehicleCategory(@RequestBody VehicleCategory object){
+		System.out.println(object);
+		String reply=vehicleService.updateVehicleCategory(object);
+		if(reply.equals("success")) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
 //	
 //	@PostMapping("/vehicle/vehicleCategory")
 //	public ResponseEntity<Void> addTimeSlot(@RequestBody TimeSlot object){

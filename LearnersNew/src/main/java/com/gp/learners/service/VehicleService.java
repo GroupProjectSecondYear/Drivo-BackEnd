@@ -207,15 +207,15 @@ public class VehicleService {
 
 
 		
-//		public String updateVehicleCategory(VehicleCategory vehicleCategory) {
-//			if (vehicleCategory.getVehicleCategoryId() != null && vehicleCategory.getVehicleCategoryId() > 0) {
-//				if (vehicleCategoryRepository.existsById(vehicleCategory.getVehicleCategoryId())) {
-//					vehicleCategoryRepository.save(vehicleCategory);
-//					return "success";
-//				}
-//			}
-//			return "notsuccess";
-//		}
+		public String updateVehicleCategory(VehicleCategory vehicleCategory) {
+			if (vehicleCategory.getVehicleCategoryId() != null && vehicleCategory.getVehicleCategoryId() > 0) {
+				if (vehicleCategoryRepository.existsById(vehicleCategory.getVehicleCategoryId())) {
+					vehicleCategoryRepository.save(vehicleCategory);
+					return "success";
+				}
+			}
+			return "notsuccess";
+		}
 //
 //		public String addTimeSlot(TimeSlot timeSlot) {
 //			if (notExistFromAndTo(timeSlot)) {
@@ -254,4 +254,8 @@ public class VehicleService {
 //			}
 //			return null;
 //		}
+
+
+
+		
 }
