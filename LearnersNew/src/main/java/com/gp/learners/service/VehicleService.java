@@ -225,35 +225,35 @@ public class VehicleService {
 //			return "notsuccess";
 //		}
 //
-//		public Integer deleteTimeSlot(Integer timeSlotId) {
-//			if (timeSlotId != null && timeSlotId > 0) {
-//				if (timeSlotRepository.existsById(timeSlotId)) {
-//
-//					try {
-//						timeSlotRepository.deleteById(timeSlotId);
-//
-//						// Erase the Id in the lessonDayfeedBack table
+		public Integer deleteVehicleCategory(Integer vehicleCategoryId) {
+			if (vehicleCategoryId != null && vehicleCategoryId > 0) {
+				if (vehicleCategoryRepository.existsById(vehicleCategoryId)) {
+
+					try {
+						vehicleCategoryRepository.deleteById(vehicleCategoryId);
+
+						// Erase the Id in the lessonDayfeedBack table
 //						List<LessonDayFeedback> feedbackList = lessonDayFeedbackRepository.findByTimeSlot(timeSlotId);
 //						if (feedbackList.size() > 0) {
 //							for (LessonDayFeedback lessonDayFeedback : feedbackList) {
-//								if (lessonDayFeedback.getTime1() == timeSlotId) {
+//								if (lessonDayFeedback.getTime1() == vehicleCategoryId) {
 //									lessonDayFeedback.setTime1(-1);
 //								}
-//								if (lessonDayFeedback.getTime2() == timeSlotId) {
+//								if (lessonDayFeedback.getTime2() == vehicleCategoryId) {
 //									lessonDayFeedback.setTime2(-1);
 //								}
 //								lessonDayFeedbackRepository.save(lessonDayFeedback);
 //							}
 //						}
-//
-//						return 1;// delete success
-//					} catch (Exception e) {
-//						return 0;// Because of the foreign keyConstrain
-//					}
-//				}
-//			}
-//			return null;
-//		}
+
+						return 1;// delete success
+					} catch (Exception e) {
+						return 0;// Because of the foreign keyConstrain
+					}
+				}
+			}
+			return null;
+		}
 
 
 
