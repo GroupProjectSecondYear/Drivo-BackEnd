@@ -72,7 +72,7 @@ public class StudentService {
 	
 	
 	public Integer studentRegister(Student student) {
-		if( isExistUser(student.getUserId().getNic(),student.getUserId().getEmail())) {
+		if(isExistUser(student.getUserId().getNic(),student.getUserId().getEmail())) {
 			studentRepository.save(student);
 			return 1;
 		}
@@ -155,8 +155,14 @@ public class StudentService {
 	public String deleteStudent(Integer studentId) {
 		if(studentId != null) {
 			if(studentRepository.existsById(studentId)) {
-				studentRepository.deleteById(studentId);
-				return "success";
+				Student object = studentRepository.findByStudentId(studentId);
+				List<StudentPackage> studentPackageList = studentPackageRepository.packageListfindByStudentId(object);
+				if(studentPackageList!=null && studentPackageList.size()>0) {
+					return "error";
+				}else {
+					studentRepository.deleteById(studentId);
+					return "success";
+				}
 			}
 		}
 		return "error";
@@ -616,7 +622,8 @@ public class StudentService {
 	}
 	
 	private Boolean isExistUser(String nic,String email) {
-		User user = userRepository.findByEmailAndNic(email,nic);
+//		User user = userRepository.findByEmailAndNic(email,nic);
+		User user = null;
 		if(user != null ) {
 			return true;
 		}

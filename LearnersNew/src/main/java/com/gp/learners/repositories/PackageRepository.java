@@ -13,4 +13,5 @@ public interface PackageRepository extends JpaRepository<com.gp.learners.entitie
 	
 	@Query("from Package p where p.status = :status")
 	public List<Package> findPackages(Integer status);
+	
 }

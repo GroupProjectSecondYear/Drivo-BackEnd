@@ -1,37 +1,25 @@
 package com.gp.learners.service;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 
 import javax.transaction.Transactional;
 
-import org.apache.tomcat.util.http.fileupload.FileItem;
-import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
-import org.springframework.lang.NonNull;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import com.amazonaws.util.IOUtils;
-import com.gp.learners.entities.Attendance;
-import com.gp.learners.entities.User;
+import com.gp.learners.entities.Admin;
 import com.gp.learners.entities.YearUpdate;
 import com.gp.learners.repositories.AdminRepository;
 import com.gp.learners.repositories.AttendanceRepository;
@@ -102,7 +90,7 @@ public class SystemUpdateService {
 	//check Updates yearly January 5
 	//@Scheduled(cron="0 0 23 5 1  *")
 	@Transactional
-	public void checkAnnualUpdate() {
+	private void checkAnnualUpdate() {
 		
 		//get current year
 		LocalDate currentDate = timeTableService.getLocalCurrentDate();
@@ -111,51 +99,23 @@ public class SystemUpdateService {
 		//1.Get db instance and save it
 		Boolean reply = monthlyDatabseBackup();
 		if(reply) {//Backup success
-			//2.Update the db
+			YearUpdate object = new YearUpdate();
 			
-			//i)Update Salary Table
-			List<Integer> salaryIdList = salaryRepository.findsalaryIdByYear(year-1);
-			for (Integer salaryId : salaryIdList) {
-				salaryRepository.deleteById(salaryId);
-			}
-			
-			//ii)Update Fuel Table
-			List<Integer> fuelPaymenIdtList = fuelPaymentRepository.findsalaryIdByYear(year-1);
-			for (Integer fuelId : fuelPaymenIdtList) {
-				fuelPaymentRepository.deleteById(fuelId);
-			}
-			
-			//iii)Staff Leave Table
-			List<Integer> staffLeaveIdList = staffLeaveRepository.findStaffLeaveIdByYear(year-1);
-			for (Integer staffLeaveId : staffLeaveIdList) {
-				staffLeaveRepository.deleteById(staffLeaveId);
-			}
-			
-			//iv)Attendance Table
-			List<Integer> attendanceIdList = attendanceRepository.findAttendanceIdByYear(year-1);
-			for (Integer attendanceId : attendanceIdList) {
-				attendanceRepository.deleteById(attendanceId);
-			}
-			
-			//update year_update record
-			YearUpdate object = yearUpdateRepository.getLastRecord();
-			if(object.getUpdateYear()==(year-1)) {
-				object.setSystemUpdateStatus(1);
+			Admin admin = adminRepository.findAll().get(0);
+			if(admin!=null) {
+				object.setAdminId(admin);
+				object.setUpdateYear(year-1);
 				yearUpdateRepository.save(object);
 			}
 		}
 	}
 	
-	
-	//getUpdate Message
-	public YearUpdate getUpdateMessage() {
-		return yearUpdateRepository.getLastRecord();
-	}
+
 	
 	//Run every month first date
 	//@Scheduled(cron="0 0 0 1 1/1  *")
 	//@Scheduled(cron="0 0/1 * 1/1 *  *")
-    public Boolean monthlyDatabseBackup() {
+    private Boolean monthlyDatabseBackup() {
 		
 		Boolean flag =false;
 
@@ -201,7 +161,7 @@ public class SystemUpdateService {
 		return false;
     }
 	
-	public MultipartFile getMultipartFile(File file) {
+	private MultipartFile getMultipartFile(File file) {
 	    try {
 	    	FileInputStream input = new FileInputStream(file);
 		    MultipartFile multipartFile = new MockMultipartFile("file",
@@ -214,7 +174,7 @@ public class SystemUpdateService {
 	}
 	
 	
-	public String uploadBackupDBFile(MultipartFile file,String fileName) {	
+	private String uploadBackupDBFile(MultipartFile file,String fileName) {	
 			String keyName = fileName;
 			if(keyName!=null) {
 				s3Service.uploadFile(keyName, file,bucketName);

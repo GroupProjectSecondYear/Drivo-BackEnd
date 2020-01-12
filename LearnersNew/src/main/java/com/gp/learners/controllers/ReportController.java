@@ -14,6 +14,9 @@ import com.gp.learners.entities.YearUpdate;
 import com.gp.learners.entities.mapObject.OutcomeDataMap;
 import com.gp.learners.entities.mapObject.PackagePaymentDataMap;
 import com.gp.learners.entities.mapObject.ProfitDataMap;
+import com.gp.learners.entities.mapObject.YearlyIncomeDataMap;
+import com.gp.learners.entities.mapObject.YearlyOutComeDataMap;
+import com.gp.learners.entities.mapObject.YearlyProfitDataMap;
 import com.gp.learners.service.ReportService;
 import com.gp.learners.service.SystemUpdateService;
 
@@ -72,13 +75,23 @@ public class ReportController {
 		return ResponseEntity.ok(reportService.getMonthlyProfit(year));
 	}
 	
-//	public ResponseEntity<List<Integer>> getYears(){
-//		
-//	}
+	@GetMapping("report/year/income")
+	public ResponseEntity<List<YearlyIncomeDataMap>> getYearlyIncome(){
+		return ResponseEntity.ok(reportService.getYearlyIncome());
+	}
 	
-	//system update 
-	@GetMapping("system/update")
-	public ResponseEntity<YearUpdate> systemUpdate(){
-		return ResponseEntity.ok(systemUpdateService.getUpdateMessage());
+	@GetMapping("report/year/outcome")
+	public ResponseEntity<List<YearlyOutComeDataMap>> getYearlyOutCome(){
+		return ResponseEntity.ok(reportService.getYearlyOutCome());
+	}
+	
+	@GetMapping("report/year/profit")
+	public ResponseEntity<List<YearlyProfitDataMap>> getYearlyProfit(){
+		return ResponseEntity.ok(reportService.getYearlyProfit());
+	}
+	
+	@GetMapping("years")
+	public List<Integer> getYears(){
+		return reportService.getYears();
 	}
 }

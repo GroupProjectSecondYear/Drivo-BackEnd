@@ -21,12 +21,6 @@ public class YearUpdate {
 
 	@NotNull
 	private Integer updateYear;
-	
-	@NotNull
-	@Max(1)
-	@Min(0)
-	private Integer systemUpdateStatus;
-	private String message;
 
 	@NotNull
 	@ManyToOne
@@ -49,22 +43,6 @@ public class YearUpdate {
 		this.updateYear = updateYear;
 	}
 
-	public Integer getSystemUpdateStatus() {
-		return systemUpdateStatus;
-	}
-
-	public void setSystemUpdateStatus(Integer systemUpdateStatus) {
-		this.systemUpdateStatus = systemUpdateStatus;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
 	public Admin getAdminId() {
 		return adminId;
 	}
@@ -75,8 +53,7 @@ public class YearUpdate {
 
 	@Override
 	public String toString() {
-		return "YearUpdate [yearId=" + yearId + ", updateYear=" + updateYear + ", systemUpdateStatus="
-				+ systemUpdateStatus + ", message=" + message + ", adminId=" + adminId + "]";
+		return "YearUpdate [yearId=" + yearId + ", updateYear=" + updateYear + ", adminId=" + adminId + "]";
 	}
 
 }
