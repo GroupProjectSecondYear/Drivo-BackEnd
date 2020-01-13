@@ -155,13 +155,15 @@ public class VehicleController {
 //		return ResponseEntity.badRequest().build();
 //	}
 //	
-//	@DeleteMapping("/vehicle/vehicleCategory/{id}")
-//	public ResponseEntity<Integer> deleteTimeSlot(@PathVariable("id") Integer timeSlotId){
-//		Integer reply=timeTableService.deleteTimeSlot(timeSlotId);
-//		if(reply != null) {
-//			return ResponseEntity.ok(reply);
-//		}
-//		return ResponseEntity.notFound().build();
-//	}
+	@DeleteMapping("/vehicle/vehicleCategory/{id}")
+	public ResponseEntity<Integer> deleteVehicleCategory(@PathVariable("id") Integer vehicleCategoryId){
+		Integer reply=vehicleService.deleteVehicleCategory(vehicleCategoryId);
+		if(reply != null) {
+			return ResponseEntity.ok(reply);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	
 	
 }
