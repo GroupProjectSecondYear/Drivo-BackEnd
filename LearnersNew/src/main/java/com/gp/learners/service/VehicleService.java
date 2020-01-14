@@ -92,7 +92,7 @@ public class VehicleService {
 		}
 
 		// get Vehicle Details
-		public Vehicle getVehicleList(Integer vehicleId) {
+		public Vehicle getVehicle1List(Integer vehicleId) {
 			if (vehicleId != null) {
 				if (vehicleRepository.existsById(vehicleId)) {
 					System.out.println("In Vehicle service Add");

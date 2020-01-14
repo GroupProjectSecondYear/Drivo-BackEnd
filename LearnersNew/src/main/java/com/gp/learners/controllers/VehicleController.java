@@ -47,10 +47,10 @@ public class VehicleController {
 	}
 
 	// get Specific vehicle data
-	@GetMapping("vehicles/{vehicleId}")
+	@GetMapping("vehicle/{vehicleId}")
 	public ResponseEntity<Vehicle> getVehicle(@PathVariable("vehicleId") Integer vehicleId) {
 		System.out.println("In vehicle Controller VmoreDetails");
-		Vehicle vehicle = (Vehicle) vehicleService.getVehicleList(vehicleId);
+		Vehicle vehicle = (Vehicle) vehicleService.getVehicle1List(vehicleId);
 		if (vehicle.getVehicleId() != null) {
 			return ResponseEntity.ok(vehicle);
 		}
