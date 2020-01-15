@@ -36,7 +36,9 @@ public class PaperQuestionService {
 		System.out.println(paper.getPaperId() + "PID");
 		if (paperRepository.existsById(paper.getPaperId())) {
 			System.out.println(1);
-			// delete old answers of the paper
+			// get currently saved answers
+			List<PaperQuestion> currentlySavedAnswers = getPaperQuestionList(paper.getPaperId());
+			// delete currently saved answers of the paper
 			paperQuestionRepository.deleteQuestionsOfaPaper(paper.getPaperId());
 			System.out.println(2);
 			System.out.println(answers + "ANS array");
@@ -45,28 +47,29 @@ public class PaperQuestionService {
 			String str = answers;
 			Integer size = 4;
 			String[] tokens = str.split("(?<=\\G.{" + size + "})"); // Split answers String
-			int n=0;
+			int n = 0;
 			for (n = 0; n < tokens.length; n++) {
-				System.out.println(tokens[n]+"Tokens");
+				System.out.println(tokens[n] + "Tokens");
 				if (tokens[n].length() == paper.getNo_of_answers()) { // checks size of a substring with no of answers
 					System.out.println(tokens[n]);
 					PaperQuestion quest = new PaperQuestion(0, paper, (n + 1), tokens[n]);
 					PaperQuestion replyQ = paperQuestionRepository.save(quest); // saves a answer
-					if (replyQ == null) {
-						//paperQuestionRepository.deleteQuestionsOfaPaper(paper.getPaperId()); // delete all questions if
-
+					if (replyQ == null) { // error in saving a answer
+						paperQuestionRepository.deleteQuestionsOfaPaper(paper.getPaperId()); // delete currently submitted answers
+						paperQuestionRepository.saveAll(currentlySavedAnswers);
+						break;
 					}
 //					System.out.println(4);
-//					if (n != answers.length - 1)
-//						ans = answers[++n].toString();
-//					System.out.println(5);
-					
 				}
 			}
-			if(n==tokens.length)
-			   return 1;       // If all answers are saved
-			else return 0;
+			if (n == tokens.length)
+				return 1; // If all answers are saved return success
+			else {
+				paperQuestionRepository.deleteQuestionsOfaPaper(paper.getPaperId()); // delete currently submitted answers
+				paperQuestionRepository.saveAll(currentlySavedAnswers); // save old answers again
+				return null; //return failure
+			}
 		}
-		return 0;
+		return null;
 	}
 }
