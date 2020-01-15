@@ -71,6 +71,7 @@ public class PaperController {
 			}
 			return ResponseEntity.notFound().build();
 		}
+		
 		//update student Details
 		@PutMapping("paper/update")
 		public ResponseEntity<Paper> updatePaper(@Valid @RequestBody Paper object){
