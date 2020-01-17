@@ -59,12 +59,14 @@ public class PaperService {
 				if (ans.length() == paper.getNo_of_answers()) {
 					System.out.println(ans);
 					PaperQuestion quest = new PaperQuestion(0, result, (n / paper.getNo_of_answers()) + 1, ans);
-					PaperQuestion replyQ=questionRepository.save(quest);
-					if(replyQ==null) {   
-						questionRepository.deleteQuestionsOfaPaper(result.getPaperId());  //delete all questions if error occured in saving questions
-				        // sjould delete paper details and upluaded paper
+					PaperQuestion replyQ = questionRepository.save(quest);
+					if (replyQ == null) {
+						questionRepository.deleteQuestionsOfaPaper(result.getPaperId()); // delete all questions if
+																							// error occured in saving
+																							// questions
+						// sjould delete paper details and upluaded paper
 					}
-					if (n != answers.length-1)
+					if (n != answers.length - 1)
 						ans = answers[++n].toString();
 				}
 			}
@@ -80,11 +82,11 @@ public class PaperService {
 		if (paperId != null) {
 			if (paperRepository.existsById(paperId)) {
 				String keyName = paperId + ".pdf";
-				//delete paper from s3 bucket
-				s3Service.deleteFile(bucketName,keyName);
-				
+				// delete paper from s3 bucket
+				s3Service.deleteFile(bucketName, keyName);
+
 				System.out.println(paperId);
-				questionRepository.deleteQuestionsOfaPaper(paperId);  //delete all questions of the paper
+				questionRepository.deleteQuestionsOfaPaper(paperId); // delete all questions of the paper
 				paperRepository.deleteById(paperId);
 				return "success";
 			}
@@ -96,10 +98,62 @@ public class PaperService {
 	public Paper updatePaper(Paper paper) {
 		if (paperRepository.existsById(paper.getPaperId())) {
 			// Paper paper1=paperRepository.getPaperById(paper.getPaperId());
+			Paper savedPaper = paperRepository.getPaperById(paper.getPaperId());
+
+			if (paper.getNo_of_questions() != savedPaper.getNo_of_questions()) { // if no of questions updating, arrange
+				// question table
+
+				if (paper.getNo_of_questions() > savedPaper.getNo_of_questions()) {
+					String blank = "0";
+					for (int j = 1; j < paper.getNo_of_answers(); j++) { // zeros as answer
+						blank += "0";
+					}
+
+					for (int i = savedPaper.getNo_of_questions() + 1; i < paper.getNo_of_questions() + 1; i++) {
+						PaperQuestion quest = new PaperQuestion(0, paper, i, blank); // saving as new answers
+						PaperQuestion replyQ = questionRepository.save(quest);
+						if (replyQ == null) { // if saving not successfull delete saved answers
+							for (int k = savedPaper.getNo_of_questions() + 1; k < i + 1; k++) {
+								questionRepository.deleteQuestionByQuestionNo(paper.getPaperId(), k);
+								return new Paper();
+							}
+						}
+					}
+				}
+				if (paper.getNo_of_questions() < savedPaper.getNo_of_questions()) {
+					for (int i = savedPaper.getNo_of_questions() + 1; i < paper.getNo_of_questions() + 1; i++) {
+						questionRepository.deleteQuestionByQuestionNo(paper.getPaperId(), i);
+						return new Paper();
+
+					}
+				}
+			}
+
+			if (paper.getNo_of_answers() != savedPaper.getNo_of_answers()) { // if no of answers updating, arrange
+				// question table
+
+				if (paper.getNo_of_answers() > savedPaper.getNo_of_answers()) {
+					String blank = "0";
+					for (int j = 1; j < paper.getNo_of_answers(); j++) { // zeros as answer
+						blank += "0";
+					}
+
+					for (int i = savedPaper.getNo_of_questions() + 1; i < paper.getNo_of_questions() + 1; i++) {
+						PaperQuestion quest = new PaperQuestion(0, paper, i, blank); // saving as new answers
+						PaperQuestion replyQ = questionRepository.save(quest);
+						if (replyQ == null) { // if saving not successfull delete saved answers
+							for (int k = savedPaper.getNo_of_questions() + 1; k < i + 1; k++) {
+								questionRepository.deleteQuestionByQuestionNo(paper.getPaperId(), k);
+								return new Paper();
+							}
+						}
+					}
+				}
+			}
 			return paperRepository.save(paper);
 		}
 
-		return new Paper();
+		return new Paper(); ///////// ???
 	}
 
 	public String uploadPaper(MultipartFile file, Integer paperId) {
