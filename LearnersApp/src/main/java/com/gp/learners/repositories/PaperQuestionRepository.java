@@ -20,7 +20,7 @@ public interface PaperQuestionRepository extends JpaRepository<PaperQuestion, In
 	public Integer deleteQuestionsOfaPaper(@Param("paperId") Integer paperId);
 
 	//send questions-answers set of a paper 
-	@Query(value="select * from paper_question where paper_id=:paperId", nativeQuery = true)
+	@Query(value="select * from paper_question where paper_id=:paperId order by question_no ASC", nativeQuery = true)
 	public List<PaperQuestion> getAnswersOfaPaper(@Param("paperId") Integer paperId);
 	
 	// delete particular question using question no 

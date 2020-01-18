@@ -97,6 +97,7 @@ public class PaperService {
 	// update Student Details
 	public Paper updatePaper(Paper paper) {
 		if (paperRepository.existsById(paper.getPaperId())) {
+			System.out.println(paper.getNo_of_questions());
 			// Paper paper1=paperRepository.getPaperById(paper.getPaperId());
 			Paper savedPaper = paperRepository.getPaperById(paper.getPaperId());
 
@@ -121,9 +122,9 @@ public class PaperService {
 					}
 				}
 				if (paper.getNo_of_questions() < savedPaper.getNo_of_questions()) {
-					for (int i = savedPaper.getNo_of_questions() + 1; i < paper.getNo_of_questions() + 1; i++) {
+					for (int i = paper.getNo_of_questions() + 1; i < savedPaper.getNo_of_questions() + 1; i++) {
 						questionRepository.deleteQuestionByQuestionNo(paper.getPaperId(), i);
-						return new Paper();
+						//return new Paper();
 
 					}
 				}
