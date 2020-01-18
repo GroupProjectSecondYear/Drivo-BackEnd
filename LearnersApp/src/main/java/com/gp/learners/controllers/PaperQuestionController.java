@@ -35,16 +35,19 @@ public class PaperQuestionController {
 	@GetMapping("/paperquestions/{paperId}")
 	public List<PaperQuestion> getPaperList(@PathVariable("paperId") Integer paperId) {
 		System.out.println("PQ controller");
-		return paperquestionService.getPaperQuestionList(paperId);
+		List<PaperQuestion> answerList = paperquestionService.getPaperQuestionList(paperId);
+		if (answerList != null)
+			return answerList;
+		else return null;
 	}
 
 	// update questions of a paper
 	@PostMapping("paperAnswers/update") // save paper and answers
 	public Integer updatePaper(@Valid @RequestBody PaperAnswerMap paperAnswerMap) {
 		System.out.println("In Answer Update Controller");
-		
-		Integer val=paperquestionService.updatePaperAnswers(paperAnswerMap.getPaper(),paperAnswerMap.getAnswers());
-		//Integer val = 0;
+
+		Integer val = paperquestionService.updatePaperAnswers(paperAnswerMap.getPaper(), paperAnswerMap.getAnswers());
+		// Integer val = 0;
 		if (val != null) {
 			return val;
 		}

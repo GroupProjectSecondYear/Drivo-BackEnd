@@ -94,16 +94,15 @@ public class PaperService {
 		return "error";
 	}
 
-	// update Student Details
+	// update Paper
 	public Paper updatePaper(Paper paper) {
 		if (paperRepository.existsById(paper.getPaperId())) {
-			System.out.println(paper.getNo_of_questions());
-			// Paper paper1=paperRepository.getPaperById(paper.getPaperId());
 			Paper savedPaper = paperRepository.getPaperById(paper.getPaperId());
 
-			if (paper.getNo_of_questions() != savedPaper.getNo_of_questions()) { // if no of questions updating, arrange
-				// question table
+			// if no of questions updating, change question table
+			if (paper.getNo_of_questions() != savedPaper.getNo_of_questions()) { 
 
+				//If no of questions large than current value should save empty answers in db
 				if (paper.getNo_of_questions() > savedPaper.getNo_of_questions()) {
 					String blank = "0";
 					for (int j = 1; j < paper.getNo_of_answers(); j++) { // zeros as answer
@@ -113,6 +112,7 @@ public class PaperService {
 					for (int i = savedPaper.getNo_of_questions() + 1; i < paper.getNo_of_questions() + 1; i++) {
 						PaperQuestion quest = new PaperQuestion(0, paper, i, blank); // saving as new answers
 						PaperQuestion replyQ = questionRepository.save(quest);
+						
 						if (replyQ == null) { // if saving not successfull delete saved answers
 							for (int k = savedPaper.getNo_of_questions() + 1; k < i + 1; k++) {
 								questionRepository.deleteQuestionByQuestionNo(paper.getPaperId(), k);
@@ -121,6 +121,8 @@ public class PaperService {
 						}
 					}
 				}
+				
+				//If no of questions less than current value should delete extra answers
 				if (paper.getNo_of_questions() < savedPaper.getNo_of_questions()) {
 					for (int i = paper.getNo_of_questions() + 1; i < savedPaper.getNo_of_questions() + 1; i++) {
 						questionRepository.deleteQuestionByQuestionNo(paper.getPaperId(), i);
@@ -130,25 +132,35 @@ public class PaperService {
 				}
 			}
 
-			if (paper.getNo_of_answers() != savedPaper.getNo_of_answers()) { // if no of answers updating, arrange
-				// question table
+			// if no of answers updating, change question table
+			if (paper.getNo_of_answers() != savedPaper.getNo_of_answers()) { 
 
 				if (paper.getNo_of_answers() > savedPaper.getNo_of_answers()) {
-					String blank = "0";
-					for (int j = 1; j < paper.getNo_of_answers(); j++) { // zeros as answer
-						blank += "0";
+					//generate extra answer part
+					String val="0";
+					for(int i=savedPaper.getNo_of_answers()+1;i<paper.getNo_of_answers();i++) {
+						val+="0";
 					}
+				    System.out.println("ZEros"+val);
+					for(int i=1;i<=savedPaper.getNo_of_answers()+1;i++) {
+						questionRepository. addExtraAnswers(paper.getPaperId(), i,val);
+					}
+				//	
+//					String blank = "0";
+//					for (int j = 1; j < paper.getNo_of_answers(); j++) { // zeros as answer
+//						blank += "0";
+//					}
 
-					for (int i = savedPaper.getNo_of_questions() + 1; i < paper.getNo_of_questions() + 1; i++) {
-						PaperQuestion quest = new PaperQuestion(0, paper, i, blank); // saving as new answers
-						PaperQuestion replyQ = questionRepository.save(quest);
-						if (replyQ == null) { // if saving not successfull delete saved answers
-							for (int k = savedPaper.getNo_of_questions() + 1; k < i + 1; k++) {
-								questionRepository.deleteQuestionByQuestionNo(paper.getPaperId(), k);
-								return new Paper();
-							}
-						}
-					}
+//					for (int i = savedPaper.getNo_of_questions() + 1; i < paper.getNo_of_questions() + 1; i++) {
+//						PaperQuestion quest = new PaperQuestion(0, paper, i, blank); // saving as new answers
+//						PaperQuestion replyQ = questionRepository.save(quest);
+//						if (replyQ == null) { // if saving not successfull delete saved answers
+//							for (int k = savedPaper.getNo_of_questions() + 1; k < i + 1; k++) {
+//								questionRepository.deleteQuestionByQuestionNo(paper.getPaperId(), k);
+//								return new Paper();
+//							}
+//						}
+//					}
 				}
 			}
 			return paperRepository.save(paper);

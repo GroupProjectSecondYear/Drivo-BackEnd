@@ -29,5 +29,10 @@ public interface PaperQuestionRepository extends JpaRepository<PaperQuestion, In
 	@Query(value="delete from paper_question where paper_id=:paperId and question_no=:questionNo", nativeQuery = true)
 	public Integer deleteQuestionByQuestionNo(@Param("paperId") Integer paperId,@Param("questionNo") Integer questionNo);
 
-	
+	//add characters to answers
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE paper_question SET answer = concat(answer,:val) WHERE paper_id=:paperId and question_no=:questionNo", nativeQuery = true)
+	public Integer addExtraAnswers(@Param("paperId") Integer paperId,@Param("questionNo") Integer questionNo,@Param("val") String val);
+
 }
