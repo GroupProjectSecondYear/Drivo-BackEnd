@@ -1,0 +1,71 @@
+package com.gp.learners.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.gp.learners.entities.Complain;
+
+import com.gp.learners.repositories.ComplainRepository;
+
+
+@Service
+public class FeedBackService {
+
+	@Autowired
+	FeedBackRepository feedbackRepository;
+
+	@Autowired
+	FeedBackService feedbackService;
+
+	// getVideoList
+	public List<FeedBack> getFeedBackList() {
+		System.out.println("In FeedBack Repo");
+		List<Complain> complainList = feedbackRepository.findAll();
+//		Video video = videoList.get(0);
+/*		System.out.println(video.getDescription());*/
+		return feedbackList;
+	}
+
+	// get Video Details
+	public FeedBack getFeedBackDetails(Integer feedbackId) {
+		if (feedbackId != null) {
+			if (feedbacRepository.existsById(feedbackId)) {
+				return complainRepository.getComplainById(complainId);
+			}
+		}
+		return new Complain();
+	}
+
+	// Add Video
+	public String addComplain(Complain complain) {
+
+		Complain result = complainRepository.save(complain);
+		if (result != null)
+			return "success";
+		else
+			return "notsuccess";
+	}
+
+	// delete video
+	public String deleteComplain(Integer complainId) {
+		if (complainId != null) {
+			if (complainRepository.existsById(complainId)) {
+				complainRepository.deleteById(complainId);
+				return "success";
+			}
+		}
+		return "error";
+	}
+
+	// update Video Details
+	public Complain updateComplain(Complain complain) {
+		if (complainRepository.existsById(complain.getComplainId())) {
+			return complainRepository.save(complain);
+		}
+
+		return new Complain();
+	}
+
+} 
