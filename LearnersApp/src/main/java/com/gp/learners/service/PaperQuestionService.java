@@ -33,6 +33,7 @@ public class PaperQuestionService {
 
 	// update answers of a paper
 	public Integer updatePaperAnswers(Paper paper, String answers) {
+		// System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");System.out.println(".");
 		System.out.println(paper.getPaperId() + "PID");
 		if (paperRepository.existsById(paper.getPaperId())) {
 			System.out.println(1);

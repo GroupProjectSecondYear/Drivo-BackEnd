@@ -1,6 +1,7 @@
 package com.gp.learners.service;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,21 +55,28 @@ public class PaperService {
 		if (result != null) {
 			// save answers of paper
 			String ans = answers[0].toString();
+			List<PaperQuestion> paperList=new ArrayList<PaperQuestion>();
 			for (int n = 1; n < answers.length; n++) { // split array of answers
 				ans += answers[n].toString();
 				if (ans.length() == paper.getNo_of_answers()) {
 					System.out.println(ans);
 					PaperQuestion quest = new PaperQuestion(0, result, (n / paper.getNo_of_answers()) + 1, ans);
-					PaperQuestion replyQ = questionRepository.save(quest);
-					if (replyQ == null) {
-						questionRepository.deleteQuestionsOfaPaper(result.getPaperId()); // delete all questions if
+					paperList.add(quest); // add answers to list
+					
+					//**PaperQuestion replyQ = questionRepository.save(quest);
+					//**if (replyQ == null) {
+						//**questionRepository.deleteQuestionsOfaPaper(result.getPaperId()); // delete all questions if
 																							// error occured in saving
 																							// questions
 						// sjould delete paper details and upluaded paper
-					}
+				//**	}
 					if (n != answers.length - 1)
 						ans = answers[++n].toString();
 				}
+			}
+			List<PaperQuestion> reply=questionRepository.saveAll(paperList);
+			if(reply==null) {
+				return null;
 			}
 			System.out.println("End Saving papaer");
 			return result;
@@ -116,6 +124,7 @@ public class PaperService {
 						if (replyQ == null) { // if saving not successfull delete saved answers
 							for (int k = savedPaper.getNo_of_questions() + 1; k < i + 1; k++) {
 								questionRepository.deleteQuestionByQuestionNo(paper.getPaperId(), k);
+								System.out.println("Deleting Quest");
 								return new Paper();
 							}
 						}
@@ -125,6 +134,7 @@ public class PaperService {
 				//If no of questions less than current value should delete extra answers
 				if (paper.getNo_of_questions() < savedPaper.getNo_of_questions()) {
 					for (int i = paper.getNo_of_questions() + 1; i < savedPaper.getNo_of_questions() + 1; i++) {
+						System.out.println("Deleting Ans");
 						questionRepository.deleteQuestionByQuestionNo(paper.getPaperId(), i);
 						//return new Paper();
 
@@ -134,7 +144,8 @@ public class PaperService {
 
 			// if no of answers updating, change question table
 			if (paper.getNo_of_answers() != savedPaper.getNo_of_answers()) { 
-
+				System.out.println(paper.getNo_of_answers()+"No Of Answers");
+				//new no of answers is large than current number
 				if (paper.getNo_of_answers() > savedPaper.getNo_of_answers()) {
 					//generate extra answer part
 					String val="0";
@@ -142,25 +153,21 @@ public class PaperService {
 						val+="0";
 					}
 				    System.out.println("ZEros"+val);
-					for(int i=1;i<=savedPaper.getNo_of_answers()+1;i++) {
+					for(int i=1;i<=paper.getNo_of_answers()+1;i++) {
 						questionRepository. addExtraAnswers(paper.getPaperId(), i,val);
 					}
-				//	
-//					String blank = "0";
-//					for (int j = 1; j < paper.getNo_of_answers(); j++) { // zeros as answer
-//						blank += "0";
-//					}
-
-//					for (int i = savedPaper.getNo_of_questions() + 1; i < paper.getNo_of_questions() + 1; i++) {
-//						PaperQuestion quest = new PaperQuestion(0, paper, i, blank); // saving as new answers
-//						PaperQuestion replyQ = questionRepository.save(quest);
-//						if (replyQ == null) { // if saving not successfull delete saved answers
-//							for (int k = savedPaper.getNo_of_questions() + 1; k < i + 1; k++) {
-//								questionRepository.deleteQuestionByQuestionNo(paper.getPaperId(), k);
-//								return new Paper();
-//							}
-//						}
-//					}
+					//questionRepository. addExtraAnswers(paper.getPaperId(), paper.getNo_of_questions(),val);//bcs of a miss working behaviour
+				
+				}
+				//new no of answers is small than current number
+				if (paper.getNo_of_answers() < savedPaper.getNo_of_answers()) {
+				
+					//remove extra part from saved answers
+					//
+					//
+					//
+					//
+				
 				}
 			}
 			return paperRepository.save(paper);
