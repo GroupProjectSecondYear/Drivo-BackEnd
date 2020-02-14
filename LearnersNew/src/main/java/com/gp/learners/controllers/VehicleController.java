@@ -64,13 +64,21 @@ public class VehicleController {
 //		System.out.println("In Vehicle controller Add");
 //		return vehicleRepository.save(vehicle);
 //	}
-	
-	
-	
+	// save vehicle
 	@PostMapping("/vehicle/add")
-	public Integer VehicleAdd(@RequestBody Vehicle vehicle) {//0:vehicle already registered ,1:Register success
-		return vehicleService.vehicleAdd(vehicle);
+	public Vehicle VehicleAdd(@RequestBody Vehicle vehicle) {
+		System.out.println(vehicle);
+		System.out.println("In Vehicle controller Adding method");
+		
+
+		return vehicleRepository.save(vehicle);
 	}
+	
+	
+	
+//	public Integer VehicleAdd(@RequestBody Vehicle vehicle) {//0:vehicle already registered ,1:Register success
+//		return vehicleService.VehicleAdd(vehicle);
+//	}
 
 	// delete Vehicle
 	@DeleteMapping("vehicle/{vehicleId}")

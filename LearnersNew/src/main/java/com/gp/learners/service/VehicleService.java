@@ -18,6 +18,7 @@ import com.gp.learners.entities.TimeSlot;
 import com.gp.learners.entities.User;
 import com.gp.learners.entities.Vehicle;
 import com.gp.learners.entities.VehicleCategory;
+import com.gp.learners.entities.Video;
 import com.gp.learners.repositories.AdministrativeStaffRepository;
 import com.gp.learners.repositories.FuelPaymentRepository;
 import com.gp.learners.repositories.InsurancePaymentRepository;
@@ -61,13 +62,26 @@ public class VehicleService {
 //		return 0;
 //	}
 	
-	public Integer vehicleAdd(Vehicle vehicle) {
-		if(isNotExistVehicle(vehicle.getVehicleId())) {
-			vehicleRepository.save(vehicle);
-			System.out.println("In Vehicle service Add");
-			return 1;
-		}
-		return 0;
+//	public Integer VehicleAdd(Vehicle vehicle) {
+//		if(isNotExistVehicle(vehicle.getVehicleId())) {
+//			vehicleRepository.save(vehicle);
+//			System.out.println("In Vehicle service Add");
+//			return 1;
+//		}
+//		return 0;
+//	}
+	
+	// Add Video
+	public String VehicleAdd(Vehicle vehicle) {
+
+		Vehicle result = vehicleRepository.save(vehicle);
+		System.out.println(vehicle);
+		
+		if (result != null)
+			
+			return "success";
+		else
+			return "notsuccess";
 	}
 
 	
