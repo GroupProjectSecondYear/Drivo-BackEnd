@@ -193,6 +193,18 @@ public class InstructorController {
 		}
 		return ResponseEntity.notFound().build();
 	}
+	
+	// get Instructor by User
+		@GetMapping("instructor/getbyUser/{userId}")
+		public ResponseEntity<Integer> getInstructorbyUserId(@PathVariable("userId") Integer userId) {
+			//System.out.println("getByEmail" + email);
+			Integer instructorId = instructorService.getInstructorId(userId);
+			System.out.println("getByEmail" + instructorId);
+			if (instructorId != null) {
+				return ResponseEntity.ok(instructorId);
+			}
+			return ResponseEntity.noContent().build();
+		}
 
 	/*
 	 * // update instructor's assigned vehicle

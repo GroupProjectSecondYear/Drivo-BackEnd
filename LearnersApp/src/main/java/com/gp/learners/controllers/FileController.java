@@ -72,7 +72,7 @@ public class FileController {
 			downloadInputStream = paperService.downloadPaper(userId);
 		}else if(type==4){
 			System.out.println("File controller Viewing meth- Video type 4");
-			downloadInputStream = videoService.downloadVideo(userId);
+			//downloadInputStream = videoService.downloadVideo(userId);
 		}
 		
 		if(downloadInputStream!=null) {
@@ -154,7 +154,7 @@ public class FileController {
 				}else if(type==3){
 					reply = paperService.uploadPaper(file, id);
 				}else if(type==4){
-					reply = videoService.uploadVideo(file, id);
+					//reply = videoService.uploadVideo(file, id);
 				}else {//type==3
 					reply = packageService.uploadPackageImage(file, id);
 				}
