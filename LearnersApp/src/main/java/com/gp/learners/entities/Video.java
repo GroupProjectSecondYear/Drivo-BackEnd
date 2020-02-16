@@ -43,8 +43,7 @@ public class Video {
 	}
 
 	public Video(Integer videoId, @NotBlank(message = "Title is mandatory") String title,
-			@NotBlank(message = "Description is mandatory") String description,
-			@NotBlank(message = "URL is mandatory") String url, AdminStaff adminStaffId, LocalDate addedDate) {
+			String description,@NotBlank(message = "URL is mandatory") String url, AdminStaff adminStaffId, LocalDate addedDate) {
 		super();
 		this.videoId = videoId;
 		this.title = title;
