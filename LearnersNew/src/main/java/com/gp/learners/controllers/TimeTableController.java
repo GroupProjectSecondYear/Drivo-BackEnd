@@ -2,21 +2,16 @@ package com.gp.learners.controllers;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Set;
+
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.Range;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,7 +49,6 @@ public class TimeTableController {
 	
 	@PutMapping("/timetable/timeslot")
 	public ResponseEntity<Void> updateTimeSlot(@RequestBody TimeSlot object){
-		System.out.println(object);
 		String reply=timeTableService.updateTimeSlot(object);
 		if(reply.equals("success")) {
 			return ResponseEntity.noContent().build();

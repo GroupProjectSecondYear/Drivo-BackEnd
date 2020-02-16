@@ -20,6 +20,7 @@ import com.gp.learners.entities.Package;
 import com.gp.learners.entities.Student;
 import com.gp.learners.entities.StudentPackage;
 import com.gp.learners.entities.User;
+import com.gp.learners.entities.YearUpdate;
 import com.gp.learners.entities.mapObject.PaymentEmailBodyMap;
 import com.gp.learners.entities.mapObject.StudentPackageMap;
 import com.gp.learners.entities.mapObject.StudentTrialMap;
@@ -31,6 +32,7 @@ import com.gp.learners.repositories.StudentNotificationRepository;
 import com.gp.learners.repositories.StudentPackageRepository;
 import com.gp.learners.repositories.StudentRepository;
 import com.gp.learners.repositories.UserRepository;
+import com.gp.learners.repositories.YearUpdateRepository;
 
 import java.time.LocalDate;
 
@@ -69,6 +71,9 @@ public class StudentService {
 	
 	@Autowired
 	JwtInMemoryUserDetailsService jwtInMemoryUserDetailsService;
+	
+	@Autowired
+	YearUpdateRepository yearUpdateRepository;
 	
 	
 	public Integer studentRegister(Student student) {
@@ -109,6 +114,7 @@ public class StudentService {
 	public Integer studentUpdate(Student student) {
 		
 		Boolean isPasswordChanged=false;
+		Boolean isEmailChanged=false;
 		if(userRepository.existsById(student.getUserId().getUserId()) && studentRepository.existsById(student.getStudentId())) {
 			Integer userId = student.getUserId().getUserId();
 			Integer studentId = student.getStudentId();
@@ -126,11 +132,16 @@ public class StudentService {
 			}
 			
 			//check update email is unique
-			String email = newUser.getEmail();
-			User user1 = userRepository.findByEmail(email);
+			String newEmail = newUser.getEmail();
+			User user1 = userRepository.findByEmail(newEmail);
 			if(user1 != null && !user1.getUserId().equals(userId)) {
 				return 2;//Same Email has another person.Save unsuccessful
 			}else {
+				
+				String currentEmail = currentUser.getEmail();
+				if(!currentEmail.equals(newEmail)) {
+					isEmailChanged=true;
+				}
 				
 				//check update nic has another person
 				String nic = student.getUserId().getNic();
@@ -139,7 +150,7 @@ public class StudentService {
 					return 3;//same nic has another person.Save unsuccessful
 				}else {
 					studentRepository.save(student);
-					if(isPasswordChanged) {
+					if(isPasswordChanged || isEmailChanged) {
 						jwtInMemoryUserDetailsService.setUserInMemory();
 					}
 					return 1;//save successful
@@ -242,10 +253,15 @@ public class StudentService {
 		if(stuId != null && pacId != null) {
 			if(studentRepository.existsById(stuId) && packageRepository.existsById(pacId)) {//check whether student and package data represent the relevant tables
 				if(!notExistStudentIdAndPackageId(getStudent(stuId), getPackage(pacId))) {//if relevant record exist in the studentPackage table
+					Integer studentPackageId = getStudentPackageId(stuId, pacId);
+					Double packagePayment = courseFeeRepository.findFeeForPackageByStudentIdAndPackageId(studentPackageId);
 					
-					//delete the studentPackage data(when delete studentpackage data relevant 'course fee' also deleted
-					studentPackageRepository.deleteById(getStudentPackageId(stuId, pacId));
-					return "success";
+					if(packagePayment==null ||  packagePayment==0) {
+						//delete the studentPackage data(when delete student package data relevant 'course fee' also deleted
+						studentPackageRepository.deleteById(getStudentPackageId(stuId, pacId));
+						return "success";
+					}
+						
 				}
 			}
 		}
@@ -278,6 +294,7 @@ public class StudentService {
 	 * 
 	 */
 	public Integer courseFeeAdd(Integer studentId,Integer packageId,CourseFee object) {
+		
 		if(!notExistStudentIdAndPackageId(getStudent(studentId), getPackage(packageId))) {
 			
 			if(object.getAmount()>0) {
@@ -325,7 +342,7 @@ public class StudentService {
 			}
 			
 		}
-		return 0;
+		return -1;
 	}
 	
 	
@@ -364,43 +381,48 @@ public class StudentService {
 	 * type 1-->Written Exam
 	 * 		2-->Trial Exam
 	 */
-	public List<Double> getWrittenExamResult(Integer type){
+	public List<Double> getExamResult(Integer type,Integer year){
 		
 		List<Double> examResult=new ArrayList<Double>();
+		
+		if(type>=1 && type<=2) {
 			
-		Calendar gc = new GregorianCalendar();
-     
-        for(int i=0 ; i<12 ; i++) {
-        	 gc.set(Calendar.MONTH, i);
-             gc.set(Calendar.DAY_OF_MONTH, 0);
-             Date monthStart = gc.getTime();//month start date
-             gc.add(Calendar.MONTH, 1);
-             gc.add(Calendar.DAY_OF_MONTH, 0);
-             Date monthEnd = gc.getTime();//month end date
-             
-             Double pass=0d;
-             Double fail=0d;
-             
-             if(type==1) {
-            	 pass=examResultRepository.findWrittenExamResultSum(monthStart,monthEnd);
-                 fail=examResultRepository.findWrittenExamResultFailSum(monthStart, monthEnd);
-             }else {
-            	 pass=examResultRepository.findTrialExamResultSum(monthStart,monthEnd);
-                 fail=examResultRepository.findTrialExamResultFailSum(monthStart, monthEnd);
-             }
-             
-             Double passRate;
-             if(pass != null) {
-            	 if(fail != null) {
-            		 passRate=(pass/(pass+fail))*100;
-            	 }else {
-            		 passRate=100.d;
-            	 }
-            	 examResult.add(truncate(passRate, 2));
-             }else {
-            	 examResult.add(0.d);
-             }        
-        }
+			Calendar gc = new GregorianCalendar();
+			gc.set(Calendar.YEAR,year);
+	     
+	        for(int i=0 ; i<12 ; i++) {
+	        	 gc.set(Calendar.MONTH, i);
+	             gc.set(Calendar.DAY_OF_MONTH, 0);
+	             Date monthStart = gc.getTime();//month start date
+	             gc.add(Calendar.MONTH, 1);
+	             gc.add(Calendar.DAY_OF_MONTH, 0);
+	             Date monthEnd = gc.getTime();//month end date
+	             
+	             Double pass=0d;
+	             Double fail=0d;
+	             
+	             if(type==1) {
+	            	 pass=examResultRepository.findWrittenExamResultSum(monthStart,monthEnd,year);
+	                 fail=examResultRepository.findWrittenExamResultFailSum(monthStart, monthEnd,year);
+	             }else {
+	            	 pass=examResultRepository.findTrialExamResultSum(monthStart,monthEnd,year);
+	                 fail=examResultRepository.findTrialExamResultFailSum(monthStart, monthEnd,year);
+	             }
+	             
+	             Double passRate;
+	             
+	             if(pass != null) {
+	            	 if(fail != null) {
+	            		 passRate=(pass/(pass+fail))*100;
+	            	 }else {
+	            		 passRate=100.d;
+	            	 }
+	            	 examResult.add(truncate(passRate, 2));
+	             }else {
+	            	 examResult.add(0.d);
+	             }        
+	        }
+		}
 		return examResult;
 	}
 	
@@ -506,13 +528,14 @@ public class StudentService {
 			
 			//checkCourse Fees Complete or not
 			if(isAllCourseFeesComplete(student)) {
-				User user = student.getUserId();
-				user.setStatus(1);
-				user = userRepository.save(user);
 				
-				jwtInMemoryUserDetailsService.addNewUserInMemory(user);
-				
+//				String reply = clearStudentPreviousPayment(studentId);
+//				
+//				if(reply.equals("success")) {
+//					return 1;
+//				}
 				return 1;
+				
 			}else {
 				return 0;
 			}
@@ -622,8 +645,7 @@ public class StudentService {
 	}
 	
 	private Boolean isExistUser(String nic,String email) {
-//		User user = userRepository.findByEmailAndNic(email,nic);
-		User user = null;
+		User user = userRepository.findByEmailAndNic(email,nic);
 		if(user != null ) {
 			return true;
 		}
@@ -651,16 +673,16 @@ public class StudentService {
 		
 		if(flag) {//course fee not completed
 			return false;
-		}else {
+		}//else {
 			//previous course fees completed.so delete all payment record
-			for (Integer packageId : studentPackageList) {		
-				StudentPackage object = studentPackageRepository.findByStudentIdAndPackageId(student, packageRepository.findByPackageId(packageId));
-				courseFeeRepository.deleteByStudentPackageId(object);
-			}
+//			for (Integer packageId : studentPackageList) {		
+//				StudentPackage object = studentPackageRepository.findByStudentIdAndPackageId(student, packageRepository.findByPackageId(packageId));
+//				courseFeeRepository.deleteByStudentPackageId(object);
+//			}
 			
 			//delete student previous lesson details
-			studentLessonRepository.deleteByStudentId(student);
-		}
+//			studentLessonRepository.deleteByStudentId(student);
+		//}
 		return true;
 	}
 	

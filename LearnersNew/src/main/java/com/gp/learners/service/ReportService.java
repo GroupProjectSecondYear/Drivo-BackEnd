@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gp.learners.entities.Package;
-import com.gp.learners.entities.YearUpdate;
 import com.gp.learners.entities.mapObject.OutcomeDataMap;
 import com.gp.learners.entities.mapObject.PackagePaymentDataMap;
 import com.gp.learners.entities.mapObject.ProfitDataMap;
@@ -16,6 +15,7 @@ import com.gp.learners.entities.mapObject.YearlyIncomeDataMap;
 import com.gp.learners.entities.mapObject.YearlyOutComeDataMap;
 import com.gp.learners.entities.mapObject.YearlyProfitDataMap;
 import com.gp.learners.repositories.CourseFeeRepository;
+import com.gp.learners.repositories.DeletePaymentOfStudentRepository;
 import com.gp.learners.repositories.FuelPaymentRepository;
 import com.gp.learners.repositories.InsurancePaymentRepository;
 import com.gp.learners.repositories.MaintainanceRepository;
@@ -52,17 +52,26 @@ public class ReportService {
 	TimeTableService timeTableService;
 	
 	@Autowired
+	DeletePaymentOfStudentRepository deletePaymentOfStudentRepository;
+	
+	@Autowired
 	ReportService reportService;
 	
 	public List<Double> studentMonthlyPayment(Integer year) {	
 		
 		List<Double> studentMonthlyPaymentList = new ArrayList<Double>(12);
 		for(int i=1 ; i<=12 ; i++) {
-			Double result = courseFeeRepository.findPaymentByMonthAndYear(year,i);
-			if(result==null) {
-				result=0D;
+			Double result1 = courseFeeRepository.findPaymentByMonthAndYear(year,i);
+			Double result2 = deletePaymentOfStudentRepository.findPaymentByMonthAndYear(year, i);
+			
+			if(result1==null) {
+				result1=0D;
 			}
-			studentMonthlyPaymentList.add(result);
+			if(result2==null) {
+				result2=0D;
+			}
+			
+			studentMonthlyPaymentList.add(result1+result2);
 		}
 		return studentMonthlyPaymentList;
 	}
@@ -146,13 +155,17 @@ public class ReportService {
 			for(int i=1 ; i<=numIteration ; i++) {
 				List<PackagePaymentDataMap> packagePaymentList = new ArrayList<PackagePaymentDataMap>(packageList.size());
 				for (Package packageData : packageList) {
-					Double result = courseFeeRepository.findPaymentByPackageIdAndYearAndMonth(packageData,year,i);
-					if(result==null) {
-						result=0D;
+					Double result1 = courseFeeRepository.findPaymentByPackageIdAndYearAndMonth(packageData,year,i);
+					Double result2 = deletePaymentOfStudentRepository.findPaymentByPackageIdAndYearAndMonth(packageData,year,i);
+					if(result1==null) {
+						result1=0D;
+					}
+					if(result2==null) {
+						result2=0D;
 					}
 					PackagePaymentDataMap object = new PackagePaymentDataMap();
 					object.setPackageName(packageData.getTitle());
-					object.setPayment(result);
+					object.setPayment(result1+result2);
 					packagePaymentList.add(object);
 				}
 				packagePaymentMonthlyList.add(packagePaymentList);
@@ -262,11 +275,15 @@ public class ReportService {
 				List<Double> paymentData = new ArrayList<Double>();
 				for (Integer year : yearList) {
 					if( (year<currentYear) || (year==currentYear && i<currentMonth) ) {
-						Double result = courseFeeRepository.findPaymentByPackageIdAndYearAndMonth(packageData,year,i);
-						if(result==null) {
-							result=0D;
+						Double result1 = courseFeeRepository.findPaymentByPackageIdAndYearAndMonth(packageData,year,i);
+						Double result2 =deletePaymentOfStudentRepository.findPaymentByPackageIdAndYearAndMonth(packageData,year,i);
+						if(result1==null) {
+							result1=0D;
 						}
-						paymentData.add(result);
+						if(result2==null) {
+							result2=0D;
+						}
+						paymentData.add(result1+result2);
 					}else {
 						paymentData.add(-1D);
 					}
@@ -361,10 +378,19 @@ public class ReportService {
 			for (Integer year : years) {
 				
 				//income
-				Double income = courseFeeRepository.findPaymentByMonthAndYear(year,i);
-				if(income==null) {
-					income=0D;
+				Double income = 0D;
+				
+				Double income1 = courseFeeRepository.findPaymentByMonthAndYear(year,i);
+				Double income2 = deletePaymentOfStudentRepository.findPaymentByMonthAndYear(year,i);
+				
+				if(income1==null) {
+					income1=0D;
 				}
+				if(income2==null) {
+					income2=0D;
+				}
+				
+				income = income1+income2;
 				
 				//OutCome Calculate
 				Double salaryResult = salaryRepository.findPaymentByMonth(i,year);

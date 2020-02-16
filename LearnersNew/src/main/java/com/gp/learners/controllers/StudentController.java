@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -132,7 +134,7 @@ public class StudentController {
 	
 	//getStudentId
 	@GetMapping("student/id/{userId}")
-	public ResponseEntity<Integer> getUserId(@PathVariable("userId") Integer id) {
+	public ResponseEntity<Integer> getStudentId(@PathVariable("userId") Integer id) {
 		Integer studentId=studentService.getStudentId(id);
 		if(studentId != (-1)) {
 			return ResponseEntity.ok(studentId);
@@ -157,9 +159,9 @@ public class StudentController {
 	 *  type 1-->Written Exam
 	 * 		 2-->Trial Exam
 	 */
-	@GetMapping("student/exam/result/{type}")
-	public List<Double> getWrittenExamResult(@PathVariable("type") Integer type){
-		return studentService.getWrittenExamResult(type);
+	@GetMapping("student/exam/result/{type}/{year}")
+	public List<Double> getExamResult(@PathVariable("type") Integer type,@PathVariable("year") Integer year){
+		return studentService.getExamResult(type,year);
 	}
 	
 	@PostMapping("student/writtenexam/result")
@@ -177,7 +179,7 @@ public class StudentController {
 	public ResponseEntity<Void> submitTrialExamResult(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
 														@RequestParam("countPass") Integer countPass,
 														@RequestParam("countFail") Integer countFail){
-		String reply=studentService.submitWrittenExamResult(date,countPass,countFail);
+		String reply=studentService.submitTrialExamResult(date,countPass,countFail);
 		if(reply.equals("success")) {
 			return ResponseEntity.noContent().build();
 		}
@@ -227,8 +229,8 @@ public class StudentController {
 	}
 	
 	@GetMapping("student/package/data/{id}/{role}/{packageId}")
-	public ResponseEntity<StudentPackage> getStudentPackageData(@PathVariable("id")Integer id,@PathVariable("role")Integer role,@PathVariable("packageId")Integer packageId){
-		StudentPackage object = studentService.getStudentPackageData(id, role, packageId);
+	public ResponseEntity<StudentPackage> getStudentPackageData(@PathVariable("id")Integer userId,@PathVariable("role")Integer role,@PathVariable("packageId")Integer packageId){
+		StudentPackage object = studentService.getStudentPackageData(userId, role, packageId);
 		if(object!=null) {
 			return ResponseEntity.ok(object);
 		}

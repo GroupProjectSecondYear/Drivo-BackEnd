@@ -145,8 +145,15 @@ public class TimeTableService {
 
 	public String deletePath(Integer pathId) {
 		if (pathRepository.existsById(pathId)) {
-			pathRepository.deleteById(pathId);
-			return "success";
+			
+			try {
+				pathRepository.deleteById(pathId);
+				return "success";
+			} catch (Exception e) {
+				System.out.println("###########################################");
+				System.out.println(e.getMessage());
+			}
+			
 		}
 		return "notsuccess";
 	}
