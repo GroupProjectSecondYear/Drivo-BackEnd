@@ -48,7 +48,8 @@ public class StudentPaperService {
 		}
 		// set marks of the student
 		int finalMarks=(marks/studentPaper.getPaperId().getNo_of_questions())*100;
-		studentPaper.setMarks(finalMarks);
+		//System.out.println();
+		studentPaper.setMarks(50);
 
 		// save student paper details
 		StudentPaper result = studentpaperRepository.save(studentPaper);

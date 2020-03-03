@@ -19,4 +19,7 @@ public interface StaffLeaveRepository extends JpaRepository<StaffLeave, Integer>
 	
 	@Query(value="select staff_leave_id from staff_leave where YEAR(date) = :year",nativeQuery=true)
 	public List<Integer> findStaffLeaveIdByYear(@Param("year") Integer year);
+	
+	@Query(value="select * from staff_leave where staff_id = :staffId and YEAR(date) = :year",nativeQuery=true)
+	public List<StaffLeave> findByStaffId(@Param("staffId")Integer staffId,@Param("year")Integer year);
 }

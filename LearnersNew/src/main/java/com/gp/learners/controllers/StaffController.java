@@ -18,12 +18,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gp.learners.entities.Admin;
 import com.gp.learners.entities.AdminStaff;
 import com.gp.learners.entities.Attendance;
 import com.gp.learners.entities.LeaveSetting;
 import com.gp.learners.entities.Salary;
 import com.gp.learners.entities.SalaryInformation;
 import com.gp.learners.entities.Staff;
+import com.gp.learners.entities.StaffLeave;
 import com.gp.learners.entities.User;
 import com.gp.learners.entities.WorkTime;
 import com.gp.learners.entities.mapObject.StaffWorkDaysDataMap;
@@ -243,6 +245,29 @@ public class StaffController {
 		Integer reply = staffService.updateStaffLeave(leaveSettingData);
 		if(reply!=null) {
 			return ResponseEntity.ok().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("staff/leaves/{staffId}")
+	public ResponseEntity<List<StaffLeave>> getLeaveList(@PathVariable Integer staffId){
+		return ResponseEntity.ok(staffService.getLeaveList(staffId));
+	}
+	
+	@GetMapping("staff/admin/{userId}")
+	public ResponseEntity<Admin> getAdminData(@PathVariable Integer userId){
+		Admin reply = staffService.getAdminData(userId);
+		if(reply!=null) {
+			return ResponseEntity.ok(reply);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@PutMapping("staff/admin")
+	public ResponseEntity<Integer> adminUpdate(@Valid @RequestBody Admin admin){
+		Integer reply = staffService.adminUpdate(admin);
+		if(reply!=null) {
+			return ResponseEntity.ok(reply);
 		}
 		return ResponseEntity.notFound().build();
 	}

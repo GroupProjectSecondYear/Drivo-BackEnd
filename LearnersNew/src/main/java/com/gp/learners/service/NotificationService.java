@@ -212,7 +212,7 @@ public class NotificationService {
 				newInstructorsMsg="Assign new " +updateLesson.getPackageId().getTitle()+" lesson for you on "+timeTableService.getDay(updateLesson.getDay())+" at "+updateLesson.getTimeSlotId().getStartTime()+"-"+updateLesson.getTimeSlotId().getFinishTime();
 			}
 			
-			//NumberStudent Msg not implement
+			
 			
 			//Save Student Notification in the notification table
 			Notification studentNotification = new Notification();

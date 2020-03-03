@@ -11,14 +11,18 @@ import javax.validation.Valid;
 import org.hibernate.boot.registry.classloading.spi.ClassLoaderService.Work;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.gp.learners.config.security.JwtInMemoryUserDetailsService;
 import com.gp.learners.entities.Admin;
 import com.gp.learners.entities.Attendance;
 import com.gp.learners.entities.LeaveSetting;
 import com.gp.learners.entities.Salary;
 import com.gp.learners.entities.SalaryInformation;
 import com.gp.learners.entities.Staff;
+import com.gp.learners.entities.StaffLeave;
+import com.gp.learners.entities.Student;
 import com.gp.learners.entities.User;
 import com.gp.learners.entities.WorkTime;
 import com.gp.learners.entities.mapObject.StaffWorkDaysDataMap;
@@ -66,12 +70,15 @@ public class StaffService {
 
 	@Autowired
 	LeaveSettingRepository leaveSettingRepository;
-	
+
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	StaffService staffService;
+
+	@Autowired
+	JwtInMemoryUserDetailsService jwtInMemoryUserDetailsService;
 
 	// Get Staff Details
 //	public Object getStaff() {
@@ -472,6 +479,80 @@ public class StaffService {
 			return "success";
 		}
 		return "error";
+	}
+
+	public List<StaffLeave> getLeaveList(Integer staffId) {
+		List<StaffLeave> list = new ArrayList<StaffLeave>();
+		if (staffId != null && staffRepository.existsById(staffId)) {
+			list = staffLeaveRepository.findByStaffId(staffId, timeTableService.getLocalCurrentDate().getYear());
+		}
+		return list;
+	}
+
+	public Admin getAdminData(Integer userId) {
+		if (userId != null && userRepository.existsById(userId)) {
+			return adminRepository.findByUserId(userRepository.findByUserId(userId));
+		}
+		return null;
+	}
+
+	// update Admin Details
+	public Integer adminUpdate(Admin admin) {
+		
+		System.out.println("################");
+		System.out.println(admin);
+
+		Boolean isPasswordChanged = false;
+		Boolean isEmailChanged = false;
+		if (userRepository.existsById(admin.getUserId().getUserId())
+				&& adminRepository.existsById(admin.getAdminId())) {
+			Integer userId = admin.getUserId().getUserId();
+			Integer adminId = admin.getAdminId();
+			User newUser = admin.getUserId();
+			User currentUser = userRepository.findByUserId(userId);
+
+			// check password change or not.If password change change then encode the
+			// password.
+			String newPassword = newUser.getPassword();
+			String currentPassword = currentUser.getPassword();
+			if (!currentPassword.equals(newPassword)) {
+				BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+				newPassword = encoder.encode(newPassword);
+				newUser.setPassword(newPassword);
+				isPasswordChanged = true;
+			}
+
+			// check update email is unique
+			String newEmail = newUser.getEmail();
+			User user1 = userRepository.findByEmail(newEmail);
+			if (user1 != null && !user1.getUserId().equals(userId)) {
+				return 2;// Same Email has another person.Save unsuccessful
+			} else {
+
+				String currentEmail = currentUser.getEmail();
+				if (!currentEmail.equals(newEmail)) {
+					isEmailChanged = true;
+				}
+
+				// check update nic has another person
+				String nic = admin.getUserId().getNic();
+				User user2 = userRepository.findByNic(nic);
+				if (user2 != null && !user2.getUserId().equals(userId)) {
+					return 3;// same nic has another person.Save unsuccessful
+				} else {
+					Admin currentAdmin = adminRepository.findByUserId(currentUser);
+					currentAdmin.setName(admin.getName());
+					currentAdmin.setUserId(admin.getUserId());
+					adminRepository.save(currentAdmin);
+					if (isPasswordChanged || isEmailChanged) {
+						jwtInMemoryUserDetailsService.setUserInMemory();
+					}
+					return 1;// save successful
+				}
+			}
+
+		}
+		return null;
 	}
 
 }
