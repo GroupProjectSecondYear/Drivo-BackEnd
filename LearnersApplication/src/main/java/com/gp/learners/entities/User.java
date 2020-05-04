@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -16,44 +17,45 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 public class User {
 
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	private Integer userId;
 
-	@NotNull(message = "First Name is mandatory")
+	@NotEmpty(message = "First Name is mandatory")
 	private String firstName;
 
-	@NotNull(message = "Last Name is mandatory")
+	@NotEmpty(message = "Last Name is mandatory")
 	private String lastName;
 
-	@NotNull(message = "Telephone number mandatory")
+	@NotEmpty(message = "Telephone number mandatory")
 	@Size(min = 10, max = 10, message = "Telephone number should have 10 digits")
 	private String tel;
 
-	@NotNull(message = "NIC is mandatory")
+	@NotEmpty(message = "NIC is mandatory")
 	@Size(min = 10, max = 10, message = "NIC number should have 10 characters")
 	private String nic;
 
-	@NotNull(message = "Address is mandatory")
+	@NotEmpty(message = "Address is mandatory")
 	private String address;
 
 	@Email(message = "Email Should be valid")
-	@NotNull(message = "Email is mandatory")
+	@NotEmpty(message = "Email is mandatory")
 	private String email;
 
-	@NotNull(message = "Password is mandatory")
+	@NotEmpty(message = "Password is mandatory")
 	private String password;
 
 	@Column(name = "reg_date")
 	@DateTimeFormat(pattern = "MM-dd-YYYY")
 	private Date regDate;
 
-	@NotNull
+	@NotEmpty
 	private Integer status;
-	@NotNull
+	@NotEmpty
 	private Integer role;
-	@NotNull
+	@NotEmpty
 	private Integer profileImage;
 
 	public Integer getUserId() {

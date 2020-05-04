@@ -12,7 +12,7 @@
 	<groupId>com.gm</groupId>
 	<artifactId>LearnersNew</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>LearnersNew</name>
+	<name>LearnersApplication</name>
 	<description>Learners Management System by Spring Boot</description>
 
 	<properties>
