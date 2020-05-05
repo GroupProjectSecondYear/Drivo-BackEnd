@@ -151,7 +151,8 @@ public class StudentService {
 				}else {
 					studentRepository.save(student);
 					if(isPasswordChanged || isEmailChanged) {
-						jwtInMemoryUserDetailsService.setUserInMemory();
+						//jwtInMemoryUserDetailsService.setUserInMemory();
+						jwtInMemoryUserDetailsService.updateUserInMemory(currentUser, newUser);
 					}
 					return 1;//save successful
 				}

@@ -33,7 +33,7 @@ public class JwtInMemoryUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
 		if(num==0) {
-			int reply = setUserInMemory();
+			setUserInMemory();
 		}
 		
 		Optional<JwtUserDetails> findFirst = inMemoryUserList.stream()
@@ -61,6 +61,18 @@ public class JwtInMemoryUserDetailsService implements UserDetailsService {
 	
 	public void addNewUserInMemory(User user) {
 		inMemoryUserList.add(new JwtUserDetails(user.getUserId().longValue(),user.getEmail(),user.getPassword(),user.getRole().toString()));
+	}
+	
+	public void updateUserInMemory(User oldUser, User updateUser) {
+		
+		JwtUserDetails oldUserData = new JwtUserDetails(oldUser.getUserId().longValue(),oldUser.getEmail(),oldUser.getPassword(),oldUser.getRole().toString());
+		for(JwtUserDetails userData : inMemoryUserList) {
+			if(userData.equals(oldUserData)) {
+				JwtUserDetails updateUserData = new JwtUserDetails(updateUser.getUserId().longValue(),updateUser.getEmail(),updateUser.getPassword(),updateUser.getRole().toString());
+				userData = updateUserData;
+				break;
+			}
+		}
 	}
 
 }

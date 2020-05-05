@@ -263,7 +263,8 @@ public class InstructorService {
 					staffRepository.save(instructor.getStaffId());
 					userRepository.save(newUser);
 					if (isPasswordChanged) {
-						jwtInMemoryUserDetailsService.setUserInMemory();
+						//jwtInMemoryUserDetailsService.setUserInMemory();
+						jwtInMemoryUserDetailsService.updateUserInMemory(currentUser, newUser);
 					}
 					return 1;// save successful
 				}

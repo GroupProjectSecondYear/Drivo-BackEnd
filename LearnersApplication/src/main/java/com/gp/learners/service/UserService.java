@@ -70,7 +70,8 @@ public class UserService {
 		return null;
 	}
 
-	public User userRegister(User user) {
+	public User userRegister(User user) { 
+	
 		if (!isExistUser(user.getEmail(), user.getNic())) {
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 			user.setPassword(encoder.encode(user.getPassword()));
