@@ -1,0 +1,69 @@
+package com.gp.learners.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.gp.learners.entities.Video;
+import com.gp.learners.repositories.VideoRepository;
+
+@Service
+public class LeaveService {
+
+	@Autowired
+	LeaveRepository Repository;
+
+	@Autowired
+	LeaveService leaveService;
+
+	// getVideoList
+	public List<Leave> getLeaveList() {
+		System.out.println("In Leave Repo");
+		List<Leave> leaveList = leaveRepository.findAll();
+//		Video video = videoList.get(0);
+//		System.out.println(video.getDescription());
+		return leaveList;
+	}
+
+	// get Video Details
+	public Leave getLeaveDetails(Integer leaveId) {
+		if (leaveId != null) {
+			if (leaveRepository.existsById(leaveId)) {
+				return leaveRepository.getLeaveById(leaveId);
+			}
+		}
+		return new Leave();
+	}
+
+	// Add Video
+	public String addLeave(Leave leave) {
+
+		Leave result = leaveRepository.save(leave);
+		if (result != null)
+			return "success";
+		else
+			return "notsuccess";
+	}
+
+	// delete video
+	public String deleteLeave(Integer leaveId) {
+		if (leaveId != null) {
+			if (leaveRepository.existsById(leaveId)) {
+				leaveRepository.deleteById(leaveId);
+				return "success";
+			}
+		}
+		return "error";
+	}
+
+	// update Video Details
+	public Leave updateLeave(Leave leave) {
+		if (leaveRepository.existsById(leave.getVideoId())) {
+			return leaveRepository.save(leave);
+		}
+
+		return new Leave();
+	}
+
+}

@@ -1,0 +1,83 @@
+package com.gp.learners.controllers;
+
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.gp.learners.entities.Leave;
+import com.gp.learners.entities.Video;
+import com.gp.learners.repositories.LeaveRepository;
+import com.gp.learners.repositories.VideoRepository;
+import com.gp.learners.service.LeaveService;
+import com.gp.learners.service.VideoService;
+
+@RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
+public class LeaveController {
+
+	@Autowired
+	LeaveService leaveService;
+
+	@Autowired
+	LeaveRepository leaveRepository;
+
+	@GetMapping("/leaves")
+	public List<Leave> getLeaveList() {
+		System.out.println("In Leave Controller");
+		return leaveService.getLeaveList();
+
+	}
+
+	// get Specific Video data
+	@GetMapping("leave/{leaveId}")
+	public ResponseEntity<Leave> getLeave(@PathVariable("leaveId") Integer leaveId) {
+		System.out.println("In Video Controller VmoreDetails");
+		Leave leave = leaveService.getLeaveDetails(leaveId);
+		if (leave.getLeaveId() != null) {
+			return ResponseEntity.ok(leave);
+		}
+		return ResponseEntity.noContent().build();
+	}
+
+	// save video
+	@PostMapping("/leave/add")
+
+	public Leave saveLeave(@RequestBody Leave leave) {
+		System.out.println("In leave controller Adding method");
+		return LeaveRepository.save(leave);
+	}
+
+	// delete Video
+	@DeleteMapping("leave/{leaveId}")
+	public ResponseEntity<Void> deleteLeave(@PathVariable("leaveId") Integer videoId) {
+		System.out.println("In leave controller delete method");
+
+		String reply = leaveService.deleteLeave(leaveId);
+		if (reply.equals("success")) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+	// update video Details
+	@PutMapping("leave/update")
+	public ResponseEntity<Leave> updateLeave(@Valid @RequestBody Leave object) {
+		Leave leave = leaveService.updateLeave(object);
+		if (leave.getLeaveId() != null) {
+			return ResponseEntity.ok(leave);
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+}
